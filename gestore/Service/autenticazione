@@ -1,1 +1,68 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))  # Aggiunge la cartella principale al path
+from models import utente
+from models import registrazione
+from models import RegistrazioneRepository
 
+class InterfacciaUtente:
+    """Rappresenta la «boundary» Interfaccia Utente"""
+    
+    def __init__(self, gestore_registrazione):
+        self.gestore = gestore_registrazione
+
+    def registrazione(self):
+        # 1. L'utente clicca o avvia la registrazione
+        # 2. L'interfaccia chiede il modulo al gestore (control)
+        modulo = self.gestore.getModulo("registrazione")
+        
+        # 3. Ricevuto il modulo, l'interfaccia lo mostra all'utente
+        self.mostraModulo(modulo)
+
+    def mostraModulo(self, tipo_modulo):
+        print(f"[UI] Mostro a schermo il modulo di: {tipo_modulo}")
+
+    def inviaModulo(self, nome, email, password):
+        print(f"[UI] Ricevuti dati dall'utente. Invio al gestore...")
+        # Nota: Nel diagramma l'invio si ferma alla UI, ma realisticamente 
+        # qui la UI passerà i dati al GestoreRegistrazione per salvarli.
+        self.gestore.elabora_registrazione(nome, email, password)
+
+
+class GestoreRegistrazione:
+
+    def __init__(self, utente_repo: UtenteRepository, registrazione_repo: RegistrazioneRepository):
+        self._utente_repo = utente_repo # Il gestore si riferisce a se stesso per semplicità
+        self._registrazione_repo = registrazione_repo
+    """Rappresenta il «control» Gestore Registrazione"""
+    
+    def getModulo(self, registrazione):
+        print(f"[Control] Richiesto modulo di tipo: {registrazione}")
+        # Ritorna il tipo di modulo richiesto (la freccia tratteggiata mostraModulo)
+        return registrazione
+    
+    def inviaDati(self, metodo, titolare, carta):
+        print(f"[Control] Ricevuti dati per {metodo}. Salvo i dati...")
+        # Qui potremmo avere la logica per salvare i dati nel database o fare altre operazioni
+        self._registrazione_repo.salvaDati(titolare, carta)
+
+    def elabora_registrazione(self, nome, email, password):
+        # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
+        print(f"[Control] Elaborazione dati per l'utente: {nome} ({email})")
+
+
+# --- SIMULAZIONE DEL FLUSSO (L'Attore 'Utente' interagisce con il sistema) ---
+if __name__ == "__main__":
+    # Inizializziamo i componenti del sistema
+    gestore_control = GestoreRegistrazione()
+    interfaccia_ui = InterfacciaUtente(gestore_control)
+
+    print("--- INIZIO FLUSSO DIAGRAMMA DI SEQUENZA ---")
+    
+    # Freccia 1: Utente -> registrazione() sulla Interfaccia Utente
+    interfaccia_ui.registrazione()
+    
+    print("\n--- L'UTENTE COMPILA I CAMPI ---")
+    
+    # Freccia 5: Utente -> inviaModulo(nome, email, password) sulla Interfaccia Utente
+    interfaccia_ui.inviaModulo(nome="Mario Rossi", email="mario@example.com", password="password123")
