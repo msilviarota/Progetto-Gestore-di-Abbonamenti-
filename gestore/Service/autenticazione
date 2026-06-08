@@ -66,3 +66,58 @@ if __name__ == "__main__":
     
     # Freccia 5: Utente -> inviaModulo(nome, email, password) sulla Interfaccia Utente
     interfaccia_ui.inviaModulo(nome="Mario Rossi", email="mario@example.com", password="password123")
+
+
+
+class InterfacciaUtente:
+    """Rappresenta la «boundary» Interfaccia Utente"""
+    
+    def __init__(self, gestore_autenticazione):
+        self.gestore = gestore_autenticazione
+
+    def logout(self):
+        print("\n[UI] L'utente ha cliccato su 'Disconnetti'.")
+        # Comunica al gestore (control) di effettuare il logout
+        successo = self.gestore.disconnetti_utente()
+        
+        if successo:
+            self.mostra_schermata_login()
+        else:
+            print("[UI] Errore: Nessun utente era loggato.")
+
+    def mostra_schermata_login(self):
+        print("[UI] Schermata di Login mostrata con successo. Arrivederci!")
+
+
+class GestoreAutenticazione:
+    """Rappresenta il «control» Gestore Autenticazione / Registrazione"""
+    
+    def __init__(self):
+        # Simuliamo una sessione attiva memorizzando l'utente corrente
+        # Se è None, significa che nessun utente è loggato
+        self.utente_corrente = "Mario Rossi" 
+
+    def disconnetti_utente(self):
+        if self.utente_corrente is not None:
+            print(f"[Control] Rimozione della sessione per l'utente: {self.utente_corrente}")
+            # Resettiamo l'utente corrente a None (Logout)
+            self.utente_corrente = None
+            print("[Control] Logout effettuato nel sistema.")
+            return True
+        else:
+            return False
+
+
+# --- SIMULAZIONE DEL FLUSSO ---
+if __name__ == "__main__":
+    gestore_control = GestoreAutenticazione()
+    interfaccia_ui = InterfacciaUtente(gestore_control)
+
+    print("--- STATO INIZIALE ---")
+    print(f"Utente connesso nel sistema: {gestore_control.utente_corrente}")
+
+    # L'utente avvia il processo di logout dalla UI
+    interfaccia_ui.logout()
+
+    print("\n--- STATO FINALE ---")
+    print(f"Utente connesso nel sistema: {gestore_control.utente_corrente}")
