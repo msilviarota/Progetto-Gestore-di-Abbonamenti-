@@ -1,9 +1,11 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))  # Aggiunge la cartella principale al path
-from models import utente
-from models import registrazione
-from models import RegistrazioneRepository
+from ..models import utente
+from ..models import registrazione
+from ..models import RegistrazioneRepository
+
+
 
 class InterfacciaUtente:
     """Rappresenta la «boundary» Interfaccia Utente"""
@@ -26,7 +28,8 @@ class InterfacciaUtente:
         print(f"[UI] Ricevuti dati dall'utente. Invio al gestore...")
         # Nota: Nel diagramma l'invio si ferma alla UI, ma realisticamente 
         # qui la UI passerà i dati al GestoreRegistrazione per salvarli.
-        self.gestore.elabora_registrazione(nome, email, password)
+        self.GestoreRegistrazione.elabora_registrazione(nome, email, password)
+
 
 
 class GestoreRegistrazione:
@@ -46,9 +49,37 @@ class GestoreRegistrazione:
         # Qui potremmo avere la logica per salvare i dati nel database o fare altre operazioni
         self._registrazione_repo.salvaDati(titolare, carta)
 
+    def inviaErrore(self, messaggio):
+        print(f"[Control] Errore: {messaggio}")
+        # Qui potremmo avere la logica per comunicare l'errore alla UI o loggarlo
+
+    def bloccaRegistrazione(self):
+        print("[Control] Registrazione bloccata a causa di errori.")
+        # Qui potremmo avere la logica per bloccare ulteriori tentativi di registrazione
+
     def elabora_registrazione(self, nome, email, password):
         # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
         print(f"[Control] Elaborazione dati per l'utente: {nome} ({email})")
+
+    def verifica(self, email):
+        if self._utente_repo.trovaPerEmail(email) is not None:
+            print(f"[Control] Email {email} già registrata.")
+            self.inviaErrore("Email in uso")
+            self.bloccaRegistrazione()
+            return False
+        else:
+            print(f"[Control] Email {email} è disponibile.")
+            return True
+
+
+
+class Notificche:
+    def __init__(self):
+        pass
+    def Notifica(self, messaggio):
+        print(f"[Notifica] {messaggio}")
+        return messaggio
+    
 
 
 # --- SIMULAZIONE DEL FLUSSO (L'Attore 'Utente' interagisce con il sistema) ---
