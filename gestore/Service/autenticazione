@@ -1,9 +1,18 @@
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))  # Aggiunge la cartella principale al path
-from ..models import utente
-from ..models import registrazione
-from ..models import RegistrazioneRepository
+import sys
+import json
+
+# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
+
+if radice_progetto not in sys.path:
+    sys.path.append(radice_progetto)
+
+# Ora puoi importare utente direttamente senza usare i punti!
+from models import utente
+#from models import registrazione
+#from models import RegistrazioneRepository
 
 
 
@@ -39,7 +48,15 @@ class GestoreRegistrazione:
         self._registrazione_repo = registrazione_repo
     """Rappresenta il «control» Gestore Registrazione"""
     
-    def getModulo(self, registrazione):
+    def getModulo(self):
+        if os.path.exists("repository/registrazione.json"):
+            with open("repository/registrazione.json", "r") as file:
+                dati = json.load(file)
+                print(f"[Control] Modulo di registrazione caricato con successo.")
+                return dati.get("tipo_modulo", "registrazione")
+        else:
+            return "registrazione assente"
+        
         print(f"[Control] Richiesto modulo di tipo: {registrazione}")
         # Ritorna il tipo di modulo richiesto (la freccia tratteggiata mostraModulo)
         return registrazione
@@ -73,7 +90,7 @@ class GestoreRegistrazione:
 
 
 
-class Notificche:
+class Notifiche:
     def __init__(self):
         pass
     def Notifica(self, messaggio):
