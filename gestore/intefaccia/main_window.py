@@ -116,6 +116,7 @@ class FinestraPrincipale(QWidget):
 
         layout_principale.addLayout(layout_categorie)
 
+        # Prima riga extra: Preferenze, Acquista, Scaduti
         layout_extra = QHBoxLayout()
         layout_extra.setSpacing(12)
 
@@ -133,6 +134,25 @@ class FinestraPrincipale(QWidget):
             layout_extra.addWidget(btn)
 
         layout_principale.addLayout(layout_extra)
+
+        # Seconda riga extra: I miei Abbonamenti, Presta Abbonamento
+        layout_extra2 = QHBoxLayout()
+        layout_extra2.setSpacing(12)
+
+        btn_abbonamenti = QPushButton("📋  I miei Abbonamenti")
+        btn_abbonamenti.setFixedHeight(70)
+        btn_abbonamenti.setStyleSheet(STILE_BTN_EXTRA)
+        btn_abbonamenti.clicked.connect(self.apri_abbonamenti)
+        layout_extra2.addWidget(btn_abbonamenti)
+
+        btn_presta = QPushButton("🤝  Presta Abbonamento")
+        btn_presta.setFixedHeight(70)
+        btn_presta.setStyleSheet(STILE_BTN_EXTRA)
+        btn_presta.clicked.connect(self.apri_presta)
+        layout_extra2.addWidget(btn_presta)
+
+        layout_principale.addLayout(layout_extra2)
+
         layout_principale.addStretch()
         self.setLayout(layout_principale)
 
@@ -160,6 +180,16 @@ class FinestraPrincipale(QWidget):
     def apri_scaduti(self):
         from abbonamenti import FinestraScaduti
         finestra = FinestraScaduti(self)
+        finestra.exec()
+
+    def apri_abbonamenti(self):
+        from abbonamenti import FinestraAbbonamenti
+        finestra = FinestraAbbonamenti(self)
+        finestra.exec()
+
+    def apri_presta(self):
+        from abbonamenti import FinestraPresta
+        finestra = FinestraPresta(self)
         finestra.exec()
 
     def filtra_categorie(self):
