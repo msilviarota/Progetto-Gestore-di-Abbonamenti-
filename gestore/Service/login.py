@@ -1,9 +1,11 @@
 from gestore.models import notifica
+from gestore.database import repositoryUtente
 
 class GestoreAccessi():
 
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        pass
+
 
     def getModulo(self, modulo):
         match modulo:
@@ -13,20 +15,24 @@ class GestoreAccessi():
                 return ["vecchia_password", "nuova_password", "conferma_nuova_password"]
             case _:
                 return []
-    
+
+
     def inviaCredenziali(self, email, password):
         print(f"[Control] Ricevuti dati: {email}. Verifica in corso...")
         return self.login(email, password)
-    
+
+
     def criptaPassword(self, password):
         passwordCriptata = "hashed_" + password  # Simulazione di hashing
         return passwordCriptata
+
 
     def bloccaOperazione(self, errore: str):
         notifica.inviaErrore(errore)
         print("[Control] Operazione bloccata per motivi di sicurezza.")
         return False
-    
+
+
     def mostra(self, esitoVerifica: str):
         match esitoVerifica:
             case "successo":
@@ -38,9 +44,25 @@ class GestoreAccessi():
             case _:
                 print("[Control] Accesso negato.")
         return
-    
+
+
+    def richiestaCambioPassword(self, vecchia_password, nuova_password, conferma_nuova_password):
+        if nuova_password != conferma_nuova_password:
+            self.bloccaOperazione("Le nuove password non corrispondono.")
+            return False
+        elif vecchia_password != repositoryUtente.getInformazioni[2]:
+            self.bloccaOperazione("La vecchia password non corrisponde")
+            return False
+        elif nuova_password == vecchia_password:
+            self.bloccaOperazione("La nuova password non può essere uguale alla vecchia.")
+            return False
+        else:
+            repositoryUtente.aggiornaPassword(self.criptaPassword(nuova_password))
+            self.mostra("passwordAggiornata")
+            return True
+
+
     def login(self, email, password):
-        user = self.db.get_user_by_email(email)
-        if user and user.check_password(password):
-            return user
+        if email in repositoryUtente.utenti and repositoryUtente.getInformazioni[2] == self.criptaPassword(password):
+            return True
         return None
