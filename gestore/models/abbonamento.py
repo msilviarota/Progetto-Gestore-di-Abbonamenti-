@@ -1,11 +1,5 @@
 from datetime import datetime
 
-# =====================================================================
-# ═══════════════════════ SECTION 1: ENTITY ═══════════════════════════
-# =====================================================================
-
-
-
 class Abbonamento:
     def __init__(self, email : str, nome_utente: str, cognome_utente: str, piattaforma_nome: str):
         self._email = email
@@ -16,30 +10,16 @@ class Abbonamento:
         self._valido = True
         self._stato = "Attivo"
 
-    # L'UNICA FUNZIONE: Recupera lo stato completo dell'abbonamento
-    def ottieni_stato_abbonamento(self) -> dict:
-        return {
-            "email": self._email,
-            "piattaforma": self.piattaforma,
-            "scadenza": self._data_scadenza,
-            "valido": self._valido,
-            "stato": self._stato
-        }
+    def get_email(self): return self._email
 
+    def get_nome_utente(self): return self._nome_utente
 
+    def get_cognome_utente(self): return self._cognome_utente
 
+    def get_piattaforma(self): return self.piattaforma_nome
 
+    def get_data_scadenza(self): return self._data_scadenza
 
+    def get_valido(self): return self._valido
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def get_stato(self): return self._stato

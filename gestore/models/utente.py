@@ -7,12 +7,14 @@ class Utente:
         self._password = password
         self._preferenze = []
 
-    # L'UNICA FUNZIONE: Recupera tutti i dati dell'utente in un colpo solo
-    def ottieni_profilo_completo(self) -> dict:
-        return {
-            "nome": self._nome,
-            "cognome": self._cognome,
-            "eta": self._eta,
-            "email": self._email,
-            "preferenze": self._preferenze
-        }
+    def get_nome(self): return self._nome
+
+    def get_cognome(self): return self._cognome
+
+    def get_eta(self): return self._eta
+
+    def get_email(self): return self._email
+
+    def get_password(self): return self._password
+
+    def get_preferenze(self): return self._preferenze
