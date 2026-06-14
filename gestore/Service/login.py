@@ -1,10 +1,13 @@
 from gestore.models import notifica
 from gestore.database import repositoryUtente
+from gestore.database import repositoryAbbonamento
 
 class GestoreAccessi():
 
     def __init__(self):
-        pass
+        self._email = None
+        self._password = None
+        return
 
 
     def getModulo(self, modulo):
@@ -15,11 +18,6 @@ class GestoreAccessi():
                 return ["vecchia_password", "nuova_password", "conferma_nuova_password"]
             case _:
                 return []
-
-
-    def inviaCredenziali(self, email, password):
-        print(f"[Control] Ricevuti dati: {email}. Verifica in corso...")
-        return self.login(email, password)
 
 
     def criptaPassword(self, password):
@@ -61,8 +59,29 @@ class GestoreAccessi():
             self.mostra("passwordAggiornata")
             return True
 
+# Da rivedere poiché non so come controllare la presenza o meno di un download
+    def verificaDownloadAttivo(self, email):
+        abbonamenti_attivi = repositoryAbbonamento.getAbbonamentiAttivi(email)
+        if not abbonamenti_attivi:
+            self.bloccaOperazione("Nessun abbonamento attivo trovato per l'utente.")
+            return False
+        return True
+    
+    def inviaCredenziali(self, email, password):
+        self._email = email
+        self._password = password
+        print(f"[Control] Ricevuti dati: {email}. Verifica in corso...")
+        return self.login(email, password)
+
 
     def login(self, email, password):
         if email in repositoryUtente.utenti and repositoryUtente.getInformazioni[2] == self.criptaPassword(password):
             return True
         return None
+
+
+    def richiestaLogout(self, abbonamento):
+        if abbonamento in repositoryAbbonamento.getAbbonamentiAttivi(email):
+            del repositoryAbbonamento.abbonamenti[abbonamento]
+        print("[Control] Logout richiesto. Procedo con il logout.")
+        return True
