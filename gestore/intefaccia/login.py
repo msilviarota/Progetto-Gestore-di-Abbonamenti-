@@ -1,9 +1,9 @@
-import sys, os
+import sys
+import os
 
-# Aggiunge la cartella di questo file al path — funziona su qualsiasi PC
-_CARTELLA = os.path.dirname(os.path.abspath(__file__))
-if _CARTELLA not in sys.path:
-    sys.path.insert(0, _CARTELLA)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
@@ -17,8 +17,9 @@ from utils import BASE_DIR
 
 
 class RegisterWindow(QWidget):
-    def __init__(self):
+    def __init__(self, login_window=None):
         super().__init__()
+        self.login_window = login_window  # Memorizziamo il riferimento del login
         self.setWindowTitle("Registrazione")
         self.showMaximized()
         self.setStyleSheet("QWidget { background-color: #e8f5e9; }")
@@ -124,18 +125,21 @@ class RegisterWindow(QWidget):
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
 
-        from control.gestoreRegistrazione import GestoreRegistrazione
+        from ..Service.gestoreRegistrazione import GestoreRegistrazione
         gestore = GestoreRegistrazione()
         gestore.inviaModulo(nome, cognome, eta, email, password)
-        gestore.valida()
-
-        QMessageBox.information(self, "Successo", f"Account creato per {email}!")
-        self.torna_login()
+        
+        if gestore.valida():
+            # CORRETTO: rimosso il refuso 'creatyo'
+            QMessageBox.information(self, "Successo", f"Account creato per {email}!")
+            self.torna_login()
+        else:
+            QMessageBox.warning(self, "Errore", "Email già registrata!")
 
     def torna_login(self):
-        self.login_window = LoginWindow()
-        self.login_window.show()
-        self.close()
+        if self.login_window:
+            self.login_window.show()  # Mostra la finestra di login esistente
+        self.close()  # Chiude la finestra di registrazione
 
 
 class LoginWindow(QWidget):
@@ -152,7 +156,8 @@ class LoginWindow(QWidget):
         layout.setContentsMargins(50, 40, 50, 40)
         layout.setSpacing(14)
 
-        titolo = QLabel("Benvenutti in RelaxApp!")
+        # CORRETTO: rimosso il refuso 'Benvenutti'
+        titolo = QLabel("Benvenuti in RelaxApp!")
         titolo.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -214,6 +219,7 @@ class LoginWindow(QWidget):
             QMessageBox.warning(self, "Errore", "Inserisci email e password!")
             return
 
+        # Qui idealmente dovresti validare i dati prima di aprire la FinestraPrincipale
         self.main_window = FinestraPrincipale("Silvia")
         self.main_window.login_window = self
         self.main_window.show()
@@ -223,6 +229,7 @@ class LoginWindow(QWidget):
         QDesktopServices.openUrl(QUrl("https://tuosito.com/reset-password"))
 
     def apri_registrazione(self):
-        self.register_window = RegisterWindow()
+        # Passiamo 'self' (LoginWindow) a RegisterWindow così sa dove tornare
+        self.register_window = RegisterWindow(self)
         self.register_window.show()
-        self.close()
+        self.hide()  # Nascondiamo il login invece di chiuderlo bruscamente
