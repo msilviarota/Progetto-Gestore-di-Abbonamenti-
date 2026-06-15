@@ -3,7 +3,6 @@
         "all'utente"
     ],
     "python.analysis.extraPaths": [
-        "./gestore",
-        "./gestore/interfaccia"
+        "./gestore"
     ]
 }
