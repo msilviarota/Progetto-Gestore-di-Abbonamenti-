@@ -59,9 +59,11 @@ class GestoreRegistrazione:
         if validità:
             print("[Control] Dati non validi. Registrazione interrotta.")
             self.bloccaRegistrazione()
+            return False
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
             print(f"[Control] Elaborazione dati per l'utente: {self._nome} ({self._email})")
         else:
             repositoryUtente.salva_utente(utente(self._nome, self._cognome, self._eta, self._email, self._password))
             print("[Control] Dati validi. Procedo con la registrazione.")
+            return True
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
