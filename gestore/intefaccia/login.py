@@ -1,5 +1,9 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Aggiunge la cartella di questo file al path — funziona su qualsiasi PC
+_CARTELLA = os.path.dirname(os.path.abspath(__file__))
+if _CARTELLA not in sys.path:
+    sys.path.insert(0, _CARTELLA)
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
@@ -119,9 +123,10 @@ class RegisterWindow(QWidget):
         if password != conferma:
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
-        from control.gestoreRegistrazione import GestoreRegistrazione 
+
+        from control.gestoreRegistrazione import GestoreRegistrazione
         gestore = GestoreRegistrazione()
-        gestore.inviaModulo(nome,cognome,eta,email,password)
+        gestore.inviaModulo(nome, cognome, eta, email, password)
         gestore.valida()
 
         QMessageBox.information(self, "Successo", f"Account creato per {email}!")
