@@ -27,3 +27,9 @@ class RepositoryAbbonamenti:
 
     def getAbbonamentiAttivi(self, email):
         return self.attivi.get(email, [])
+    
+    def getAbbonamentiScaduti(self, email):
+        return self.scaduti.get(email, [])
+    
+    def getAbbonamentiPossibili(self, email):
+        return self.attivi.get(email, []) + self.scaduti.get(email, [])

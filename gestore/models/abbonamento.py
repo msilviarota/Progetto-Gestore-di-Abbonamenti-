@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Abbonamento:
     def __init__(self, email : str, nome_utente: str, cognome_utente: str, piattaforma_nome: str):
@@ -6,7 +6,7 @@ class Abbonamento:
         self._nome_utente = nome_utente
         self._cognome_utente = cognome_utente
         self.piattaforma = piattaforma_nome
-        self._data_scadenza = datetime.now()
+        self._data_scadenza = datetime.now() + timedelta(days=365)  # Scadenza dopo 365 giorni
         self._valido = True
         self._stato = "Attivo"
 

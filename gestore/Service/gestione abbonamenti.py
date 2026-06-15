@@ -17,7 +17,7 @@ from models import notifica
 from models import utente
 from models import abbonamento
 from models import piattaforma
-
+from datetime import datetime
 
 
 #==================================================================== 
@@ -34,13 +34,18 @@ class GestoreAbbonamenti:
 
 
     # Riceve la scelta dell'utente e la elabora
-    def inviaScelta(self, abbonamento):
-        print(f"[Control] Ricevuto abbonamento: {abbonamento}. Elaborazione in corso...")
+    def inviaScelta(self, abbonamentoScelto):
+        print(f"[Control] Ricevuto abbonamento: {abbonamentoScelto}. Elaborazione in corso...")
         repositoryUtente.controlloProfilo(self._email)
         repositoryDatiPagamento.getiDatiPagamaneto(self._email)
         notifica.inviaNotifica("Abbonamento scelto: " + abbonamento + "Dati di Pagamento" + repositoryDatiPagamento.getiDatiPagamaneto(self._email))
-        piattaforma.inviaAbbonamento(piattaforma.getPiattaformaScelta(), abbonamento)        
-        return repositoryUtente.getInformazioni(self._email) is not None and repositoryAbbonamento.salva_abbonamento(self._email, abbonamento)
+        piattaforma.inviaSceltaAbbonamento(piattaforma.getPiattaformaScelta(), abbonamento)        
+        piattaforma.inviaDatiPagamento(piattaforma.getPiattaformaScelta(), repositoryDatiPagamento.getiDatiPagamaneto(self._email))
+        nuovoAbbonamento = abbonamento(self._email, repositoryUtente.getInformazioni(self._email).get_nome(),
+                                       repositoryUtente.getInformazioni(self._email).get_cognome(),
+                                       abbonamentoScelto, datetime.now(), True, "Attivo")
+        repositoryAbbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
+        return repositoryUtente.getInformazioni(self._email) is not None and notifica.inviaConferma()
 
 
     # Blocca l'operazione in caso di errori o dati non validi
