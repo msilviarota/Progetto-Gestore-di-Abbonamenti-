@@ -1,4 +1,6 @@
-import os
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QMessageBox
@@ -121,7 +123,7 @@ class RegisterWindow(QWidget):
         gestore = GestoreRegistrazione()
         gestore.inviaModulo(nome,cognome,eta,email,password)
         gestore.valida()
-        
+
         QMessageBox.information(self, "Successo", f"Account creato per {email}!")
         self.torna_login()
 
