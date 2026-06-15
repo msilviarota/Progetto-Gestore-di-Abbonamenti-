@@ -117,7 +117,11 @@ class RegisterWindow(QWidget):
         if password != conferma:
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
-
+        from control.gestoreRegistrazione import GestoreRegistrazione 
+        gestore = GestoreRegistrazione()
+        gestore.inviaModulo(nome,cognome,eta,email,password)
+        gestore.valida()
+        
         QMessageBox.information(self, "Successo", f"Account creato per {email}!")
         self.torna_login()
 
