@@ -125,7 +125,7 @@ class RegisterWindow(QWidget):
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
 
-        from ..Service.gestoreRegistrazione import GestoreRegistrazione
+        from Service.registrazione import GestoreRegistrazione
         gestore = GestoreRegistrazione()
         gestore.inviaModulo(nome, cognome, eta, email, password)
         
