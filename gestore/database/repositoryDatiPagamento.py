@@ -1,4 +1,4 @@
-class RepositoryPagamenti:
+class RepositoryDatiPagamento:
     def __init__(self): 
         self.metodi = {} # email -> DatiPagamento
     def salva_metodo(self, email: str, dati: DatiPagamento): 

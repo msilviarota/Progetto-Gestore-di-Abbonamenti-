@@ -10,32 +10,56 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 # Ora puoi importare utente direttamente senza usare i punti!
-from models import utente
+from models.utente import Utente
 
 
 
 class RepositoryUtente:
-    def __init__(self): 
-        self.utenti = {} # email -> Oggetto Utente
+    def __init__(self, percorsoFile = "utenti.json"): 
+        self._percorsoFile = percorsoFile
 
 
-    def salva_utente(self, utente: utente): 
-        self.utenti[utente.get_email()] = utente
+    # Scarichiamo tutte le informazione dalla repository e carichiamole nel file
+    def caricaFile(self):
+        try:
+            with open(self._percorsoFile, "r", encoding="utf-8") as file:
+                return json.load(file)        
+        except FileNotFoundError:
+            return []
 
 
+    # Salviamo il file con le nuove informazioni nella repository
+    def salvaFile(self, utenti):
+        with open(self._percorsoFile, "w", encoding="utf-8") as file:
+            json.dump(utenti, file, indent=4)
+
+
+    # Salviamo il nuovo utente che ha effettuato la registrazione
+    def salva_utente(self, utente: Utente):
+        utenti = self.caricaFile() 
+        utenti[utente.get_email()] = utente.to_dict()
+        self.salvaFile(utenti)
+
+
+    # Otteniamo le informazioni dell'utente
     def getInformazioni(self, email):
-        if email in self.utenti:
-            utente = self.utenti[email]
-            return utente
+        utenti = self.caricaFile
+        if email in utenti: 
+            return utenti[email]
         return None
     
 
+    # Sostituiamo la precedente password dell'utente con un'altra
     def aggiornaPassword(self, email, nuova_password):
-        if email in self.utenti:
-            self.utenti[email] = nuova_password
+        utenti = self.caricaFile()
+        if email in utenti:
+            utenti[email]["password"] = nuova_password
+            self.salvaFile(utenti)
             return True
         return False
     
 
+    # Verifichiamo che l'email impiegata non sia già associata ad altri utenti
     def verifica(self, email):
-        return email in self.utenti
+        utenti = self.caricaFile()
+        return email in utenti

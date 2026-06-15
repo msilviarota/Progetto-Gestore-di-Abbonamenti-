@@ -13,18 +13,19 @@ if radice_progetto not in sys.path:
 import json
 import os
 from models import utente
-from database import repositoryUtente
+from database.repositoryUtente import RepositoryUtente
 
 
 class GestoreRegistrazione:
 
-    def __init__(self):
+    def __init__(self, repoUtente: RepositoryUtente):
         self._nome = None
         self._cognome = None
         self._eta = None
         self._email = None
         self._password = None
         self._passwordValida = None
+        self._repo_Utente = repoUtente
         return
     """Rappresenta il «control» Gestore Registrazione"""
 
@@ -55,7 +56,7 @@ class GestoreRegistrazione:
 
 
     def valida(self):
-        validità = repositoryUtente.verifica(self._email)
+        validità = self._repo_Utente.verifica(self._email)
         if validità:
             print("[Control] Dati non validi. Registrazione interrotta.")
             self.bloccaRegistrazione()
@@ -63,7 +64,9 @@ class GestoreRegistrazione:
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
             print(f"[Control] Elaborazione dati per l'utente: {self._nome} ({self._email})")
         else:
-            repositoryUtente.salva_utente(utente(self._nome, self._cognome, self._eta, self._email, self._password))
+            nuovoUtente = utente(self._nome, self._cognome,
+                                self._eta, self._email, self._password)
+            self._repo_Utente.salva_utente(nuovoUtente)
             print("[Control] Dati validi. Procedo con la registrazione.")
             return True
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)

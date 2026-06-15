@@ -7,6 +7,7 @@ class Piattaforma:
 
 
     def inviaSceltaAbbonamento(self, email, nome_utente, cognome_utente):
+        
         return {
             "email": email,
             "nome_utente": nome_utente,

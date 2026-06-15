@@ -23,3 +23,13 @@ class Abbonamento:
     def get_valido(self): return self._valido
 
     def get_stato(self): return self._stato
+
+    def to_dict(self):
+        return{
+            "email": self._email,
+            "nome": self._nome_utente,
+            "cognome": self._cognome_utente,
+            "dataScadenza": self._data_scadenza,
+            "validità": self._valido,
+            "stato": self._stato
+        }

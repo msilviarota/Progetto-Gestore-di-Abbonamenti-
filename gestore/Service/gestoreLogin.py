@@ -10,15 +10,19 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 # Ora puoi importare utente direttamente senza usare i punti!
-from models import notifica
-from database import repositoryUtente
-from database import repositoryAbbonamento
+from models.notifica import Notifica
+from database.repositoryUtente import RepositoryUtente
+from database.repositoryAbbonamento import RepositoryAbbonamento
 
 class GestoreAccessi():
 
-    def __init__(self):
+    def __init__(self, repoUtente: RepositoryUtente,
+                 repoAbbonamento: RepositoryAbbonamento):
         self._email = None
         self._password = None
+        self._repo_Utente = repoUtente
+        self._repo_Abbonamento = repoAbbonamento
+        self._notifica = None
         return
 
 
@@ -38,7 +42,7 @@ class GestoreAccessi():
 
 
     def bloccaOperazione(self, errore: str):
-        notifica.inviaErrore(errore)
+        self._notifica.inviaErrore(errore)
         print("[Control] Operazione bloccata per motivi di sicurezza.")
         return False
 
@@ -60,20 +64,20 @@ class GestoreAccessi():
         if nuova_password != conferma_nuova_password:
             self.bloccaOperazione("Le nuove password non corrispondono.")
             return False
-        elif vecchia_password != repositoryUtente.getInformazioni[2]:
+        elif vecchia_password != self._repo_Utente.getInformazioni[2]:
             self.bloccaOperazione("La vecchia password non corrisponde")
             return False
         elif nuova_password == vecchia_password:
             self.bloccaOperazione("La nuova password non può essere uguale alla vecchia.")
             return False
         else:
-            repositoryUtente.aggiornaPassword(self.criptaPassword(nuova_password))
+            self._repo_Utente.aggiornaPassword(self.criptaPassword(nuova_password))
             self.mostra("passwordAggiornata")
             return True
 
 # Da rivedere poiché non so come controllare la presenza o meno di un download
     def verificaDownloadAttivo(self, email):
-        abbonamenti_attivi = repositoryAbbonamento.getAbbonamentiAttivi(email)
+        abbonamenti_attivi = self._repo_Abbonamento.getAbbonamentiAttivi(email)
         if not abbonamenti_attivi:
             self.bloccaOperazione("Nessun abbonamento attivo trovato per l'utente.")
             return False
@@ -87,13 +91,13 @@ class GestoreAccessi():
 
 
     def login(self, email, password):
-        if email in repositoryUtente.utenti and repositoryUtente.getInformazioni[2] == self.criptaPassword(password):
+        if email in self._repo_Utente.utenti and self._repo_Utente.getInformazioni[2] == self.criptaPassword(password):
             return True
         return None
 
 
     def richiestaLogout(self, abbonamento):
-        if abbonamento in repositoryAbbonamento.getAbbonamentiAttivi(email):
-            del repositoryAbbonamento.abbonamenti[abbonamento]
+        if abbonamento in self._repo_Abbonamento.getAbbonamentiAttivi(self._email):
+            del self._repo_Abbonamento.abbonamenti[abbonamento]
         print("[Control] Logout richiesto. Procedo con il logout.")
         return True

@@ -10,20 +10,36 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 # Ora puoi importare utente direttamente senza usare i punti!
-from models import abbonamento
+from models.abbonamento import Abbonamento
 
 
-class RepositoryAbbonamenti:
-    def __init__(self):
+class RepositoryAbbonamento:
+    def __init__(self, percorsoFile = "abbonamenti.json"):
         self.attivi = {}   # email -> lista oggetti Abbonamento
         self.scaduti = {}  # email -> lista oggetti Abbonamento
+        self._percorsoFile = percorsoFile
 
-    def salva_abbonamento(self, email: str, abbonamento: abbonamento):
-        if email not in self.attivi: 
-            self.attivi[email] = []
-            self.attivi[email].append(abbonamento)
-        else:
-            self.attivi[email].append(abbonamento)
+
+    
+    def caricaFile(self):
+        try:
+            with open(self._percorsoFile, "r", encoding="utf-8") as file:
+                return json.load(file)        
+        except FileNotFoundError:
+            return []
+
+
+    # Salviamo il file con le nuove informazioni nella repository
+    def salvaFile(self, abbonamenti):
+        with open(self._percorsoFile, "w", encoding="utf-8") as file:
+            json.dump(abbonamenti, file, indent=4)
+
+
+    def salva_abbonamento(self, email: str, abbonamento: Abbonamento):
+        abbonamenti = self.caricaFile()
+        abbonamenti[abbonamento.get_email] = abbonamento.to_dict()
+        self.salvaFile(abbonamenti)
+        
 
     def getAbbonamentiAttivi(self, email):
         return self.attivi.get(email, [])
@@ -33,3 +49,4 @@ class RepositoryAbbonamenti:
     
     def getAbbonamentiPossibili(self, email):
         return self.attivi.get(email, []) + self.scaduti.get(email, [])
+    

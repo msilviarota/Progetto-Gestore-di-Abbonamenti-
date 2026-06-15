@@ -18,3 +18,13 @@ class Utente:
     def get_password(self): return self._password
 
     def get_preferenze(self): return self._preferenze
+
+    def to_dict(self):
+        return {
+            "nome": self._nome,
+            "cognome": self._cognome,
+            "eta": self._eta,
+            "email": self._email,
+            "password": self._password,
+            "preferenze": self._preferenze
+        }
