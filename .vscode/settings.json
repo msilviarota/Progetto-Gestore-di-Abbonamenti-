@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "all'utente"
+    ],
+    "python.analysis.extraPaths": [
+        "./gestore"
     ]
 }
