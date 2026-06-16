@@ -111,6 +111,9 @@ class RegisterWindow(QWidget):
         layout.addWidget(btn_torna, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def registrati(self):
+        from Service.registrazione import GestoreRegistrazione
+        from database.repositoryUtente import RepositoryUtente 
+
         nome = self.nome_input.text()
         cognome = self.cognome_input.text()
         eta = self.eta_input.text()
@@ -124,14 +127,11 @@ class RegisterWindow(QWidget):
         if password != conferma:
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
-
-        from Service.registrazione import GestoreRegistrazione
-        gestore = GestoreRegistrazione()
-        gestore.inviaModulo(nome, cognome, eta, email, password)
-        
+        repo_utente = RepositoryUtente()
+        gestore = GestoreRegistrazione(repo_utente)
+        gestore.inviaModulo(nome,cognome,eta,email,password)
         if gestore.valida():
-            # CORRETTO: rimosso il refuso 'creatyo'
-            QMessageBox.information(self, "Successo", f"Account creato per {email}!")
+            QMessageBox.information(self,"Successo", f"Account creato per {email}")
             self.torna_login()
         else:
             QMessageBox.warning(self, "Errore", "Email già registrata!")
