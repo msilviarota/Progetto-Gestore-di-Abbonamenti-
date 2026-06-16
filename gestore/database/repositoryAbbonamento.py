@@ -37,12 +37,25 @@ class RepositoryAbbonamento:
 
     def salva_abbonamento(self, email: str, abbonamento: Abbonamento):
         abbonamenti = self.caricaFile()
-        abbonamenti[abbonamento.get_email()] = abbonamento.to_dict()
+        if abbonamento.get_email() not in abbonamenti:
+            abbonamenti[email] = []
+        abbonamenti[email].append(abbonamento.to_dict())
         self.salvaFile(abbonamenti)
     
+    # Scorriamo i vari abbonamenti contenuti nella lista relativa alla specifica email
+    # dell'utente e se corrisponde lo eliminiamo 
     def elimina_abbonamento(self, abbonamento: Abbonamento):
         abbonamenti = self.caricaFile()
-        
+        email = abbonamento.get_email()
+        if email in abbonamenti:
+            datiDaEliminare = abbonamento.to_dict()
+
+            abbonamenti[email] = [abb for abb in abbonamenti[email] if abb != datiDaEliminare]
+
+            self.salvaFile(abbonamenti)
+            return True # eliminazione riuscita
+
+
     def getAbbonamentiAttivi(self, email):
         return self.attivi.get(email, [])
     
