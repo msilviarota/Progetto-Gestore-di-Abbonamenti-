@@ -43,7 +43,7 @@ class RepositoryUtente:
 
     # Otteniamo le informazioni dell'utente
     def getInformazioni(self, email):
-        utenti = self.caricaFile
+        utenti = self.caricaFile()
         if email in utenti: 
             return utenti[email]
         return None
