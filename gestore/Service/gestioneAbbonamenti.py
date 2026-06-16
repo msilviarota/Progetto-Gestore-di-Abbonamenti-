@@ -13,9 +13,9 @@ if radice_progetto not in sys.path:
 from database.repositoryAbbonamento import RepositoryAbbonamento
 from database import repositoryUtente
 from database.repositoryDatiPagamento import RepositoryDatiPagamento
-from models.notifica import notifica
-from models import utente
-from models import abbonamento
+from models.notifica import Notifica
+from models.utente import Utente
+from models.abbonamento import Abbonamento
 from models import piattaforma
 from datetime import datetime
 
@@ -23,9 +23,9 @@ from datetime import datetime
 #==================================================================== 
 # Rappresenta il «control» Gestore Abbonamenti
 class GestoreAbbonamenti:
-    def __init__(self, utente: utente, repoAbbonamento: RepositoryAbbonamento,
+    def __init__(self, utente: Utente, repoAbbonamento: RepositoryAbbonamento,
                  repoDatiPagamento: RepositoryDatiPagamento,
-                 nomePiattaforma: piattaforma):
+                 nomePiattaforma: piattaforma, notifica: Notifica):
         self._email = utente.get_email()
         self._repo_Abbonamento = repoAbbonamento
         self._repo_DatiPagamento = repoDatiPagamento
@@ -65,16 +65,23 @@ class GestoreAbbonamenti:
     # ===========================================================================================================================================================
     # Qui scriviamo il codice per il caso d'uso 2 in cui si affronta il caso in cui l'utente vuole disdire un abbonamento tra quelli comprati
     
-    # recuperiamo glia bbonamenti attivi dalla self._repo_Abbonamento
+    # recuperiamo gli abbonamenti attivi dalla self._repo_Abbonamento
     def recuperaAbbonamenti(self):
-        return self._repo_Abbonamento.getAbbonamentiAttivi()
+        return self._repo_Abbonamento.getAbbonamentiPossibili()
     
     # inviamo una notifica all'utente per accertarci che voglia disdire l'abbonamento
     def inviaSeleziona(self, abbonamentoScelto):
         self._abbonamentoScelto = abbonamentoScelto
-        notifica.invia("Vuoi disdire?")
+        self._notifica.invia("Vuoi disdire?")
         return
     
     # facciamo controllare lo stato dell'abbonamento selezionato e se è scaduto o disdetto lo eliminiamo
-    def esguiDisdetta(self, abbonamentoScelto):
+    def esguiDisdetta(self, abbonamentoScelto ):
+        if abbonamentoScelto:
+            return
+        return
+    
+
+    # Permettiamo all'utente di condividere un abbonamento con un'amico mediante email
+    def presta(self, emailAmico):
         return

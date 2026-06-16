@@ -22,7 +22,7 @@ class GestoreAccessi():
         self._password = None
         self._repo_Utente = repoUtente
         self._repo_Abbonamento = repoAbbonamento
-        self._notifica = None
+        self._notifica = Notifica()
         return
 
 
@@ -80,7 +80,7 @@ class GestoreAccessi():
             self.bloccaOperazione("La nuova password non può essere uguale alla vecchia.")
             return False
         else:
-            self._repo_Utente.aggiornaPassword(self.criptaPassword(nuova_password))
+            self._repo_Utente.aggiornaPassword(self._email, self.criptaPassword(nuova_password))
             self.mostra("passwordAggiornata")
             return True
 

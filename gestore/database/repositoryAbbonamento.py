@@ -39,8 +39,10 @@ class RepositoryAbbonamento:
         abbonamenti = self.caricaFile()
         abbonamenti[abbonamento.get_email()] = abbonamento.to_dict()
         self.salvaFile(abbonamenti)
+    
+    def elimina_abbonamento(self, abbonamento: Abbonamento):
+        abbonamenti = self.caricaFile()
         
-
     def getAbbonamentiAttivi(self, email):
         return self.attivi.get(email, [])
     
