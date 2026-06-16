@@ -212,19 +212,28 @@ class LoginWindow(QWidget):
 
     def login(self):
         from main_window import FinestraPrincipale
+        from Service.gestoreAccessi import GestoreAccessi 
+        from database.repositoryUtente import RepositoryUtente 
+        from database.repositoryAbbonamento import RepositoryAbbonamento 
+
         email = self.email_input.text()
         password = self.password_input.text()
 
         if not email or not password:
             QMessageBox.warning(self, "Errore", "Inserisci email e password!")
             return
-
-        # Qui idealmente dovresti validare i dati prima di aprire la FinestraPrincipale
-        self.main_window = FinestraPrincipale("Silvia")
-        self.main_window.login_window = self
-        self.main_window.show()
-        self.hide()
-
+        
+        repo_utente = RepositoryUtente()
+        repo_abbonamento = RepositoryAbbonamento()
+        gestore = GestoreAccessi (repo_utente, repo_abbonamento)
+        esito = gestore.inviaCredenziali(email,password)
+        if esito:
+            self.main_window = FinestraPrincipale(email)
+            self.main_window.login_window = self 
+            self.main_window.show()
+            self.hide()
+        else: 
+            QMessageBox.warning(self, "Errore", "Email o password errati!")
     def password_dimenticata(self):
         QDesktopServices.openUrl(QUrl("https://tuosito.com/reset-password"))
 
