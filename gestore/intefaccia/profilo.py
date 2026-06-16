@@ -78,19 +78,24 @@ class FinestraCambiaPassword(QDialog):
         layout.addWidget(btn_annulla)
 
     def salva(self):
-        vecchia = self.vecchia_input.text()
-        nuova = self.nuova_input.text()
+        from Service.gestoreAccessi import GestoreAccessi 
+        from database.repositoryUtente import RepositoryUtente 
+        from database.repositoryAbbonamento import RepositoryAbbonamento 
+        vecchia = self.vecchia_impurt.text()
+        nuova= self.nuova_imput.text()
         conferma = self.conferma_input.text()
-
-        if not vecchia or not nuova or not conferma:
+        if not vecchia or not nuova or not conferma :
             QMessageBox.warning(self, "Errore", "Compila tutti i campi!")
             return
-        if nuova != conferma:
-            QMessageBox.warning(self, "Errore", "Le password non coincidono!")
-            return
-
-        QMessageBox.information(self, "Successo", "Password cambiata con successo!")
-        self.close()
+        repo_utente = RepositoryUtente()
+        repo_abbonamento = RepositoryAbbonamento()
+        gestore = GestoreAccessi(repo_utente, repo_abbonamento)
+        esito = gestore.richiestaCambioPassword(vecchia, nuova,conferma)
+        if esito:
+            QMessageBox.information(self,"Successo","Password cambiata con successo!")
+            self.close()
+        else:
+            QMessageBox.warning(self,"Errore","Operazione non riuscita. Controlla i dati inseriti.")
 
 
 class FinestraModificaPagamento(QDialog):
