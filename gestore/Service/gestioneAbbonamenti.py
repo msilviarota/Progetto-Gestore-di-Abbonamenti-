@@ -45,10 +45,10 @@ class GestoreAbbonamenti:
         print(f"[Control] Ricevuto abbonamento: {abbonamentoScelto}. Elaborazione in corso...")
         self._repo_Abbonamento.getAbbonamentiPossibili(self._email)
         self._repo_DatiPagamento.getiDatiPagamaneto(self._email)
-        self._notifica.inviaNotifica("Abbonamento scelto: " + abbonamento + "Dati di Pagamento" + self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
-        self._piattaforma.inviaSceltaAbbonamento(piattaforma.getPiattaformaScelta())        
-        self._piattaforma.inviaDatiPagamento(piattaforma.getPiattaformaScelta(), self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
-        nuovoAbbonamento = abbonamento(self._email, repositoryUtente.getInformazioni(self._email).get_nome(),
+        self._notifica.inviaNotifica("Abbonamento scelto: " + Abbonamento + "Dati di Pagamento" + self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
+        self._piattaforma.inviaSceltaAbbonamento(self._piattaforma.getPiattaformaScelta())        
+        self._piattaforma.inviaDatiPagamento(self._piattaforma.getPiattaformaScelta(), self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
+        nuovoAbbonamento = Abbonamento(self._email, repositoryUtente.getInformazioni(self._email).get_nome(),
                                        repositoryUtente.getInformazioni(self._email).get_cognome(),
                                        abbonamentoScelto, datetime.now(), True, "Attivo")
         self._repo_Abbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
@@ -75,13 +75,14 @@ class GestoreAbbonamenti:
         self._notifica.invia("Vuoi disdire?")
         return
     
-    # facciamo controllare lo stato dell'abbonamento selezionato e se è scaduto o disdetto lo eliminiamo
+    # Richiamiamo la funzione elimina_abbonamento per scorrere gli abbonamenti ed elimnare quello voluto
+    # se presente
     def esguiDisdetta(self, abbonamentoScelto ):
-        if abbonamentoScelto:
-            return
+        self._repo_Abbonamento.elimina_abbonamento(abbonamentoScelto)
         return
     
 
     # Permettiamo all'utente di condividere un abbonamento con un'amico mediante email
     def presta(self, emailAmico):
+        
         return

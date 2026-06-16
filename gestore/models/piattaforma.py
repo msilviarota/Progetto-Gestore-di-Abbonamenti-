@@ -14,3 +14,8 @@ class Piattaforma:
             "cognome_utente": cognome_utente,
             "piattaforma_nome": self._nome
         }
+
+    
+    def getRicerca(self, parolaChiave: str):
+        
+        return
