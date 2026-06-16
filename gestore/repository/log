@@ -1,0 +1,10 @@
+from datetime import datetime 
+"""chiede al sistema operativo (anno, mese, giorno, ora, minuto, secondo) in cui viene eseguita questa riga"""
+
+class RepositoryLog:
+    """Registro delle operazioni di manutenzione ordinaria e backup di sistema."""
+    def _init_(self): 
+        self.logs = []
+        
+    def aggiungi_log(self, evento: str): 
+        self.logs.append((datetime.now(), evento))

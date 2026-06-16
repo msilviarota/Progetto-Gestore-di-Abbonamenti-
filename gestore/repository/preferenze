@@ -1,0 +1,7 @@
+class RepositoryPreferenze:
+    """Catalogo delle categorie di preferenza disponibili per l'algoritmo."""
+    def _init_(self):
+        self.categorie = ["Cinema", "Sport", "Musica", "Serie TV"]
+        
+    def ottieni_tutte_categorie(self) -> list: 
+        return self.categorie

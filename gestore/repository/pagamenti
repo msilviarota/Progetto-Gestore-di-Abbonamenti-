@@ -1,0 +1,9 @@
+from gestore.models.dati_pagamento import DatiPagamento
+
+class RepositoryPagamenti:
+    """Archivio sicuro dei metodi di pagamento memorizzati dagli utenti."""
+    def __init__(self): 
+        self.metodi = {}  # email -> Oggetto DatiPagamento
+        
+    def salva_metodo(self, email: str, dati: DatiPagamento): 
+        self.metodi[email] = dati

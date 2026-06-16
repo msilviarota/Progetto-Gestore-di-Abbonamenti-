@@ -1,0 +1,11 @@
+from gestore.models.utente import Utente
+"""prendo la classe Utente in models per applicarla in questo codice"""
+
+
+class RepositoryUtente:
+    """Persistenza dati degli utenti registrati."""
+    def __init__(self): 
+        self.utenti = {}  # email -> Oggetto Utente
+        
+    def salva_utente(self, utente: Utente): 
+        self.utenti[utente.get_email()] = utente

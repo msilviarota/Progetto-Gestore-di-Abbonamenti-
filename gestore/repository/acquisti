@@ -1,0 +1,12 @@
+from models.abbonamento import Abbonamento
+"""prendo la classe Abbonamento in models per applicarla in questo codice"""
+
+class RepositoryAcquisti:
+    """Archivio cronologico degli acquisti effettuati sul gestore."""
+    def _init_(self): 
+        self.storico = {}  # email -> lista Abbonamenti passati
+        
+    def registra_acquisto(self, email: str, abbonamento: Abbonamento):
+        if email not in self.storico: 
+            self.storico[email] = []
+        self.storico[email].append(abbonamento)

@@ -1,0 +1,14 @@
+from gestore.models.abbonamento import Abbonamento 
+"""prendo la classe Abbonamento in models per applicarla in questo codice"""
+
+class RepositoryAbbonamenti:
+    """Separazione e gestione degli abbonamenti attivi e storicizzati nel cestino."""
+    
+    def __init__(self):
+        self.attivi = {}   # email -> lista oggetti Abbonamento
+        self.scaduti = {}  # email -> lista oggetti Abbonamento
+        
+    def salva_abbonamento(self, email: str, abbonamento: Abbonamento):
+        if email not in self.attivi: 
+            self.attivi[email] = []
+        self.attivi[email].append(abbonamento)

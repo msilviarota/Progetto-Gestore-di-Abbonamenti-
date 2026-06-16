@@ -1,0 +1,7 @@
+class RepositoryDati:
+    """Contenitore dei cataloghi aggregati multimediali delle piattaforme streaming."""
+    def _init_(self):
+        self.catalogo = []  # Lista globale di oggetti Contenuto
+        
+    def ottieni_catalogo_completo(self) -> list: 
+        return self.catalogo
