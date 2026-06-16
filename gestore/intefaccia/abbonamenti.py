@@ -11,8 +11,9 @@ from stile import (
 
 
 class FinestraAbbonamenti(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, email=""):
         super().__init__(parent)
+        self.eamil_utente=email
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 400)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
@@ -65,7 +66,18 @@ class FinestraAbbonamenti(QDialog):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if risposta == QMessageBox.StandardButton.Yes:
-            QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo!")
+           from Service.gestoreAbbonamenti import GestoreAbbonamenti
+           from database.repositoryAbbonamento import RepositoryAbbonamento
+           from database.repositoryDatiPagamento import RepositoryDatiPagamento
+           from database.repositoryUtente import RepositoryUtente
+        repo_utente = RepositoryUtente()
+        utente = repo_utente.getInformazioni(self.email_utente)
+        repo_abb = RepositoryAbbonamento()
+        repo_pag = RepositoryDatiPagamento()
+        gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, None)
+        gestore.eseguiDisdetta(nome)
+        QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo")
+    
 
 
 class FinestraPresta(QDialog):
@@ -131,8 +143,9 @@ class FinestraPresta(QDialog):
 
 
 class FinestraAcquista(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, email=""):
         super().__init__(parent)
+        self.email_utente = email
         self.setWindowTitle("Acquista Abbonamento")
         self.setFixedSize(450, 520)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
@@ -241,17 +254,25 @@ class FinestraAcquista(QDialog):
         if not carta or not scadenza or not titolare or not cvv:
             QMessageBox.warning(self, "Errore", "Compila tutti i campi!")
             return
-
-        QMessageBox.information(
-            self, "Successo",
-            f"Abbonamento {piano} a {piattaforma} acquistato con successo!"
-        )
+        
+        from Service.gestoreAbbonamneti import GestoreAbbonamenti 
+        from database.repositoryAbbonamento import RepositoryAbbonamento
+        from database.repositoryDatiPagamento import RepositoryDatiPagamento
+        from database.repositoryUtente import RepositoryUtente
+        repo_utente = RepositoryUtente()
+        utente= repo_utente.getinformazioni(self.email_utente)
+        repo_abb = RepositoryAbbonamento()
+        repo_pag = RepositoryDatiPagamento ()
+        gestore = GestoreAbbonamenti (utente, repo_abb, repo_pag , None)
+        gestore.inviaScelta(f"{piattaforma}-{piano}")
+        QMessageBox.information ( self,"Successo", f"Abbonamento {piano} a  {piattaforma}acquistato con successo !")
         self.close()
 
 
 class FinestraScaduti(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, email=""):
         super().__init__(parent)
+        self.email_utente = email
         self.setWindowTitle("Abbonamenti Scaduti")
         self.setFixedSize(500, 500)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
