@@ -146,7 +146,7 @@ class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Login")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo/logo5.1.png")))
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
         self.setStyleSheet("QWidget { background-color: #e8f5e9; }")
         self._build_ui()
@@ -162,7 +162,7 @@ class LoginWindow(QWidget):
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         logo = QLabel()
-        pixmap = QPixmap(os.path.join(BASE_DIR, "logo/logo5.1.png"))
+        pixmap = QPixmap(os.path.join(BASE_DIR, "logo5.1.png"))
         logo.setPixmap(
             pixmap.scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         )
