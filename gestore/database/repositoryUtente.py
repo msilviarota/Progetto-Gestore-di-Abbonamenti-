@@ -25,7 +25,7 @@ class RepositoryUtente:
             with open(self._percorsoFile, "r", encoding="utf-8") as file:
                 return json.load(file)        
         except FileNotFoundError:
-            return []
+            return {}
 
 
     # Salviamo il file con le nuove informazioni nella repository

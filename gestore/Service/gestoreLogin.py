@@ -31,11 +31,12 @@ class GestoreAccessi():
             case "login":
                 return ["email", "password"]
             case "CambioPassword":
-                return ["vecchia_password", "nuova_password", "conferma_nuova_password"]
+                return ["email", "vecchia_password", "nuova_password", "conferma_nuova_password"]
             case _:
                 return []
 
 
+    # Criptiamo la password inserita dall'utente
     def criptaPassword(self, password):
         passwordCriptata = "hashed_" + password  # Simulazione di hashing
         return passwordCriptata
@@ -60,11 +61,19 @@ class GestoreAccessi():
         return
 
 
+    # Effettuiamo il login all'app
+    def login(self, email, password):
+        if self._repo_Utente.getInformazioni(email) is not None and self._repo_Utente.getInformazioni(email)["password"] == self.criptaPassword(password):
+            return True
+        return None
+
+
+    # Permettimao all'utente di cambiare password, se lo desidera, una volta fatto l'accesso
     def richiestaCambioPassword(self, vecchia_password, nuova_password, conferma_nuova_password):
         if nuova_password != conferma_nuova_password:
             self.bloccaOperazione("Le nuove password non corrispondono.")
             return False
-        elif vecchia_password != self._repo_Utente.getInformazioni[2]:
+        elif vecchia_password != self._repo_Utente.getInformazioni(self._email)["password"]:
             self.bloccaOperazione("La vecchia password non corrisponde")
             return False
         elif nuova_password == vecchia_password:
@@ -88,12 +97,6 @@ class GestoreAccessi():
         self._password = password
         print(f"[Control] Ricevuti dati: {email}. Verifica in corso...")
         return self.login(email, password)
-
-
-    def login(self, email, password):
-        if email in self._repo_Utente.utenti and self._repo_Utente.getInformazioni[2] == self.criptaPassword(password):
-            return True
-        return None
 
 
     def richiestaLogout(self, abbonamento):
