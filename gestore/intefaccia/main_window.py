@@ -17,9 +17,10 @@ class FinestraPrincipale(QWidget):
     def __init__(self, nome="Utente"):
         super().__init__()
         self.setWindowTitle("RelaxApp")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo/logo5.1.png")))
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
         self.nome_utente = nome
+        self.email_utente = nome 
         self.setStyleSheet(STILE_FINESTRA_PRINCIPALE)
 
         self.link_categorie = {
@@ -174,17 +175,17 @@ class FinestraPrincipale(QWidget):
 
     def apri_acquista(self):
         from abbonamenti import FinestraAcquista
-        finestra = FinestraAcquista(self)
+        finestra = FinestraAcquista(self, self.email_utente)
         finestra.exec()
 
     def apri_scaduti(self):
         from abbonamenti import FinestraScaduti
-        finestra = FinestraScaduti(self)
+        finestra = FinestraScaduti(self, self.email_utente)
         finestra.exec()
 
     def apri_abbonamenti(self):
         from abbonamenti import FinestraAbbonamenti
-        finestra = FinestraAbbonamenti(self)
+        finestra = FinestraAbbonamenti(self, self.email_utente)
         finestra.exec()
 
     def apri_presta(self):
