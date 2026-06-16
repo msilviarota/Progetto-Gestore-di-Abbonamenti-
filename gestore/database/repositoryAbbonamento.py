@@ -26,7 +26,7 @@ class RepositoryAbbonamento:
             with open(self._percorsoFile, "r", encoding="utf-8") as file:
                 return json.load(file)        
         except FileNotFoundError:
-            return []
+            return {}
 
 
     # Salviamo il file con le nuove informazioni nella repository
@@ -37,7 +37,7 @@ class RepositoryAbbonamento:
 
     def salva_abbonamento(self, email: str, abbonamento: Abbonamento):
         abbonamenti = self.caricaFile()
-        abbonamenti[abbonamento.get_email] = abbonamento.to_dict()
+        abbonamenti[abbonamento.get_email()] = abbonamento.to_dict()
         self.salvaFile(abbonamenti)
         
 

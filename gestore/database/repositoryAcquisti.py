@@ -1,3 +1,4 @@
+from models.abbonamento import Abbonamento
 class RepositoryAcquisti:
     def __init__(self): 
         self.storico = {} # email -> lista Abbonamenti passati
