@@ -1,3 +1,4 @@
+from models.datiPagamento import DatiPagamento
 class RepositoryDatiPagamento:
     def __init__(self): 
         self.metodi = {} # email -> DatiPagamento
