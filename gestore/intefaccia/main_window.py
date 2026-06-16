@@ -67,7 +67,7 @@ class FinestraPrincipale(QWidget):
         layout_principale.addLayout(barra_top)
 
         logo = QLabel()
-        percorso_logo = os.path.join(BASE_DIR, "logo/logo5.1.png")
+        percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
         pixmap = QPixmap(percorso_logo)
         logo.setPixmap(
             pixmap.scaled(140, 140, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
