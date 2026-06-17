@@ -10,7 +10,7 @@ class Piattaforma:
      def get_link_ricerca(self):
           return self.link_ricerca
      def get_link_login(self):
-          return self.get_link_login
+          return self.link_login
      def get_logo(self):
           return self.logo
      def get_categoria(self):
@@ -21,14 +21,14 @@ CATALOGO_PIATTAFORME ={
           nome="Netflix",
           link_ricerca="https://www.netflix.com/search?q={}",
           link_login="https://www.netflix.com/login",
-          logo="loghi/netflix.png"
+          logo="loghi/netflix.png",
           categoria="Streaming"
      ),
-     " prime video": Piattaforma(
+     "prime video": Piattaforma(     
           nome="Prime Video",
-          link_ricerca="https://www.primevideo.com/search/ref=atv_nb_sr?phrase={}"
+          link_ricerca="https://www.primevideo.com/search/ref=atv_nb_sr?phrase={}", # CORRETTO: Aggiunta virgola
           link_login="https://www.primevideo.com",
-          logo="loghi/primevideo.png"
+          logo="loghi/primevideo.png", 
           categoria="Streaming"
      ),
      "youtube": Piattaforma(
