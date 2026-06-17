@@ -32,3 +32,9 @@ class RepositoryPreferenze:
     def salvaFile(self, preferenze):
         with open(self._percorsoFile, "w", encoding="utf-8") as file:
             json.dump(preferenze, file, indent=4)
+    
+
+    # Aggiorniamo le preferenze all'interno della repository
+    def aggiornaPreferenze(self, categorieScelte: list):
+        with open(self._percorsoFile, "w", encoding="utf-8") as file:
+            json.dump(categorieScelte, file, indent=4)
