@@ -28,10 +28,19 @@ class GestoreRicerca():
         # 1. Dizionario con i link di ricerca delle varie piattaforme
         # Il simbolo {} serve per inserire la parola formattata dentro al link
         link_piattaforme = {
-            "netflix": "https://netflix.com{}",
-            "prime": "https://primevideo.com{}",
-            "youtube": "https://youtube.com{}",
-            "disney": "https://disneyplus.com{}"
+            "netflix": "https://www.netflix.com/it/login?serverState=Bgi3uuvcAxK1Ac2GPyEBJXr89EhSDVBn4MShVY1lMLQOwYH5Xr6AAfpWtY5W5va3bSDF%2FHB%2B2EQkZYdciX7LSzcbYg%2FJKsLjHZNIt2G%2Frbv6JLiykpXFEShNbnfNJw8caP4DG8f1cY0xdIADXtDWnj9qoCmFrKBLS12K1oSrTriD5SIXyUf6qj%2FFOSS3IM87Djqmxd4R3Hcq3Ydpb%2Frka%2B%2BcMwmC2jk5INlRWV3vSq17YKB4uC0TVFGyUfAnX4QYBiIOCgydiKLowBcR91EZTrU%3D}",
+            "prime video": "https://www.primevideo.com{}",
+            "youtube": "https://www.youtube.com{}",
+            "disney + ": "https://www.disneyplus.com/it-it{}",
+            "apple music":"https://www.apple.com/it/apple-music/{}",
+            "spotify": "https://open.spotify.com/intl-it{}",
+            "amazon music": "https://music.amazon.it/{}",
+            "mediaset infinity":"https://www.mediasetplay.mediaset.it/{}",
+            "raiplay": "https://www.raiplay.it/{}",
+            "kobo": "https://www.kobo.com/it/it{}",
+            "kindle": "https://leggi.amazon.it/landing{}",
+            "sky sport":"https://sport.sky.it/{}",
+            "now tv":"https://www.nowtv.it/sport{}",
         }
         
         # Trasformiamo il nome della piattaforma in minuscolo per evitare errori di scrittura
