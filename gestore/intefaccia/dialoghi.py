@@ -66,7 +66,7 @@ class FinestraRicerca(QDialog):
     def __init__(self, testo_iniziale="", parent=None):
         super().__init__(parent)
         self.setWindowTitle("Risultati")
-        self.setFixedSize(350, 280)
+        self.setFixedSize(350, 380)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
         layout = QVBoxLayout(self)
@@ -77,18 +77,43 @@ class FinestraRicerca(QDialog):
         titolo.setStyleSheet("font-size: 18px; font-weight: bold;")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
-        from PyQt6.QtWidgets import QLineEdit ,QComboBox
+
+        from PyQt6.QtWidgets import QLineEdit, QComboBox
         from stile import STILE_COMBO
+
         self.testo_input = QLineEdit()
         self.testo_input.setText(testo_iniziale)
+        self.testo_input.setPlaceholderText("Cosa vuoi cercare?")
         self.testo_input.setFixedHeight(36)
         layout.addWidget(self.testo_input)
 
         self.combo_piattaforma = QComboBox()
-        self.combo_piattaforma.addItems(["Netflix","Prime Video","Youtube","Disney +","Apple Music","Sportify","Amazon Music","Mediaset Infinity","RaiPlay","Kobo","Kindle","SkySport","NowTV"])
+        self.combo_piattaforma.addItems([
+            "Netflix", "Prime Video", "Youtube", "Disney +", "AppleMusic",
+            "Spotify", "Amazon Music", "Mediaset Infinity", "RaiPlay",
+            "Kobo", "Kindle", "Sky Sport", "Now TV"
+        ])
         self.combo_piattaforma.setFixedHeight(36)
         self.combo_piattaforma.setStyleSheet(STILE_COMBO)
         layout.addWidget(self.combo_piattaforma)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        layout.addWidget(QLabel("Accesso piattaforma (opzionale):"))
+
+        self.email_piattaforma_input = QLineEdit()
+        self.email_piattaforma_input.setPlaceholderText("Email piattaforma")
+        self.email_piattaforma_input.setFixedHeight(36)
+        layout.addWidget(self.email_piattaforma_input)
+
+        self.password_piattaforma_input = QLineEdit()
+        self.password_piattaforma_input.setPlaceholderText("Password piattaforma")
+        self.password_piattaforma_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password_piattaforma_input.setFixedHeight(36)
+        layout.addWidget(self.password_piattaforma_input)
 
         btn_cerca = QPushButton("Cerca")
         btn_cerca.setFixedHeight(40)
@@ -99,17 +124,22 @@ class FinestraRicerca(QDialog):
         btn_chiudi = QPushButton("Chiudi")
         btn_chiudi.setStyleSheet(STILE_BTN_ESCI)
         btn_chiudi.clicked.connect(self.close)
-        layout.addWidget(btn_chiudi) 
+        layout.addWidget(btn_chiudi)
+
     def cerca(self):
         testo = self.testo_input.text().strip()
         piattaforma = self.combo_piattaforma.currentText()
+        email_piattaforma = self.email_piattaforma_input.text().strip()
+        password_piattaforma = self.password_piattaforma_input.text().strip()
+
         if not testo:
-            QMessageBox.warning(self,"Errore","Inserisci un termine di ricerca!")
-        return
-        from Service.gestoreRicerca  import GestoreRicerca
+            QMessageBox.warning(self, "Errore", "Inserisci un termine di ricerca!")
+            return
+
+        from Service.gestoreRicerca import GestoreRicerca
         gestore = GestoreRicerca(piattaforma)
-        gestore.inviaCerca(testo,piattaforma)
-        self.close()        
+        gestore.inviaCerca(testo, piattaforma, email_piattaforma, password_piattaforma)
+        self.close() 
 
 class FinestraPreferenze(QDialog):
     def __init__(self, parent=None):
