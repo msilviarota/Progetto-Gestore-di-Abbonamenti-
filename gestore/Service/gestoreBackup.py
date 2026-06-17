@@ -3,8 +3,10 @@ import time
 import json
 import logging
 from datetime import datetime
+from intefaccia.dialoghi import mostra_errore_backup
 
-# Configurazione del Logging (Requisito CDU23 - Flusso principale 4)
+
+# Configurazione del Logging 
 logging.basicConfig(
     filename='backup_log.txt',
     level=logging.INFO,
@@ -12,7 +14,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-# Percorsi simulati dei dati del database e della cartella di stoccaggio
+
 DB_ABBONAMENTI = "db_abbonamenti.json"
 DB_PREFERENZE = "db_preferenze.json"
 CARTELLA_BACKUP = "stoccaggio_backup"
@@ -68,6 +70,10 @@ def esegui_backup():
         info_errore = f"FALLIMENTO BACKUP: {str(e)}"
         print(info_errore)
         logging.error(info_errore)
+        mostra_errore_backup(
+            "il backup giornaliero è fallito.\n"
+            "il sistema eseguirà un tentativo di recupero automatico tra 10 minuti "
+        )
         return False
 
 def avvia_pianificazione():
