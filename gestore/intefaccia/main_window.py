@@ -14,7 +14,7 @@ from utils import BASE_DIR
 
 
 class FinestraPrincipale(QWidget):
-    def __init__(self, nome="Utente"):
+    def __init__(self, nome="Utente",email="utente@email.com"):
         super().__init__()
         self.setWindowTitle("RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
@@ -165,7 +165,7 @@ class FinestraPrincipale(QWidget):
     def apri_categoria(self, chiave):
         from dialoghi import SchedaCategoria
         pulsanti = self.link_categorie[chiave]
-        scheda = SchedaCategoria(chiave, pulsanti, self)
+        scheda = SchedaCategoria(chiave, pulsanti, self.email_utente,self)
         scheda.exec()
 
     def apri_preferenze(self):
@@ -175,7 +175,7 @@ class FinestraPrincipale(QWidget):
 
     def apri_acquista(self):
         from abbonamenti import FinestraAcquista
-        finestra = FinestraAcquista(self, self.email_utente)
+        finestra = FinestraAcquista(self)
         finestra.exec()
 
     def apri_scaduti(self):
