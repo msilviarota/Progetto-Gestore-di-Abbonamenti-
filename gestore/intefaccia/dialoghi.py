@@ -220,3 +220,15 @@ class FinestraPreferenze(QDialog):
             return
         QMessageBox.information(self, "Salvato", "Preferenze salvate:\n" + "\n".join(selezionate))
         self.close()
+
+    def mostra_errore_backup(messaggio_errore):
+     """
+     Funzione indipendente che mostra un popup di errore all'utente 
+     se il backup automatico fallisce.
+     """
+     msg = QMessageBox()
+     msg.setIcon(QMessageBox.Icon.Warning)
+     msg.setWindowTitle("Avviso di Sistema - Backup")
+     msg.setText(messaggio_errore)
+     msg.setStyleSheet("QMessageBox { background-color: #fce4ec; font-size: 14px; }") 
+     msg.exec()
