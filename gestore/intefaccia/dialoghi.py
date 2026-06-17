@@ -12,6 +12,10 @@ from stile import (
 from utils import scarica_logo
 
 from Service.gestoreProfilo import salva_preferenze_utente
+from Service.gestorePreferenze import GestorePreferenze
+from database.repositoryUtente import RepositoryUtente
+from database.repositoryPreferenze import RepositoryPreferenze
+from models.notifica import Notifica
 
 class SchedaCategoria(QDialog):
     def __init__(self, titolo, pulsanti, parent=None):
@@ -148,7 +152,13 @@ class FinestraPreferenze(QDialog):
         self.setWindowTitle("Preferenze")
         self.setFixedSize(450, 550)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
-
+        
+        repo_u = RepositoryUtente()
+        repo_p = RepositoryPreferenze()
+        notif = Notifica()
+        
+       
+        
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
@@ -220,22 +230,22 @@ class FinestraPreferenze(QDialog):
             QMessageBox.warning(self, "Attenzione", "Seleziona almeno una categoria!")
             return
         
-        salva_preferenze_utente(selezionate)
-        
         QMessageBox.information(
             self, 
             "Salvato", 
             "Preferenze salvate correttamente nel profilo utente:\n" + "\n".join(selezionate)
         )
         self.close()
-    def mostra_errore_backup(messaggio_errore):
-     """
-     Funzione indipendente che mostra un popup di errore all'utente 
-     se il backup automatico fallisce.
-     """
-     msg = QMessageBox()
-     msg.setIcon(QMessageBox.Icon.Warning)
-     msg.setWindowTitle("Avviso di Sistema - Backup")
-     msg.setText(messaggio_errore)
-     msg.setStyleSheet("QMessageBox { background-color: #fce4ec; font-size: 14px; }") 
-     msg.exec()
+
+
+def mostra_errore_backup(messaggio_errore):
+    """
+    Funzione indipendente che mostra un popup di errore all'utente 
+    se il backup automatico fallisce.
+    """
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Icon.Warning)
+    msg.setWindowTitle("Avviso di Sistema - Backup")
+    msg.setText(messaggio_errore)
+    msg.setStyleSheet("QMessageBox { background-color: #fce4ec; font-size: 14px; }") 
+    msg.exec()
