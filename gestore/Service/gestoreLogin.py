@@ -13,15 +13,18 @@ if radice_progetto not in sys.path:
 from models.notifica import Notifica
 from database.repositoryUtente import RepositoryUtente
 from database.repositoryAbbonamento import RepositoryAbbonamento
+from database.repositoryLog import RepositoryLog
 
 class GestoreAccessi():
 
     def __init__(self, repoUtente: RepositoryUtente,
-                 repoAbbonamento: RepositoryAbbonamento):
+                 repoAbbonamento: RepositoryAbbonamento,
+                 repoLog: RepositoryLog):
         self._email = None
         self._password = None
         self._repo_Utente = repoUtente
         self._repo_Abbonamento = repoAbbonamento
+        self._repo_Log = repoLog
         self._notifica = Notifica()
         return
 
@@ -64,6 +67,7 @@ class GestoreAccessi():
     # Effettuiamo il login all'app
     def login(self, email, password):
         if self._repo_Utente.getInformazioni(email) is not None and self._repo_Utente.getInformazioni(email)["password"] == self.criptaPassword(password):
+            self._repo_Log.aggiungi_log()
             return True
         return None
 
