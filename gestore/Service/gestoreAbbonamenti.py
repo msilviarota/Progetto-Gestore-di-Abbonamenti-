@@ -57,9 +57,9 @@ class GestoreAbbonamenti:
 
     # Blocca l'operazione in caso di errori o dati non validi
     def bloccaOperazione(self, errore: str):
-        notifica.inviaErrore(errore)
-        print("[Control] Operazione bloccata per motivi di sicurezza.")
-        return False
+     self._notifica.inviaErrore(errore)
+     print("[Control] Operazione bloccata per motivi di sicurezza.")
+     return False
 
 
     # ===========================================================================================================================================================
