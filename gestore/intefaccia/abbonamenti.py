@@ -13,7 +13,7 @@ from stile import (
 class FinestraAbbonamenti(QDialog):
     def __init__(self, parent=None, email=""):
         super().__init__(parent)
-        self.eamil_utente=email
+        self.email_utente=email
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 400)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
@@ -66,18 +66,18 @@ class FinestraAbbonamenti(QDialog):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if risposta == QMessageBox.StandardButton.Yes:
-           from Service.gestoreAbbonamenti import GestoreAbbonamenti
-           from database.repositoryAbbonamento import RepositoryAbbonamento
-           from database.repositoryDatiPagamento import RepositoryDatiPagamento
-           from database.repositoryUtente import RepositoryUtente
-        repo_utente = RepositoryUtente()
-        utente = repo_utente.getInformazioni(self.email_utente)
-        repo_abb = RepositoryAbbonamento()
-        repo_pag = RepositoryDatiPagamento()
-        gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, None)
-        gestore.eseguiDisdetta(nome)
-        QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo")
-    
+            from Service.gestoreAbbonamenti import GestoreAbbonamenti
+            from database.repositoryAbbonamento import RepositoryAbbonamento
+            from database.repositoryDatiPagamento import RepositoryDatiPagamento
+            from database.repositoryUtente import RepositoryUtente
+
+            repo_utente = RepositoryUtente()
+            utente = repo_utente.getInformazioni(self.email_utente)
+            repo_abb = RepositoryAbbonamento()
+            repo_pag = RepositoryDatiPagamento()
+            gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, None)
+            gestore.eseguiDisdetta(nome)
+            QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo")
 
 
 class FinestraPresta(QDialog):
@@ -255,17 +255,17 @@ class FinestraAcquista(QDialog):
             QMessageBox.warning(self, "Errore", "Compila tutti i campi!")
             return
         
-        from Service.gestoreAbbonamneti import GestoreAbbonamenti 
+        from Service.gestoreAbbonamenti import GestoreAbbonamenti 
         from database.repositoryAbbonamento import RepositoryAbbonamento
         from database.repositoryDatiPagamento import RepositoryDatiPagamento
         from database.repositoryUtente import RepositoryUtente
         repo_utente = RepositoryUtente()
-        utente= repo_utente.getinformazioni(self.email_utente)
+        utente= repo_utente.getInformazioni(self.email_utente)
         repo_abb = RepositoryAbbonamento()
         repo_pag = RepositoryDatiPagamento ()
         gestore = GestoreAbbonamenti (utente, repo_abb, repo_pag , None)
         gestore.inviaScelta(f"{piattaforma}-{piano}")
-        QMessageBox.information ( self,"Successo", f"Abbonamento {piano} a  {piattaforma}acquistato con successo !")
+        QMessageBox.information(self, "Successo", f"Abbonamento {piano} a {piattaforma} acquistato con successo!")
         self.close()
 
 
