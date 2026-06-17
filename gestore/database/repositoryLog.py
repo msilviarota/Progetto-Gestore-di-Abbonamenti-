@@ -39,6 +39,6 @@ class RepositoryLog:
 
     def recuperaUltimoLog(self):
         logs = self.caricaFile()
-        ultimo_valore = next(reversed(logs))
+        ultimo_valore = next(reversed(logs.values()))
         return ultimo_valore
     
