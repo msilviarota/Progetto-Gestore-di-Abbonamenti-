@@ -12,7 +12,7 @@ if radice_progetto not in sys.path:
 # Ora puoi importare utente direttamente senza usare i punti!
 import json
 import os
-from models import utente
+from models.utente import Utente
 from database.repositoryUtente import RepositoryUtente
 from database.repositoryPreferenze import RepositoryPreferenze
 
@@ -69,7 +69,7 @@ class GestoreRegistrazione:
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
             print(f"[Control] Elaborazione dati per l'utente: {self._nome} ({self._email})")
         else:
-            nuovoUtente = utente(self._nome, self._cognome,
+            nuovoUtente = Utente(self._nome, self._cognome,
                                 self._eta, self._email, self._password)
             self._repo_Utente.salva_utente(nuovoUtente)
             self._repo_Preferenze.aggiornaPreferenze(self._preferenze)
