@@ -75,7 +75,7 @@ class FinestraRicerca(QDialog):
 
         titolo = QLabel("🔍 Cerca un contenuto")
         titolo.setStyleSheet("font-size: 18px; font-weight: bold;")
-        titolo.setAlignment(Qt.AligmentFlag.AlignCenter)
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
         from PyQt6.QtWidgets import QLineEdit ,QComboBox
         from stile import STILE_COMBO
@@ -90,11 +90,12 @@ class FinestraRicerca(QDialog):
         self.combo_piattaforma.setStyleSheet(STILE_COMBO)
         layout.addWidget(self.combo_piattaforma)
 
-        btn_cerca = QPushButton
+        btn_cerca = QPushButton("Cerca")
         btn_cerca.setFixedHeight(40)
         btn_cerca.setStyleSheet(STILE_BTN_CHIUDI)
         btn_cerca.clicked.connect(self.cerca)
         layout.addWidget(btn_cerca)
+
         btn_chiudi = QPushButton("Chiudi")
         btn_chiudi.setStyleSheet(STILE_BTN_ESCI)
         btn_chiudi.clicked.connect(self.close)
@@ -105,10 +106,10 @@ class FinestraRicerca(QDialog):
         if not testo:
             QMessageBox.warning(self,"Errore","Inserisci un termine di ricerca!")
         return
-    from Service.gestoreRicerca  import GestoreRicerca
-    gestore = GestoreRicerca(piattaforma)
-    gestore.inviaCerca(testo,piattaforma)
-    self.close()        
+        from Service.gestoreRicerca  import GestoreRicerca
+        gestore = GestoreRicerca(piattaforma)
+        gestore.inviaCerca(testo,piattaforma)
+        self.close()        
 
 class FinestraPreferenze(QDialog):
     def __init__(self, parent=None):
