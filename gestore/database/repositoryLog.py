@@ -25,9 +25,9 @@ class RepositoryLog:
 
 
     # Salviamo il file con le nuove informazioni nella repository
-    def salvaFile(self, preferenze):
+    def salvaFile(self, testoDelFile):
         with open(self._percorsoFile, "w", encoding="utf-8") as file:
-            json.dump(preferenze, file, indent=4)
+            json.dump(testoDelFile, file, indent=4)
 
 
     def aggiungi_log(self, emailUtente: str): 
@@ -36,9 +36,9 @@ class RepositoryLog:
         self.salvaFile(logs)
         return
 
-    
+
     def recuperaUltimoLog(self):
         logs = self.caricaFile()
-        ultimo_valore = next(reversed(logs))
+        ultimo_valore = next(reversed(logs.values()))
         return ultimo_valore
     
