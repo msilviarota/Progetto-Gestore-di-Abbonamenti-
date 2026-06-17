@@ -7,7 +7,7 @@ if ROOT not in sys.path:
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QLineEdit, QMessageBox
+    QPushButton, QLabel, QLineEdit, QMessageBox,QDialog
 )
 from PyQt6.QtGui import QFont, QDesktopServices, QPixmap, QIcon
 from PyQt6.QtCore import Qt, QUrl
@@ -231,17 +231,80 @@ class LoginWindow(QWidget):
         gestore = GestoreAccessi (repo_utente, repo_abbonamento,repo_log)
         esito = gestore.inviaCredenziali(email,password)
         if esito:
-            self.main_window = FinestraPrincipale(email)
+            dati_utente = repo_utente.getUtente(email)
+            nome_reale = dati_utente.get("nome","Utente") if dati_utente else "Utente"
+            self.main_window = FinestraPrincipale(nome=nome_reale, email=email)
             self.main_window.login_window = self 
             self.main_window.show()
             self.hide()
         else: 
             QMessageBox.warning(self, "Errore", "Email o password errati!")
     def password_dimenticata(self):
-        QDesktopServices.openUrl(QUrl("https://tuosito.com/reset-password"))
+       finestra = FinestraRecuperoPassword(self)
+       finestra.exec()
 
     def apri_registrazione(self):
         # Passiamo 'self' (LoginWindow) a RegisterWindow così sa dove tornare
         self.register_window = RegisterWindow(self)
         self.register_window.show()
         self.hide()  # Nascondiamo il login invece di chiuderlo bruscamente
+
+class FinestraRecuperoPassword(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Recupero Password")
+        self.setFixedSize(350, 200)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        from database.repositoryUtente import RepositoryUtente
+        from models.email import Email
+        from Service.gestoreRecupero import GestoreRecupero
+
+        self.repo_utente = RepositoryUtente()
+        self.servizio_email = Email()
+        self.gestore_recupero = GestoreRecupero(self.repo_utente, self.servizio_email)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        titolo = QLabel("🔒 Recupera la tua Password")
+        titolo.setStyleSheet("font-size: 16px; font-weight: bold; color: #222222;")
+        layout.addWidget(titolo)
+
+        self.campo_email = QLineEdit()
+        self.campo_email.setPlaceholderText("Inserisci la tua email")
+        self.campo_email.setFixedHeight(35)
+        layout.addWidget(self.campo_email)
+
+        btn_invia = QPushButton("Invia Nuova Password")
+        btn_invia.setFixedHeight(35)
+        btn_invia.setStyleSheet("background-color: #4caf50; color: white; font-weight: bold; border-radius: 4px;")
+        btn_invia.clicked.connect(self.processa_recupero)
+        layout.addWidget(btn_invia)
+
+        btn_chiudi = QPushButton("Annulla")
+        btn_chiudi.clicked.connect(self.close)
+        layout.addWidget(btn_chiudi)
+
+    def processa_recupero(self):
+        email_utente = self.campo_email.text().strip()
+        if not email_utente:
+            QMessageBox.warning(self, "Attenzione", "Inserisci un indirizzo email!")
+            return
+
+        try:
+            successo = self.gestore_recupero.inviaEmail(email_utente)
+            if successo:
+                QMessageBox.information(
+                    self, 
+                    "Password Inviata", 
+                    f"È stata generata una nuova password temporanea inviata a:\n{email_utente}\n\nUsala per accedere."
+                )
+                self.close()
+        except Exception as e:
+            QMessageBox.critical(
+                self, 
+                "Errore", 
+                "Impossibile completare l'operazione.\nVerifica che l'email inserita sia registrata."
+            )
