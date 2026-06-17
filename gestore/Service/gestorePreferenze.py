@@ -26,8 +26,8 @@ class GestorePreferenze:
 
     # Riprendiamo le categorie dalla RepositoryPreferenze
     def getPreferenze(self ):
-        self._repo_Preferenze.getCategorie()
-        return
+        return self._repo_Preferenze.getCategorie()
+        
 
     # Prendiamo le categorie selzionate dall'utente e vediamo
     # di modificare le preferenze 
