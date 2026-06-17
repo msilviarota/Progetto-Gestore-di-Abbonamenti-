@@ -81,8 +81,3 @@ class GestoreAbbonamenti:
         self._repo_Abbonamento.elimina_abbonamento(abbonamentoScelto)
         return
     
-
-    # Permettiamo all'utente di condividere un abbonamento con un'amico mediante email
-    def presta(self, emailAmico):
-        
-        return
