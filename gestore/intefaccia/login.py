@@ -131,7 +131,7 @@ class RegisterWindow(QWidget):
         repo_utente = RepositoryUtente()
         repo_preferenze = RepositoryPreferenze()
         gestore = GestoreRegistrazione(repo_utente, repo_preferenze)
-        gestore.inviaModulo(nome,cognome,eta,email,password)
+        gestore.inviaModulo(nome,cognome,eta,email,password,repo_preferenze)
         if gestore.valida():
             QMessageBox.information(self,"Successo", f"Account creato per {email}")
             self.torna_login()
