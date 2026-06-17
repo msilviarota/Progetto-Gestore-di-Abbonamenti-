@@ -9,9 +9,6 @@ radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-from models.preferenza import Preferenza
-
-
 
 # Dichiariamo la RepositoryPreferenze
 class RepositoryPreferenze:

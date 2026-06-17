@@ -5,7 +5,6 @@ class Utente:
         self._eta = eta
         self._email = email
         self._password = password
-        self._preferenze = []
 
     def get_nome(self): return self._nome
 
@@ -17,8 +16,6 @@ class Utente:
 
     def get_password(self): return self._password
 
-    def get_preferenze(self): return self._preferenze
-
     def to_dict(self):
         return {
             "nome": self._nome,
@@ -26,5 +23,4 @@ class Utente:
             "eta": self._eta,
             "email": self._email,
             "password": self._password,
-            "preferenze": self._preferenze
         }

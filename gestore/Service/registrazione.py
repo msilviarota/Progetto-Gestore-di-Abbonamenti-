@@ -14,32 +14,37 @@ import json
 import os
 from models import utente
 from database.repositoryUtente import RepositoryUtente
+from database.repositoryPreferenze import RepositoryPreferenze
 
 
 class GestoreRegistrazione:
 
-    def __init__(self, repoUtente: RepositoryUtente):
+    def __init__(self, repoUtente: RepositoryUtente,
+                  repoPreferenze: RepositoryPreferenze):
         self._nome = None
         self._cognome = None
         self._eta = None
         self._email = None
         self._password = None
         self._passwordValida = None
+        self._preferenze = None
         self._repo_Utente = repoUtente
+        self._repo_Preferenze = repoPreferenze
         return
     """Rappresenta il «control» Gestore Registrazione"""
 
 
     def getModulo(self):
-        return ["nome", "cognome", "eta", "email", "password"] # In un caso reale, questo potrebbe essere un oggetto più complesso o un template HTML
+        return ["nome", "cognome", "eta", "email", "password", "preferenze"] # In un caso reale, questo potrebbe essere un oggetto più complesso o un template HTML
 
 
-    def inviaModulo(self, nome, cognome, eta, email, password):
+    def inviaModulo(self, nome, cognome, eta, email, password, preferenze):
         self._nome = nome
         self._cognome = cognome
         self._eta = eta
         self._email = email
         self._password = password
+        self._preferenze = preferenze
         print(f"[Control] Ricevuti dati: {nome}, {cognome}, {eta}, {email}. Validazione in corso...")
         return
 
@@ -67,6 +72,7 @@ class GestoreRegistrazione:
             nuovoUtente = utente(self._nome, self._cognome,
                                 self._eta, self._email, self._password)
             self._repo_Utente.salva_utente(nuovoUtente)
+            self._repo_Preferenze.aggiornaPreferenze(self._preferenze)
             print("[Control] Dati validi. Procedo con la registrazione.")
             return True
             # Questo metodo gestirà la logica di business (es. creare l'Utente nel DB)
