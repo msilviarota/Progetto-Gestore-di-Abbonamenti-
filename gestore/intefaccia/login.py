@@ -212,7 +212,7 @@ class LoginWindow(QWidget):
 
     def login(self):
         from main_window import FinestraPrincipale
-        from Service.gestoreAccessi import GestoreAccessi 
+        from Service.gestoreLogin import GestoreAccessi 
         from database.repositoryUtente import RepositoryUtente 
         from database.repositoryAbbonamento import RepositoryAbbonamento 
 
