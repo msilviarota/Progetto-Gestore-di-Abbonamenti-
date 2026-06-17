@@ -63,39 +63,53 @@ class SchedaCategoria(QDialog):
 
 
 class FinestraRicerca(QDialog):
-    def __init__(self, risultati, parent=None):
+    def __init__(self, testo_iniziale="", parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Risultati ricerca")
-        self.setFixedSize(350, 400)
+        self.setWindowTitle("Risultati")
+        self.setFixedSize(350, 280)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
         layout = QVBoxLayout(self)
-        layout.setSpacing(10)
+        layout.setSpacing(15)
         layout.setContentsMargins(20, 20, 20, 20)
 
-        titolo = QLabel("Risultati trovati:")
-        titolo.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 10px;")
+        titolo = QLabel("🔍 Cerca un contenuto")
+        titolo.setStyleSheet("font-size: 18px; font-weight: bold;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
+        from PyQt6.QtWidgets import QLineEdit ,QComboBox
+        from stile import STILE_COMBO
+        self.testo_input = QLineEdit()
+        self.testo_input.setText(testo_iniziale)
+        self.testo_input.setFixedHeight(36)
+        layout.addWidget(self.testo_input)
 
-        if not risultati:
-            lbl = QLabel("Nessun risultato trovato.")
-            lbl.setStyleSheet("font-size: 14px; color: #888888;")
-            layout.addWidget(lbl)
-        else:
-            for nome, link in risultati:
-                btn = QPushButton(nome)
-                btn.setFixedHeight(45)
-                btn.setStyleSheet(STILE_BTN_SERVIZIO)
-                btn.clicked.connect(lambda checked, l=link: webbrowser.open(l))
-                layout.addWidget(btn)
+        self.combo_piattaforma = QComboBox()
+        self.combo_piattaforma.addItems(["Netflix","Prime Video","Youtube","Disney +","Apple Music","Sportify","Amazon Music","Mediaset Infinity","RaiPlay","Kobo","Kindle","SkySport","NowTV"])
+        self.combo_piattaforma.setFixedHeight(36)
+        self.combo_piattaforma.setStyleSheet(STILE_COMBO)
+        layout.addWidget(self.combo_piattaforma)
 
-        layout.addStretch()
+        btn_cerca = QPushButton("Cerca")
+        btn_cerca.setFixedHeight(40)
+        btn_cerca.setStyleSheet(STILE_BTN_CHIUDI)
+        btn_cerca.clicked.connect(self.cerca)
+        layout.addWidget(btn_cerca)
 
         btn_chiudi = QPushButton("Chiudi")
-        btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
+        btn_chiudi.setStyleSheet(STILE_BTN_ESCI)
         btn_chiudi.clicked.connect(self.close)
-        layout.addWidget(btn_chiudi, alignment=Qt.AlignmentFlag.AlignCenter)
-
+        layout.addWidget(btn_chiudi) 
+    def cerca(self):
+        testo = self.testo_input.text().strip()
+        piattaforma = self.combo_piattaforma.currentText()
+        if not testo:
+            QMessageBox.warning(self,"Errore","Inserisci un termine di ricerca!")
+        return
+        from Service.gestoreRicerca  import GestoreRicerca
+        gestore = GestoreRicerca(piattaforma)
+        gestore.inviaCerca(testo,piattaforma)
+        self.close()        
 
 class FinestraPreferenze(QDialog):
     def __init__(self, parent=None):
