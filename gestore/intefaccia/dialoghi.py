@@ -10,7 +10,8 @@ from stile import (
     STILE_BTN_CHIUDI, STILE_BTN_ESCI, STILE_TITOLO_PROFILO
 )
 from utils import scarica_logo
-
+from Service.gestoreStreaming import GestoreStreaming
+from database.repositoryUtente import RepositoryUtente
 from Service.gestoreProfilo import salva_preferenze_utente
 from Service.gestorePreferenze import GestorePreferenze
 from database.repositoryUtente import RepositoryUtente
@@ -18,13 +19,15 @@ from database.repositoryPreferenze import RepositoryPreferenze
 from models.notifica import Notifica
 
 class SchedaCategoria(QDialog):
-    def __init__(self, titolo, pulsanti, parent=None):
+    def __init__(self, titolo, pulsanti,email_utente, parent=None):
         super().__init__(parent)
         self.setWindowTitle(titolo)
         self.setMinimumWidth(350)
         self.setMinimumHeight(400)
         self.setStyleSheet(STILE_SCHEDA_CATEGORIA)
-
+        self,repo_u = RepositoryUtente()
+        self.gestore_streaming = GestoreStreaming(self.repo_u)
+        self.email_utente_corrente =  email_utente
         layout = QVBoxLayout()
         layout.setSpacing(15)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -65,6 +68,15 @@ class SchedaCategoria(QDialog):
         btn_chiudi.clicked.connect(self.close)
         layout.addWidget(btn_chiudi, alignment=Qt.AlignmentFlag.AlignCenter)
         self.setLayout(layout)
+    def gestisci_click_piattaforma(self,nome_piattaforma,url_piattaforma):
+       """Richiede al getore l'avvio della piattaforma previa verifica abbonamento"""
+       successo, messaggio = self.gestore_streaming.avviaPiattaforma(
+        self.email_utente_corrente,
+        nome_piattaforma,
+        url_piattaforma
+       )
+       if not successo:
+           QMessageBox.critical(self , "Accesso Negato", messaggio)
 
 
 class FinestraRicerca(QDialog):
