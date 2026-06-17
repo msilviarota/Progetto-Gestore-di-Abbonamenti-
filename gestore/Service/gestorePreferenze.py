@@ -11,6 +11,7 @@ if radice_progetto not in sys.path:
 
 from database.repositoryUtente import RepositoryUtente
 from database.repositoryPreferenze import RepositoryPreferenze
+from Service.gestoreRicerca import GestoreRicerca
 from models.notifica import Notifica
 
 
@@ -18,16 +19,30 @@ from models.notifica import Notifica
 class GestorePreferenze:
     def __init__(self, repoUtente: RepositoryUtente,
                   repoPreferenze: RepositoryPreferenze,
+                  gestRicerca: GestoreRicerca,
                   notifica: Notifica):
         self._repo_Utente = repoUtente
         self._repo_Preferenze = repoPreferenze
+        self._gest_Ricerca = gestRicerca
         self._notifica = notifica
+        self._risultati = []
 
 
     # Riprendiamo le categorie dalla RepositoryPreferenze
     def getPreferenze(self ):
-        return self._repo_Preferenze.getCategorie()
+        preferenze = self._repo_Preferenze.getCategorie()
+        if preferenze is None:
+            return self._notifica.inviaErrore("preferenze non impostate")
+
+        paroleChiave = self._repo_Preferenze.getCategorie()
+        
+        for parola in paroleChiave:
+            self._risultati.append(self._gest_Ricerca.inviaCerca(parola))
+        return self._risultati
         
 
-    # Prendiamo le categorie selzionate dall'utente e vediamo
-    # di modificare le preferenze 
+    # Dopo che l'utente ha deciso quale contenuto voluto,
+    #  facciamo return del contenuto selezionato
+    def inviaSelezione(self, contenutoSelezionato):
+        return contenutoSelezionato
+    
