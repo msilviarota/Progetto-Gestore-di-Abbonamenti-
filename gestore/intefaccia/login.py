@@ -113,6 +113,7 @@ class RegisterWindow(QWidget):
     def registrati(self):
         from Service.registrazione import GestoreRegistrazione
         from database.repositoryUtente import RepositoryUtente 
+        from database.repositoryPreferenze import RepositoryPreferenze
 
         nome = self.nome_input.text()
         cognome = self.cognome_input.text()
@@ -128,7 +129,8 @@ class RegisterWindow(QWidget):
             QMessageBox.warning(self, "Errore", "Le password non coincidono!")
             return
         repo_utente = RepositoryUtente()
-        gestore = GestoreRegistrazione(repo_utente)
+        repo_preferenze = RepositoryPreferenze()
+        gestore = GestoreRegistrazione(repo_utente, repo_preferenze)
         gestore.inviaModulo(nome,cognome,eta,email,password)
         if gestore.valida():
             QMessageBox.information(self,"Successo", f"Account creato per {email}")
@@ -215,7 +217,7 @@ class LoginWindow(QWidget):
         from Service.gestoreLogin import GestoreAccessi 
         from database.repositoryUtente import RepositoryUtente 
         from database.repositoryAbbonamento import RepositoryAbbonamento 
-
+        from database.repositoryLog import RepositoryLog
         email = self.email_input.text()
         password = self.password_input.text()
 
@@ -225,7 +227,8 @@ class LoginWindow(QWidget):
         
         repo_utente = RepositoryUtente()
         repo_abbonamento = RepositoryAbbonamento()
-        gestore = GestoreAccessi (repo_utente, repo_abbonamento)
+        repo_log = RepositoryLog()
+        gestore = GestoreAccessi (repo_utente, repo_abbonamento,repo_log)
         esito = gestore.inviaCredenziali(email,password)
         if esito:
             self.main_window = FinestraPrincipale(email)
