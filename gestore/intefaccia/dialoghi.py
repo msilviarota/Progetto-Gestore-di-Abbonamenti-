@@ -11,6 +11,7 @@ from stile import (
 )
 from utils import scarica_logo
 
+from Service.gestoreProfilo import salva_preferenze_utente
 
 class SchedaCategoria(QDialog):
     def __init__(self, titolo, pulsanti, parent=None):
@@ -218,9 +219,15 @@ class FinestraPreferenze(QDialog):
         if not selezionate:
             QMessageBox.warning(self, "Attenzione", "Seleziona almeno una categoria!")
             return
-        QMessageBox.information(self, "Salvato", "Preferenze salvate:\n" + "\n".join(selezionate))
+        
+        salva_preferenze_utente(selezionate)
+        
+        QMessageBox.information(
+            self, 
+            "Salvato", 
+            "Preferenze salvate correttamente nel profilo utente:\n" + "\n".join(selezionate)
+        )
         self.close()
-
     def mostra_errore_backup(messaggio_errore):
      """
      Funzione indipendente che mostra un popup di errore all'utente 
