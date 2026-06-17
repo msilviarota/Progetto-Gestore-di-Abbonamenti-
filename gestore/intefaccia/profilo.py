@@ -78,7 +78,7 @@ class FinestraCambiaPassword(QDialog):
         layout.addWidget(btn_annulla)
 
     def salva(self):
-        from Service.gestoreAccessi import GestoreAccessi 
+        from Service.gestoreLogin import GestoreAccessi 
         from database.repositoryUtente import RepositoryUtente 
         from database.repositoryAbbonamento import RepositoryAbbonamento 
         vecchia = self.vecchia_impurt.text()
