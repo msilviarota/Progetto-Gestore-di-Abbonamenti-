@@ -31,7 +31,13 @@ class RepositoryPreferenze:
             json.dump(preferenze, file, indent=4)
     
 
-    # Aggiorniamo le preferenze all'interno della repository
+    # Sovrascriviamo le nuove preferenze a quelle vecchie all'interno della repository
     def aggiornaPreferenze(self, categorieScelte: list):
         with open(self._percorsoFile, "w", encoding="utf-8") as file:
             json.dump(categorieScelte, file, indent=4)
+
+
+    # Recuperiamo le preferenze contenute nella repository
+    def getCategorie(self):
+        categorie = self.caricaFile()
+        return categorie
