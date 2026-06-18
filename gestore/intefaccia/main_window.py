@@ -6,6 +6,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
+from intefaccia.dialoghi import FinestraRicerca, SchedaCategoria
+from intefaccia.profilo import ProfiloDialog  # Import diretto dal nuovo file
 
 # Calcolo del percorso radice del progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
