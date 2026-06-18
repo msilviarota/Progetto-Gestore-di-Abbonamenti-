@@ -81,12 +81,12 @@ class FinestraAbbonamenti(QDialog):
 
 
 class FinestraPresta(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, email_utente=""):
         super().__init__(parent)
+        self.email_utente_corrente = email_utente
         self.setWindowTitle("Presta Abbonamento")
         self.setFixedSize(400, 300)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
-
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
@@ -131,15 +131,40 @@ class FinestraPresta(QDialog):
         layout.addWidget(btn_annulla)
 
     def presta(self):
-        abbonamento = self.combo.currentText()
-        email = self.email_input.text()
+        abbonamento_testo = self.combo.currentText()
+        email_amico = self.email_input.text().strip()
 
-        if not email:
+        if not email_amico:
             QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico!")
             return
 
-        QMessageBox.information(self, "Inviato", f"{abbonamento} prestato a {email} con successo!")
-        self.close()
+        # Dizionario per convertire la selezione della stringa in ID int richiesto dal tuo GestorePrestiti
+        mappa_id = {"Netflix": 1, "Spotify": 2, "Disney+": 3}
+        id_abbonamento = mappa_id.get(abbonamento_testo, 1)
+
+        from database.repositoryUtente import RepositoryUtente
+        from database.repositoryAbbonamento import RepositoryAbbonamento
+        from database.repositoryLog import RepositoryLog
+        from models.notifica import Notifica 
+        from Service.gestorePrestiti import GestorePrestiti
+        
+        repo_u = RepositoryUtente()
+        repo_a = RepositoryAbbonamento()
+        repo_l = RepositoryLog()
+        notifica_servizio = Notifica()
+        
+        gestore_prestiti = GestorePrestiti(repo_u, repo_a, repo_l, notifica_servizio)
+        
+        # Corretto l'uso della variabile email_amico coerente
+        risultato_notifica = gestore_prestiti.avvia_prestito(email_amico, id_abbonamento)
+        
+        if risultato_notifica is not None:
+            QMessageBox.information(self, "Inviato", f"{abbonamento_testo} prestato a {email_amico} con successo")
+            self.close()
+        else:
+            QMessageBox.critical(
+                self, "Errore di Condivisione", "Impossibile prestare l'abbonamento.\nL'amico inserito deve avere un account registrato!"
+            )
 
 
 class FinestraAcquista(QDialog):
