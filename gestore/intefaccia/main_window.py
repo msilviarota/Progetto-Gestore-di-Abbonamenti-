@@ -6,9 +6,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
+from intefaccia.profilo import ProfiloDialog
 from intefaccia.dialoghi import FinestraRicerca, SchedaCategoria
-from intefaccia.profilo import ProfiloDialog  # Import diretto dal nuovo file
-
 # Calcolo del percorso radice del progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
@@ -21,7 +20,7 @@ from intefaccia.stile import (
     STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA
 )
 from intefaccia.utils import BASE_DIR
-from intefaccia.dialoghi import ProfiloDialog, FinestraRicerca, SchedaCategoria
+
 
 class FinestraPrincipale(QWidget):
     """
