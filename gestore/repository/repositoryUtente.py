@@ -31,13 +31,15 @@ class RepositoryUtente:
         """Restituisce l'oggetto Utente se esiste, altrimenti None."""
         return self.utenti.get(email, None)
     
-    def aggiornaPassword(self, email, nuova_password):
+    def aggiornaPassword(self, email, nuova_password_criptata):
         # NOTA: Qui dovresti gestire meglio il passaggio da oggetto Utente a dict JSON
-        utenti = self.caricaFile()
-        if email in utenti:
-            utenti[email]["password"] = nuova_password
-            self.salvaFile(utenti)
-            return True
+        utente = self.getInformazioni(email)
+        if utente :
+          utente.set_password(nuova_password_criptata)
+          dati_totali = self.caricaFile()
+        if email in dati_totali:
+           dati_totali[email]["password"]= nuova_password_criptata
+           return True
         return False
     
     def verifica(self, email: str):
