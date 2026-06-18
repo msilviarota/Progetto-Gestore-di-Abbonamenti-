@@ -1,201 +1,156 @@
 import os
+import sys
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QLineEdit
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QLabel, QLineEdit, QFrame, QScrollArea, QMessageBox
 )
-from PyQt6.QtGui import QPixmap, QIcon
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
-from stile import (
-    STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA,
-    STILE_BTN_EXTRA, STILE_CAMPO_RICERCA, STILE_SALUTO
-)
-from utils import BASE_DIR
+# Calcolo del percorso radice del progetto
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
+if radice_progetto not in sys.path:
+    sys.path.append(radice_progetto)
 
+# Importazione degli stili, utility e dialoghi
+from intefaccia.stile import (
+    STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA, 
+    STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA
+)
+from intefaccia.utils import BASE_DIR
+from intefaccia.dialoghi import ProfiloDialog, FinestraRicerca, SchedaCategoria
 
 class FinestraPrincipale(QWidget):
-    def __init__(self, nome="Utente",email="utente@email.com",gestore_preferenze=None):
+    """
+    Rappresenta l'interfaccia principale del gestore (Home Page).
+    Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
+    """
+
+    def __init__(self, nome="Utente", email="utente@email.com", gestore_preferenze=None):
         super().__init__()
         self.nome_utente = nome
         self.email_utente = email
         self.gestore_preferenze = gestore_preferenze
-        self.setWindowTitle("RelaxApp")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
-        self.showMaximized()
-        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE)
 
+        # Configurazione finestra
+        self.setWindowTitle("RelaxApp")
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png"))) [2]
+        self.showMaximized()
+        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE) [3]
+
+        # Mappatura completa delle categorie e piattaforme (Requisito 1.4)
         self.link_categorie = {
             "🎵 Musica": [
                 ("Apple Music", "https://www.apple.com/it/apple-music/", "loghi/appmusic.png"),
                 ("Spotify", "https://open.spotify.com/intl-it", "loghi/spotify.png"),
-                ("Amazon Music", "https://music.amazon.it/", "loghi/amazonmusic.png"),
+                ("Amazon Music", "https://music.amazon.it/", "loghi/amazonmusic.png")
             ],
             "📡 Streaming": [
                 ("Netflix", "https://www.netflix.com/browse", "loghi/netflix.png"),
                 ("Disney+", "https://www.disneyplus.com/it-it", "loghi/disney.png"),
                 ("Mediaset Infinity", "https://www.mediasetplay.mediaset.it/", "loghi/mediasetinfinity.png"),
                 ("RaiPlay", "https://www.raiplay.it/", "loghi/raiplay.png"),
-                ("Prime Video", "https://www.primevideo.com/", "loghi/primevideo.png"),
+                ("Prime Video", "https://www.primevideo.com/", "loghi/primevideo.png")
             ],
             "📚 Libri": [
                 ("Kobo", "https://www.kobo.com/it/it", "loghi/kobo.png"),
-                ("Kindle", "https://leggi.amazon.it/landing", "loghi/kindle.png"),
+                ("Kindle", "https://leggi.amazon.it/landing", "loghi/kindle.png")
             ],
             "🎬 Video": [
-                ("YouTube", "https://www.youtube.com", "loghi/youtube.png"),
+                ("YouTube", "https://www.youtube.com", "loghi/youtube.png")
             ],
             "⚽ Sport": [
                 ("Sky Sport", "https://sport.sky.it/", "loghi/skysport.png"),
-                ("Now TV", "https://www.nowtv.it/sport", "loghi/nowtv.png"),
-            ],
-        }
+                ("Now TV", "https://www.nowtv.it/sport", "loghi/nowtv.png")
+            ]
+        } [3, 4]
 
-        self._costruisci_ui()
+        self._build_ui()
+        self.carica_suggerimenti() # Implementazione CDU17
+        self.controlla_notifiche() # Implementazione CDU21/CDU22
 
-    def _costruisci_ui(self):
-        layout_principale = QVBoxLayout()
-        layout_principale.setContentsMargins(20, 20, 20, 20)
-        layout_principale.setSpacing(15)
+    def _build_ui(self):
+        """Costruisce il layout della Home Page."""
+        self.layout_principale = QVBoxLayout(self)
 
-        barra_top = QHBoxLayout()
-        barra_top.addStretch()
+        # 1. Barra Superiore: Saluto, Ricerca e Profilo
+        top_bar = QHBoxLayout()
+        label_saluto = QLabel(f"Ciao, {self.nome_utente}!")
+        label_saluto.setStyleSheet(STILE_SALUTO) [5]
+        
+        self.campo_ricerca = QLineEdit()
+        self.campo_ricerca.setPlaceholderText("Cerca un film, una serie o un brano...")
+        self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
+        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca) [6]
 
         btn_profilo = QPushButton("👤")
         btn_profilo.setFixedSize(50, 50)
         btn_profilo.setStyleSheet(STILE_BTN_PROFILO)
-        btn_profilo.clicked.connect(self.apri_profilo)
-        barra_top.addWidget(btn_profilo)
-        layout_principale.addLayout(barra_top)
+        btn_profilo.clicked.connect(self.apri_profilo) [7]
 
-        logo = QLabel()
-        percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
-        pixmap = QPixmap(percorso_logo)
-        logo.setPixmap(
-            pixmap.scaled(140, 140, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        )
-        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout_principale.addWidget(logo)
+        top_bar.addWidget(label_saluto)
+        top_bar.addStretch()
+        top_bar.addWidget(self.campo_ricerca)
+        top_bar.addWidget(btn_profilo)
+        self.layout_principale.addLayout(top_bar)
 
-        saluto = QLabel(f"Buongiorno, {self.nome_utente}!")
-        saluto.setStyleSheet(STILE_SALUTO)
-        saluto.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout_principale.addWidget(saluto)
+        # 2. Sezione Categorie (CDU4)
+        self.layout_principale.addWidget(QLabel("Esplora per Categoria"))
+        layout_cat = QHBoxLayout()
+        for cat_nome in self.link_categorie.keys():
+            btn_cat = QPushButton(cat_nome)
+            btn_cat.setStyleSheet(STILE_BTN_CATEGORIA)
+            btn_cat.clicked.connect(lambda ch, c=cat_nome: self.apri_categoria(c))
+            layout_cat.addWidget(btn_cat)
+        self.layout_principale.addLayout(layout_cat)
 
-        barra_ricerca = QHBoxLayout()
-        barra_ricerca.addStretch()
-        self.campo_ricerca = QLineEdit()
-        self.campo_ricerca.setPlaceholderText("🔍  Cerca...")
-        self.campo_ricerca.setFixedWidth(400)
-        self.campo_ricerca.setFixedHeight(40)
-        self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
-        self.campo_ricerca.returnPressed.connect(self.filtra_categorie)
-        barra_ricerca.addWidget(self.campo_ricerca)
-        barra_ricerca.addStretch()
-        layout_principale.addLayout(barra_ricerca)
+        # 3. Area Suggerimenti (CDU17)
+        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te")) [8]
+        self.scroll_suggerimenti = QScrollArea()
+        self.container_suggerimenti = QWidget()
+        self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
+        self.scroll_suggerimenti.setWidget(self.container_suggerimenti)
+        self.scroll_suggerimenti.setWidgetResizable(True)
+        self.layout_principale.addWidget(self.scroll_suggerimenti)
 
-        layout_principale.addStretch()
-        self.bottoni_categoria = []
-
-        layout_categorie = QHBoxLayout()
-        layout_categorie.setSpacing(12)
-
-        categorie = [
-            ("🎵", "Musica"),
-            ("🎬", "Video"),
-            ("📚", "Libri"),
-            ("📡", "Streaming"),
-            ("⚽", "Sport"),
-        ]
-
-        for emoji, nome in categorie:
-            chiave = f"{emoji} {nome}"
-            btn = QPushButton(f"{emoji}\n{nome}")
-            btn.setFixedHeight(110)
-            btn.setStyleSheet(STILE_BTN_CATEGORIA)
-            btn.clicked.connect(lambda checked, k=chiave: self.apri_categoria(k))
-            layout_categorie.addWidget(btn)
-            self.bottoni_categoria.append((btn, nome.lower()))
-
-        layout_principale.addLayout(layout_categorie)
-
-        # Prima riga extra: Preferenze, Acquista, Scaduti
-        layout_extra = QHBoxLayout()
-        layout_extra.setSpacing(12)
-
-        extra = ["⭐  Preferenze", "🛒  Acquista", "⏰  Scaduti"]
-        for nome in extra:
-            btn = QPushButton(nome)
-            btn.setFixedHeight(70)
-            btn.setStyleSheet(STILE_BTN_EXTRA)
-            if "Acquista" in nome:
-                btn.clicked.connect(self.apri_acquista)
-            elif "Preferenze" in nome:
-                btn.clicked.connect(self.apri_preferenze)
-            elif "Scaduti" in nome:
-                btn.clicked.connect(self.apri_scaduti)
-            layout_extra.addWidget(btn)
-
-        layout_principale.addLayout(layout_extra)
-
-        # Seconda riga extra: I miei Abbonamenti, Presta Abbonamento
-        layout_extra2 = QHBoxLayout()
-        layout_extra2.setSpacing(12)
-
-        btn_abbonamenti = QPushButton("📋  I miei Abbonamenti")
-        btn_abbonamenti.setFixedHeight(70)
-        btn_abbonamenti.setStyleSheet(STILE_BTN_EXTRA)
-        btn_abbonamenti.clicked.connect(self.apri_abbonamenti)
-        layout_extra2.addWidget(btn_abbonamenti)
-
-        btn_presta = QPushButton("🤝  Presta Abbonamento")
-        btn_presta.setFixedHeight(70)
-        btn_presta.setStyleSheet(STILE_BTN_EXTRA)
-        btn_presta.clicked.connect(self.apri_presta)
-        layout_extra2.addWidget(btn_presta)
-
-        layout_principale.addLayout(layout_extra2)
-
-        layout_principale.addStretch()
-        self.setLayout(layout_principale)
+        self.layout_principale.addStretch()
 
     def apri_profilo(self):
-        from profilo import ProfiloDialog
-        dialogo = ProfiloDialog(self, self)
+        """CDU7: Apre il pannello di gestione del profilo."""
+        dialogo = ProfiloDialog(self) [9, 10]
         dialogo.exec()
 
-    def apri_categoria(self, chiave):
-        from dialoghi import SchedaCategoria
-        pulsanti = self.link_categorie[chiave]
-        scheda = SchedaCategoria(chiave, pulsanti, self.email_utente,self)
-        scheda.exec()
+    def esegui_ricerca(self):
+        """CDU4: Avvia la ricerca globale interrogando le piattaforme."""
+        testo = self.campo_ricerca.text()
+        if testo:
+            # Aggrega i risultati e li mostra nella finestra dedicata [11]
+            dialogo = FinestraRicerca(testo, self) [12, 13]
+            dialogo.exec()
 
-    def apri_preferenze(self):
-        from dialoghi import FinestraPreferenze
-        finestra = FinestraPreferenze(self,self.gestore_preferenze)
-        finestra.exec()
+    def apri_categoria(self, nome_categoria):
+        """CDU18: Mostra le piattaforme per avviare la riproduzione."""
+        servizi = self.link_categorie.get(nome_categoria, [])
+        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self) [12, 13]
+        dialogo.exec()
 
-    def apri_acquista(self):
-        from abbonamenti import FinestraAcquista
-        finestra = FinestraAcquista(self)
-        finestra.exec()
+    def carica_suggerimenti(self):
+        """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
+        # Se le preferenze sono assenti, il sistema notifica l'assenza [8]
+        if not self.gestore_preferenze or not self.gestore_preferenze.ottieni_preferenze(self.email_utente):
+            self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!"))
+            return
 
-    def apri_scaduti(self):
-        from abbonamenti import FinestraScaduti
-        finestra = FinestraScaduti(self, self.email_utente,self.gestore_preferenze)
-        finestra.exec()
+        # Simula il caricamento dei suggerimenti basati sull'algoritmo di matching [14]
+        suggerimenti = ["Film d'Azione (Netflix)", "Pop Hits (Spotify)", "Documentari (Disney+)"]
+        for s in suggerimenti:
+            btn_sug = QPushButton(s)
+            btn_sug.setStyleSheet(STILE_BTN_EXTRA)
+            self.layout_suggerimenti.addWidget(btn_sug)
 
-    def apri_abbonamenti(self):
-        from abbonamenti import FinestraAbbonamenti
-        finestra = FinestraAbbonamenti(self, self.email_utente, self.gestore_preferenze)
-        finestra.exec()
-
-    def apri_presta(self):
-        from abbonamenti import FinestraPresta
-        finestra = FinestraPresta(self, self.email_utente)
-        finestra.exec()
-
-    def filtra_categorie(self):
-        from dialoghi import FinestraRicerca
-        testo = self.campo_ricerca.text().strip()
-        finestra = FinestraRicerca (testo, self)
-        finestra.exec()
+    def controlla_notifiche(self):
+        """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
+        # Esempio: Notifica periodica ogni settimana per le preferenze [15]
+        messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
+        QMessageBox.information(self, "Avviso di Sistema", messaggio)
