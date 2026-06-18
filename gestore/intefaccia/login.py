@@ -233,7 +233,7 @@ class LoginWindow(QWidget):
         if esito:
             dati_utente = repo_utente.getUtente(email)
             nome_reale = dati_utente.get("nome","Utente") if dati_utente else "Utente"
-            self.main_window = FinestraPrincipale(nome=nome_reale, email=email)
+            self.main_window = FinestraPrincipale(nome=nome_reale, email=email, password=password)
             self.main_window.login_window = self 
             self.main_window.show()
             self.hide()
