@@ -74,7 +74,7 @@ class FinestraAbbonamenti(QDialog):
             self.gestore.eseguiDisdetta(nome)
             QMessageBox.information(self, "Disdetto",f"{nome} disdetto!")
 
-       
+
 class FinestraPresta(QDialog):
     def __init__(self, parent=None, email_utente="", gestore_prestiti=None):
         super().__init__(parent)
@@ -239,27 +239,14 @@ class FinestraAcquista(QDialog):
         btn_annulla.clicked.connect(self.close)
         layout.addWidget(btn_annulla)
 
+
     def conferma_acquisto(self):
         piattaforma = self.combo_piattaforma.currentText()
         piano = self.combo_piano.currentText()
-        carta = self.carta_input.text()
-        scadenza = self.scadenza_input.text()
-        titolare = self.titolare_input.text()
-        cvv = self.cvv_input.text()
-
-        if not carta or not scadenza or not titolare or not cvv:
-            QMessageBox.warning(self, "Errore", "Compila tutti i campi!")
-            return
         
-        repo_utente = RepositoryUtente()
-        utente= repo_utente.getInformazioni(self.email_utente)
-        repo_abb = RepositoryAbbonamento()
-        repo_pag = RepositoryDatiPagamento()
-        piattaforma_obj = Piattaforma()
-        notifica_obj = Notifica()
-        gestore = GestoreAbbonamenti (utente, repo_abb, repo_pag ,piattaforma_obj, notifica_obj)
-        esito_notifica = gestore.inviaScelta (f"{piattaforma}-{piano}")
-        QMessageBox.information(self, "Successo", f"Abbonamento {piano} a {piattaforma} acquistato con successo!")
+        esito = self.gestore.inviaScelta(f"{piattaforma}-{piano}")
+
+        QMessageBox.information(self, "Successo", "Abbonamento acquistato!")
         self.close()
 
 
@@ -319,23 +306,9 @@ class FinestraScaduti(QDialog):
         btn_chiudi.setFixedHeight(40)
         btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
         btn_chiudi.clicked.connect(self.close)
-       
-        repo_utente = RepositoryUtente()
-        utente_obj = repo_utente.getInformazioni(self.email_utente)
         
-        if not utente_obj:
-            from models.utente import Utente
-            utente_obj = Utente(email=self.email_utente)
-
-        gestore_scadenze = GestoreAbbonamenti(
-            utente_obj, 
-            RepositoryAbbonamento(), 
-            RepositoryDatiPagamento(), 
-            Piattaforma(), 
-            Notifica()
-        )
         
-        esito_scadenza = gestore_scadenze.ricordaScadenza()
+        esito_scadenza = self.gestore.ricordaScadenza()
         if esito_scadenza:
             QMessageBox.warning(self, "Controllo Scadenze", esito_scadenza)
         
