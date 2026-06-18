@@ -12,14 +12,13 @@ if radice_progetto not in sys.path:
 from database.repositoryLog import RepositoryLog
 from models.notifica import Notifica
 
-# Dichiariamo la RepositoryPreferenze
 class RepositoryPreferenze:
     def __init__(self, percorsoFile = "preferenze.json"): 
         self._percorsoFile = percorsoFile
         self._repo_Log = RepositoryLog()
         self._notifica = Notifica()
 
-    # Scarichiamo tutte le informazione dalla repository e carichiamole nel file
+    # Scarichiamo tutte le informazioni dalla repository e carichiamole nel file
     def caricaFile(self):
         try:
             with open(self._percorsoFile, "r", encoding="utf-8") as file:
@@ -27,26 +26,28 @@ class RepositoryPreferenze:
         except FileNotFoundError:
             return {}
 
-
     # Salviamo il file con le nuove informazioni nella repository
     def salvaFile(self, preferenze):
         with open(self._percorsoFile, "w", encoding="utf-8") as file:
             json.dump(preferenze, file, indent=4)
     
-
     # Sovrascriviamo le nuove preferenze a quelle vecchie all'interno della repository
     def aggiornaPreferenze(self, categorieScelte: list):
-        if categorieScelte in None:
+       
+        if categorieScelte is None:
             self._notifica.inviaErrore("Nessuna categoria selezionata")
         else:
             utente = self._repo_Log.recuperaUltimoLog()
-            nuovePreferenze = {utente: categorieScelte}
-            with open(self._percorsoFile, "w", encoding="utf-8") as file:
-                json.dump(nuovePreferenze, file, indent=4)
-                self._notifica.invia("Preferenze salvate")
+            
+            
+            preferenze_totali = self.caricaFile()
+            preferenze_totali[utente] = categorieScelte
+            
+            # Usiamo il metodo salvaFile centralizzato della classe
+            self.salvaFile(preferenze_totali)
+            self._notifica.invia("Preferenze salvate")
 
-
-    # Recuperiamo le preferenze contenute nella repository
-    def getCategorie(self):
-        categorie = self.caricaFile()
-        return categorie
+  
+    def getCategorie(self, emailUtente):
+        preferenze_totali = self.caricaFile()
+        return preferenze_totali.get(emailUtente, [])
