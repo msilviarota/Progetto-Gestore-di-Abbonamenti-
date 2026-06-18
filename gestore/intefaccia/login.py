@@ -16,6 +16,17 @@ from PyQt6.QtCore import Qt
 from stile import STILE_BTN_LINK
 from utils import BASE_DIR
 
+from main_window import FinestraPrincipale
+from Service.gestoreLogin import GestoreAccessi 
+from repository.repositoryUtente import RepositoryUtente 
+from repository.repositoryAbbonamento import RepositoryAbbonamento 
+from repository.repositoryLog import RepositoryLog
+from intefaccia.abbonamenti import FinestraAbbonamenti
+from intefaccia.abbonamenti import FinestraAcquista
+from intefaccia.abbonamenti import FinestraPresta
+from intefaccia.abbonamenti import FinestraScaduti        
+from intefaccia.main_window import FinestraPrincipale
+
 # --- Classi RegisterWindow e FinestraRecuperoPassword devono stare sopra LoginWindow ---
 # Se le tieni nello stesso file, assicuratevi che le definizioni siano qui sopra.
 # Se sono in file separati, assicurati di avere gli import corretti in cima.
@@ -87,11 +98,6 @@ class LoginWindow(QWidget):
         layout.addWidget(btn_register, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def login(self):
-        from main_window import FinestraPrincipale
-        from Service.gestoreLogin import GestoreAccessi 
-        from repository.repositoryUtente import RepositoryUtente 
-        from repository.repositoryAbbonamento import RepositoryAbbonamento 
-        from repository.repositoryLog import RepositoryLog
         
         email = self.email_input.text().strip()
         password = self.password_input.text().strip()

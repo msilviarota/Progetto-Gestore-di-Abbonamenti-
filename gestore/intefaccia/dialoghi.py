@@ -11,10 +11,10 @@ from stile import (
 )
 from utils import scarica_logo
 from Service.gestoreStreaming import GestoreStreaming
-from database.repositoryUtente import RepositoryUtente
+from repository.repositoryUtente import RepositoryUtente
 from Service.gestoreProfilo import salva_preferenze_utente
 from Service.gestorePreferenze import GestorePreferenze
-from database.repositoryPreferenze import RepositoryPreferenze
+from repository.repositoryPreferenze import RepositoryPreferenze
 from models.notifica import Notifica
 
 class SchedaCategoria(QDialog):
@@ -29,7 +29,7 @@ class SchedaCategoria(QDialog):
         self.gestore_streaming = GestoreStreaming(self.repo_u)
         self.email_utente_corrente = email_utente
         self.password_utente_corrente = getattr(parent, " password_utente","")
-        from database.repositoryDati import RepositoryDati
+        from repository.repositoryDati import RepositoryDati
         from models.piattaforma import Piattaforma
         self.repo_dati = RepositoryDati()
         self.piattaforma_esterna = Piattaforma()
