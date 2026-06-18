@@ -11,11 +11,12 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 class RepositoryLog:
+    
     def __init__(self, percorsoFile = "logs.json"): 
-        self._percorso = percorsoFile
+        self._percorsoFile = percorsoFile
     
 
-    # Scarichiamo tutte le informazione dalla repository e carichiamole nel file
+    # Scarichiamo tutte le informazioni dalla repository e carichiamole nel file
     def caricaFile(self):
         try:
             with open(self._percorsoFile, "r", encoding="utf-8") as file:
@@ -32,13 +33,17 @@ class RepositoryLog:
 
     def aggiungi_log(self, emailUtente: str): 
         logs = self.caricaFile()
-        logs[datetime.now()] = emailUtente
+      
+        data_stringa = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logs[data_stringa] = emailUtente
         self.salvaFile(logs)
         return
 
 
     def recuperaUltimoLog(self):
         logs = self.caricaFile()
-        ultimo_valore = next(reversed(logs.values()))
+        
+        if not logs:
+            return None
+        ultimo_valore = next(reversed(list(logs.values())))
         return ultimo_valore
-    
