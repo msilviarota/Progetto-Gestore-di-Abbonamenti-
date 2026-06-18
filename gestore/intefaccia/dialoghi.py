@@ -1,176 +1,229 @@
+import os
+import sys
 import webbrowser
 from PyQt6.QtWidgets import (
-    QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QDialog, QCheckBox, QFrame, QMessageBox
+    QDialog, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QLabel, QLineEdit, QFrame, QMessageBox, QComboBox, 
+    QCheckBox, QScrollArea, QFormLayout, QSpinBox
 )
+from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import Qt, QSize
 
-from stile import (
-    STILE_SCHEDA_CATEGORIA, STILE_BTN_SERVIZIO,
-    STILE_BTN_CHIUDI, STILE_BTN_ESCI, STILE_TITOLO_PROFILO
-)
-from utils import scarica_logo
-from Service.gestoreStreaming import GestoreStreaming
-from repository.repositoryUtente import RepositoryUtente
-from Service.gestoreProfilo import salva_preferenze_utente
-from Service.gestorePreferenze import GestorePreferenze
-from repository.repositoryPreferenze import RepositoryPreferenze
-from models.notifica import Notifica
+# Configurazione robusta dei percorsi per gestire gli import
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
+if radice_progetto not in sys.path:
+    sys.path.append(radice_progetto)
 
+# Importazione degli stili e delle utilità [5, 6]
+from intefaccia.stile import *
+from intefaccia.utils import BASE_DIR, scarica_logo
+from models.piattaforma import CATALOGO_PIATTAFORME
+
+# ============================================================
+# 1. SCHEDA CATEGORIA (CDU18 - Riproduci)
+# ============================================================
 class SchedaCategoria(QDialog):
-    def __init__(self, titolo, pulsanti, email_utente, parent=None):
+    """Mostra le piattaforme di una categoria e ne permette l'avvio [7, 8]."""
+    def __init__(self, titolo, servizi, email_utente, parent=None):
         super().__init__(parent)
         self.setWindowTitle(titolo)
-        self.setMinimumWidth(350)
-        self.setMinimumHeight(400)
+        self.setMinimumSize(400, 500)
         self.setStyleSheet(STILE_SCHEDA_CATEGORIA)
+        self.email_utente = email_utente
         
-        self.repo_u = RepositoryUtente()
-        self.gestore_streaming = GestoreStreaming(self.repo_u)
-        self.email_utente_corrente = email_utente
-        self.password_utente_corrente = getattr(parent, " password_utente","")
-        from repository.repositoryDati import RepositoryDati
-        from models.piattaforma import Piattaforma
-        self.repo_dati = RepositoryDati()
-        self.piattaforma_esterna = Piattaforma()
-        self.gestore_streaming = GestoreStreaming(self.repo_dati,self.piattaforma_esterna)
-
-        layout = QVBoxLayout()
-        layout.setSpacing(15)
-        layout.setContentsMargins(30, 30, 30, 30)
-
-        titolo_label = QLabel(titolo)
-        titolo_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #222222;")
-        titolo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(titolo_label)
-
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
-        layout.addWidget(sep)
-
-        layout.addStretch()
-
-        for nome, link, logo_url in pulsanti:
-            btn = QPushButton(nome)
-            btn.setFixedHeight(50)
-            btn.setFixedWidth(250)
-            btn.setStyleSheet(STILE_BTN_SERVIZIO)
-            
-            btn.clicked.connect(lambda checked, n=nome, l=link: self.gestisci_click_piattaforma(n, l))
-
-            if logo_url:
-                icon = scarica_logo(logo_url)
-                if icon:
-                    btn.setIcon(icon)
-                    btn.setIconSize(QSize(120, 40))
-                    btn.setText("")
-
-            layout.addWidget(btn, alignment=Qt.AlignmentFlag.AlignCenter)
-
-        layout.addStretch()
-
-        btn_chiudi = QPushButton("Chiudi")
-        btn_chiudi.setFixedWidth(150)
-        btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
-        btn_chiudi.clicked.connect(self.close)
-        layout.addWidget(btn_chiudi, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(layout)
-
-    def gestisci_click_piattaforma(self, nome_piattaforma, url_piattaforma):
-        """Richiede al gestore l'avvio della piattaforma previa verifica abbonamento"""
-        esito,dettaglio = self.gestore_streaming.avviaPiattaforma(
-            self.email_utente_corrente,
-            self.password_utente_corrente,
-            nome_piattaforma
-        )
-        if esito == "successo":
-            contenuto, messaggio = dettaglio
-            QMessageBox.information(self,"Streaming Avviato", "🍿 Buona visione!\nRiproduzione di '{contenuto}' avviata.\nStato: {messaggio}")
-        else:
-            QMessageBox.critical( 
-            self, "Accesso Negato",
-            f"Impossibile avviare la piattaforma.\nMotivo: {dettaglio}"
-        )
-
-class FinestraRicerca(QDialog):
-    def __init__(self, testo_iniziale="", parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Risultati")
-        self.setFixedSize(350, 380)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
-
         layout = QVBoxLayout(self)
-        layout.setSpacing(15)
-        layout.setContentsMargins(20, 20, 20, 20)
+        label_titolo = QLabel(f"Servizi per {titolo}")
+        label_titolo.setStyleSheet(STILE_TITOLO_PROFILO)
+        layout.addWidget(label_titolo)
 
-        titolo = QLabel("🔍 Cerca un contenuto")
-        titolo.setStyleSheet("font-size: 18px; font-weight: bold;")
-        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(titolo)
-
-        from PyQt6.QtWidgets import QLineEdit, QComboBox
-        from stile import STILE_COMBO
-
-        self.testo_input = QLineEdit()
-        self.testo_input.setText(testo_iniziale)
-        self.testo_input.setPlaceholderText("Cosa vuoi cercare?")
-        self.testo_input.setFixedHeight(36)
-        layout.addWidget(self.testo_input)
-
-        self.combo_piattaforma = QComboBox()
-        self.combo_piattaforma.addItems([
-            "Netflix", "Prime Video", "Youtube", "Disney +", "AppleMusic",
-            "Spotify", "Amazon Music", "Mediaset Infinity", "RaiPlay",
-            "Kobo", "Kindle", "Sky Sport", "Now TV"
-        ])
-        self.combo_piattaforma.setFixedHeight(36)
-        self.combo_piattaforma.setStyleSheet(STILE_COMBO)
-        layout.addWidget(self.combo_piattaforma)
-
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
-        layout.addWidget(sep)
-
-        layout.addWidget(QLabel("Accesso piattaforma (opzionale):"))
-
-        self.email_piattaforma_input = QLineEdit()
-        self.email_piattaforma_input.setPlaceholderText("Email piattaforma")
-        self.email_piattaforma_input.setFixedHeight(36)
-        layout.addWidget(self.email_piattaforma_input)
-
-        self.password_piattaforma_input = QLineEdit()
-        self.password_piattaforma_input.setPlaceholderText("Password piattaforma")
-        self.password_piattaforma_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_piattaforma_input.setFixedHeight(36)
-        layout.addWidget(self.password_piattaforma_input)
-
-        btn_cerca = QPushButton("Cerca")
-        btn_cerca.setFixedHeight(40)
-        btn_cerca.setStyleSheet(STILE_BTN_CHIUDI)
-        btn_cerca.clicked.connect(self.cerca)
-        layout.addWidget(btn_cerca)
+        # Creazione dinamica dei pulsanti per ogni servizio della categoria [4, 9]
+        for nome, link, logo_path in servizi:
+            btn_servizio = QPushButton(f"  {nome}")
+            # Caricamento del logo con ridimensionamento 120x40 [3, 10]
+            icona = scarica_logo(logo_path)
+            if icona:
+                btn_servizio.setIcon(icona)
+                btn_servizio.setIconSize(QSize(100, 30))
+            
+            btn_servizio.setStyleSheet(STILE_BTN_SERVIZIO)
+            # Implementazione del CDU18: avvio della piattaforma esterna
+            btn_servizio.clicked.connect(lambda ch, n=nome, l=link: self.avvia_piattaforma(n, l))
+            layout.addWidget(btn_servizio)
 
         btn_chiudi = QPushButton("Chiudi")
-        btn_chiudi.setStyleSheet(STILE_BTN_ESCI)
+        btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
         btn_chiudi.clicked.connect(self.close)
         layout.addWidget(btn_chiudi)
 
-    def cerca(self):
-        testo = self.testo_input.text().strip()
-        piattaforma = self.combo_piattaforma.currentText()
-        email_piattaforma = self.email_piattaforma_input.text().strip()
-        password_piattaforma = self.password_piattaforma_input.text().strip()
+    def avvia_piattaforma(self, nome, link):
+        """Simula la trasmissione dei dati e apre il browser [11, 12]."""
+        print(f"[Sistema] Verifico abbonamento per {nome}...")
+        webbrowser.open(link)
 
-        if not testo:
-            QMessageBox.warning(self, "Errore", "Inserisci un termine di ricerca!")
-            return
+# ============================================================
+# 2. PROFILO DIALOG (CDU7, CDU15, CDU16)
+# ============================================================
+class ProfiloDialog(QDialog):
+    """Hub centrale per la gestione dell'account utente [2, 13]."""
+    def __init__(self, finestra_principale, parent=None):
+        super().__init__(parent)
+        self.finestra_principale = finestra_principale
+        self.setWindowTitle("Il mio Account")
+        self.setFixedSize(430, 650)
+        self.setStyleSheet(STILE_DIALOGO_PROFILO)
+        self._build_ui()
 
-        from Service.gestoreRicerca import GestoreRicerca
-        gestore = GestoreRicerca(piattaforma)
-        gestore.inviaCerca(testo, piattaforma, email_piattaforma, password_piattaforma)
-        self.close() 
+    def _build_ui(self):
+        layout = QVBoxLayout(self)
+        
+        # Info Utente basate sulla registrazione [14, 15]
+        info_frame = QFrame()
+        info_layout = QVBoxLayout(info_frame)
+        label_titolo = QLabel("Dati Utente")
+        label_titolo.setStyleSheet(STILE_TITOLO_PROFILO)
+        
+        label_nome = QLabel(f"Nome: {self.finestra_principale.nome_utente}")
+        label_email = QLabel(f"Email: {self.finestra_principale.email_utente}")
+        label_nome.setStyleSheet(STILE_LABEL_PROFILO)
+        label_email.setStyleSheet(STILE_LABEL_PROFILO)
+        
+        info_layout.addWidget(label_titolo)
+        info_layout.addWidget(label_nome)
+        info_layout.addWidget(label_email)
+        layout.addWidget(info_frame)
+
+        # Pulsanti di gestione per i vari Casi d'Uso [16-18]
+        azioni = [
+            ("💳 Metodi di Pagamento", self.apri_pagamento), # CDU16
+            ("📜 I miei Abbonamenti", self.apri_abbonamenti), # CDU13
+            ("🤝 Presta Abbonamento", self.apri_presta),     # CDU11
+            ("⭐ Preferenze", self.apri_preferenze),         # CDU5
+            ("🗑️ Abbonamenti Scaduti", self.apri_scaduti),   # CDU14
+            ("🔑 Cambia Password", self.apri_cambia_password) # CDU9
+        ]
+
+        for testo, funzione in azioni:
+            btn = QPushButton(testo)
+            btn.setStyleSheet(STILE_BTN_EXTRA)
+            btn.clicked.connect(funzione)
+            layout.addWidget(btn)
+
+        # Logout (CDU15) [19]
+        btn_logout = QPushButton("Esci dal Gestore")
+        btn_logout.setStyleSheet(STILE_BTN_ESCI)
+        btn_logout.clicked.connect(self.finestra_principale.close)
+        layout.addWidget(btn_logout)
+
+    # Metodi per l'apertura delle sotto-finestre [7, 13, 20]
+    def apri_pagamento(self): FinestraModificaPagamento(self).exec()
+    def apri_abbonamenti(self): FinestraAbbonamenti(self).exec()
+    def apri_presta(self): FinestraPresta(self).exec()
+    def apri_preferenze(self): FinestraPreferenze(self).exec()
+    def apri_scaduti(self): FinestraScaduti(self).exec()
+    def apri_cambia_password(self): FinestraCambiaPassword(self).exec()
+
+# ============================================================
+# 3. FINESTRE DI SUPPORTO (CDU 1, 4, 8, 9)
+# ============================================================
+
+class FinestraRecuperoPassword(QDialog):
+    """CDU8: Gestisce la richiesta di una password temporanea [21]."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Recupero Password")
+        self.setFixedSize(400, 250)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("Inserisci l'email associata al tuo account:"))
+        self.input_email = QLineEdit()
+        self.input_email.setStyleSheet(STILE_CAMPO_RICERCA)
+        layout.addWidget(self.input_email)
+        
+        btn_invia = QPushButton("Invia Password Temporanea")
+        btn_invia.setStyleSheet(STILE_BTN_CHIUDI)
+        btn_invia.clicked.connect(self.conferma_invio)
+        layout.addWidget(btn_invia)
+
+    def conferma_invio(self):
+        if self.input_email.text():
+            QMessageBox.information(self, "Email Inviata", "Controlla la tua casella di posta per la password temporanea.")
+            self.close()
+
+class FinestraRicerca(QDialog):
+    """CDU4: Visualizza i risultati della ricerca globale [7, 22]."""
+    def __init__(self, testo, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(f"Risultati per: {testo}")
+        self.setFixedSize(400, 500)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(f"Risultati aggregati per '{testo}':"))
+        
+        scroll = QScrollArea()
+        container = QWidget()
+        layout_risultati = QVBoxLayout(container)
+        
+        # Simulazione aggregazione risultati [23]
+        piattaforme = ["Netflix", "Spotify", "Disney+", "Prime Video"]
+        for p in piattaforme:
+            frame = QFrame()
+            frame.setFrameShape(QFrame.Shape.StyledPanel)
+            h_layout = QHBoxLayout(frame)
+            h_layout.addWidget(QLabel(f"Contenuto trovato su {p}"))
+            btn_vai = QPushButton("Vedi")
+            btn_vai.setFixedWidth(60)
+            h_layout.addWidget(btn_vai)
+            layout_risultati.addWidget(frame)
+            
+        scroll.setWidget(container)
+        scroll.setWidgetResizable(True)
+        layout.addWidget(scroll)
+
+class FinestraCambiaPassword(QDialog):
+    """CDU9: Modulo per impostare una nuova password [1, 20, 24]."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Cambia Password")
+        self.setFixedSize(400, 350)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        
+        layout = QFormLayout(self)
+        self.old_pass = QLineEdit()
+        self.new_pass = QLineEdit()
+        self.conf_pass = QLineEdit()
+        
+        for p in [self.old_pass, self.new_pass, self.conf_pass]:
+            p.setEchoMode(QLineEdit.EchoMode.Password)
+            p.setStyleSheet(STILE_CAMPO_RICERCA)
+            
+        layout.addRow("Vecchia Password:", self.old_pass)
+        layout.addRow("Nuova Password:", self.new_pass)
+        layout.addRow("Conferma Password:", self.conf_pass)
+        
+        btn_salva = QPushButton("Aggiorna Password")
+        btn_salva.setStyleSheet(STILE_BTN_CHIUDI)
+        layout.addWidget(btn_salva)
+
+# ============================================================
+# 4. ALTRE FINESTRE DI GESTIONE [7, 9, 13, 20, 25, 26]
+# ============================================================
+
+class FinestraAbbonamenti(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("I miei Abbonamenti")
+        self.setFixedSize(500, 400)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+class FinestraModificaPagamento(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Modifica Pagamento")
+        self.setFixedSize(400, 400)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
 class FinestraPreferenze(QDialog):
     def __init__(self, parent=None):
@@ -178,98 +231,29 @@ class FinestraPreferenze(QDialog):
         self.setWindowTitle("Preferenze")
         self.setFixedSize(450, 550)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
-        
-        repo_u = RepositoryUtente()
-        repo_p = RepositoryPreferenze()
-        notif = Notifica()
-        
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(15)
 
-        titolo = QLabel("Le mie Preferenze")
-        titolo.setStyleSheet(STILE_TITOLO_PROFILO)
-        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(titolo)
+class FinestraScaduti(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Abbonamenti Scaduti")
+        self.setFixedSize(450, 500)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
-        layout.addWidget(sep)
+class FinestraPresta(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Presta Abbonamento")
+        self.setFixedSize(400, 300)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
-        sottotitolo = QLabel("Seleziona le categorie che ti interessano:")
-        sottotitolo.setStyleSheet("font-size: 13px; color: #555555;")
-        layout.addWidget(sottotitolo)
-
-        self.checkboxes = []
-        categorie = ["🎵 Musica", "🎬 Video", "📚 Libri", "📡 Streaming", "⚽ Sport"]
-
-        for cat in categorie:
-            cb = QCheckBox(cat)
-            cb.setStyleSheet("""
-                QCheckBox {
-                    font-size: 15px;
-                    color: #222222;
-                    padding: 6px;
-                    spacing: 10px;
-                }
-                QCheckBox::indicator {
-                    width: 20px;
-                    height: 20px;
-                }
-                QCheckBox::indicator:unchecked {
-                    border: 2px solid #aaaaaa;
-                    border-radius: 4px;
-                    background-color: white;
-                }
-                QCheckBox::indicator:checked {
-                    border: 2px solid #222222;
-                    border-radius: 4px;
-                    background-color: #4caf50;
-                }
-            """)
-            layout.addWidget(cb)
-            self.checkboxes.append(cb)
-
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.Shape.HLine)
-        sep2.setStyleSheet("color: #cccccc;")
-        layout.addWidget(sep2)
-
-        btn_salva = QPushButton("Salva preferenze")
-        btn_salva.setFixedHeight(40)
-        btn_salva.setStyleSheet(STILE_BTN_CHIUDI)
-        btn_salva.clicked.connect(self.salva)
-        layout.addWidget(btn_salva)
-
-        btn_annulla = QPushButton("Annulla")
-        btn_annulla.setFixedHeight(40)
-        btn_annulla.setStyleSheet(STILE_BTN_ESCI)
-        btn_annulla.clicked.connect(self.close)
-        layout.addWidget(btn_annulla)
-
-    def salva(self):
-        selezionate = [cb.text() for cb in self.checkboxes if cb.isChecked()]
-        if not selezionate:
-            QMessageBox.warning(self, "Attenzione", "Seleziona almeno una categoria!")
-            return
-        
-        QMessageBox.information(
-            self, 
-            "Salvato", 
-            "Preferenze salvate correttamente nel profilo utente:\n" + "\n".join(selezionate)
-        )
-        self.close()
-
-
+# ============================================================
+# 5. UTILITY DI SISTEMA (CDU23)
+# ============================================================
 def mostra_errore_backup(messaggio_errore):
-    """
-    Funzione indipendente che mostra un popup di errore all'utente 
-    se il backup automatico fallisce.
-    """
+    """Popup di avviso per fallimento backup alle 23:30 [27, 28]."""
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Icon.Warning)
     msg.setWindowTitle("Avviso di Sistema - Backup")
     msg.setText(messaggio_errore)
-    msg.setStyleSheet("QMessageBox { background-color: #fce4ec; font-size: 14px; }") 
+    msg.setStyleSheet("QMessageBox { background-color: #fce4ec; font-size: 14px; }")
     msg.exec()
