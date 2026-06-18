@@ -29,12 +29,12 @@ class GestorePreferenze:
 
 
     # Riprendiamo le categorie dalla RepositoryPreferenze
-    def getPreferenze(self):
+    def getPreferenze(self,emailUtente):
         # 1. Reset dei risultati per evitare duplicazioni
         self._risultati = []
         
         # 2. Recupero categorie una sola volta
-        paroleChiave = self._repo_Preferenze.getCategorie()
+        paroleChiave = self._repo_Preferenze.getCategorie(emailUtente)
         
         if not paroleChiave: # Verifica se la lista è vuota o None
             self._notifica.inviaErrore("Preferenze non impostate")
@@ -42,7 +42,7 @@ class GestorePreferenze:
         
         # 3. Ciclo di ricerca
         for parola in paroleChiave:
-            risultato = self._gest_Ricerca.inviaCerca(parola)
+            risultato = self._gest_Ricerca.inviaCerca(parola,"youtube")
             if risultato: # Aggiungiamo solo se la ricerca ha dato esito positivo
                 self._risultati.append(risultato)
                 
