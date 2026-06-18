@@ -5,19 +5,36 @@ from models.notifica import Notifica
 
 
 class GestorePrestiti:
-    def __init__(self, repoUtente: RepositoryUtente,
-                 repoAbbonamento: RepositoryAbbonamento,
+    def __init__(self, 
+                 repo_utente: RepositoryUtente,
+                 repo_abbonamento: RepositoryAbbonamento,
+                 repo_log: RepositoryLog,  # Iniettato per una migliore testabilità
                  notifica: Notifica):
-        self._repo_Utente = repoUtente
-        self._email_Utente = RepositoryLog.recuperaUltimoLog()
-        self._repo_Abbonamneto = repoAbbonamento
+        
+        self._repo_utente = repo_utente
+        self._repo_abbonamento = repo_abbonamento
+        self._repo_log = repo_log
         self._notifica = notifica
+        
+       
+        self._email_utente = self._repo_log.recuperaUltimoLog()
     
-    def avviaPrestito(self, emailAmico, IDAbbonamento):
-        if self._repo_Utente.verifica(emailAmico):
-            self._repo_Abbonamneto.duplicaPermessiAccesso(self._email_Utente, emailAmico, IDAbbonamento)
-            notificaDiRitorno =self._notifica.invia("Abbonamento condiviso correttamente")
-            return notificaDiRitorno
-        else:
+    def avvia_prestito(self, email_amico: str, id_abbonamento: int):
+        """
+        Avvia la procedura di condivisione di un abbonamento con un amico.
+        """
+        # 1. Verifica se l'amico esiste nel sistema
+        if not self._repo_utente.verifica(email_amico):
             self._notifica.inviaErrore("Il tuo amico/a deve avere un account Gestore")
-            return
+            return None
+
+        # 2. Condivide l'abbonamento duplicando i permessi
+        self._repo_abbonamento.duplicaPermessiAccesso(
+            self._email_utente, 
+            email_amico, 
+            id_abbonamento
+        )
+        
+        # 3. Invia la notifica di successo e la restituisce
+        notifica_ritorno = self._notifica.invia("Abbonamento condiviso correttamente")
+        return notifica_ritorno
