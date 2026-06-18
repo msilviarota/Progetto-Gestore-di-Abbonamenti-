@@ -9,8 +9,8 @@ radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-from database.repositoryUtente import RepositoryUtente
-from database.repositoryPreferenze import RepositoryPreferenze
+from repository.repositoryUtente import RepositoryUtente
+from repository.repositoryPreferenze import RepositoryPreferenze
 from Service.gestoreRicerca import GestoreRicerca
 from models.notifica import Notifica
 
@@ -29,20 +29,24 @@ class GestorePreferenze:
 
 
     # Riprendiamo le categorie dalla RepositoryPreferenze
-    def getPreferenze(self ):
-        preferenze = self._repo_Preferenze.getCategorie()
-        if preferenze is None:
-            return self._notifica.inviaErrore("preferenze non impostate")
-
+    def getPreferenze(self):
+        # 1. Reset dei risultati per evitare duplicazioni
+        self._risultati = []
+        
+        # 2. Recupero categorie una sola volta
         paroleChiave = self._repo_Preferenze.getCategorie()
         
-        for parola in paroleChiave:
-            self._risultati.append(self._gest_Ricerca.inviaCerca(parola))
-        return self._risultati
+        if not paroleChiave: # Verifica se la lista è vuota o None
+            self._notifica.inviaErrore("Preferenze non impostate")
+            return [] # Restituiamo una lista vuota per evitare crash dell'interfaccia
         
-
-    # Dopo che l'utente ha deciso quale contenuto voluto,
-    #  facciamo return del contenuto selezionato
+        # 3. Ciclo di ricerca
+        for parola in paroleChiave:
+            risultato = self._gest_Ricerca.inviaCerca(parola)
+            if risultato: # Aggiungiamo solo se la ricerca ha dato esito positivo
+                self._risultati.append(risultato)
+                
+        return self._risultati
     def inviaSelezione(self, contenutoSelezionato):
         return contenutoSelezionato
     
