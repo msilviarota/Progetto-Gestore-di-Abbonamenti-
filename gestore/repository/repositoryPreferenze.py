@@ -1,46 +1,59 @@
-import sys
 import os
+import sys
 import json
 
-# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
+# Calcolo del percorso radice del progetto per gestire gli import
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-from repository.repositoryLog import RepositoryLog
-from models.notifica import Notifica
-
 class RepositoryPreferenze:
-    def __init__(self, nome_file="preferenze.json"): 
-        cartella_corrente = os.path.dirname(os.path.abspath(__file__))
-        self._percorsoFile = os.path.join(cartella_corrente,"..","database",nome_file)
-        self._notifica = Notifica()
-    # Scarichiamo tutte le informazioni dalla repository e carichiamole nel file
-    def caricaFile(self):
+    """
+    Gestisce la lettura e scrittura delle preferenze degli utenti (CDU5, CDU17).
+    I dati sono salvati in repository2/preferenze.json.
+    """
+
+    def __init__(self, nome_file="preferenze.json"):
+        # Percorso robusto verso la cartella repository2
+        self._percorso_file = os.path.join(radice_progetto, "repository2", nome_file)
+        
+        # Assicura che la cartella esista
+        cartella = os.path.dirname(self._percorso_file)
+        if not os.path.exists(cartella):
+            os.makedirs(cartella)
+            
+        # Carica il database locale in memoria
+        self._database = self.carica_file()
+
+    def carica_file(self):
+        """Carica l'intero dizionario delle preferenze dal file JSON."""
+        if not os.path.exists(self._percorso_file):
+            return {}
         try:
-            with open(self._percorsoFile, "r", encoding="utf-8") as file:
-                return json.load(file)        
-        except FileNotFoundError:
+            with open(self._percorso_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
             return {}
 
-    # Salviamo il file con le nuove informazioni nella repository
-    def salvaFile(self, preferenze):
-        with open(self._percorsoFile, "w", encoding="utf-8") as file:
-            json.dump(preferenze, file, indent=4)
-    
-    # Sovrascriviamo le nuove preferenze a quelle vecchie all'interno della repository
-    def aggiornaPreferenze(self,email, categorieScelte: list):
-       if not categorieScelte:
-           self._notifica.inviaErrore("Nessuna categoria selezionata")
-           return False
-    
-       preferenze_totali = self.caricaFile()
-       preferenze_totali[email]= categorieScelte
-       self.salvaFile(preferenze_totali)
-       self._notifica.invia("preferenze salvate")
-       return True
-    def getCategorie(self, emailUtente):
-        preferenze_totali = self.caricaFile()
-        return preferenze_totali.get(emailUtente, [])
+    def _salva_su_disco(self):
+        """Salva lo stato attuale del dizionario sul file fisico."""
+        with open(self._percorso_file, "w", encoding="utf-8") as f:
+            json.dump(self._database, f, indent=4, ensure_ascii=False)
+
+    def ottieni_per_utente(self, email):
+        """
+        Recupera le preferenze (categorie e data) associate a un utente.
+        Se non presenti, restituisce None (CDU17 - Flusso Alt. A).
+        """
+        return self._database.get(email)
+
+    def salva_per_utente(self, email, dati_preferenze):
+        """
+        CDU5: Aggiorna o crea il record delle preferenze per l'utente.
+        'dati_preferenze' è un dizionario contenente la lista categorie e la data.
+        """
+        self._database[email] = dati_preferenze
+        self._salva_su_disco()
+        return True
