@@ -25,11 +25,16 @@ class SchedaCategoria(QDialog):
         self.setMinimumHeight(400)
         self.setStyleSheet(STILE_SCHEDA_CATEGORIA)
         
-        
         self.repo_u = RepositoryUtente()
         self.gestore_streaming = GestoreStreaming(self.repo_u)
         self.email_utente_corrente = email_utente
-        
+        self.password_utente_corrente = getattr(parent, " password_utente","")
+        from database.repositoryDati import RepositoryDati
+        from models.piattaforma import Piattaforma
+        self.repo_dati = RepositoryDati()
+        self.piattaforma_esterna = Piattaforma()
+        self.gestore_streaming = GestoreStreaming(self.repo_dati,self.piattaforma_esterna)
+
         layout = QVBoxLayout()
         layout.setSpacing(15)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -74,14 +79,19 @@ class SchedaCategoria(QDialog):
 
     def gestisci_click_piattaforma(self, nome_piattaforma, url_piattaforma):
         """Richiede al gestore l'avvio della piattaforma previa verifica abbonamento"""
-        successo, messaggio = self.gestore_streaming.avviaPiattaforma(
+        esito,dettaglio = self.gestore_streaming.avviaPiattaforma(
             self.email_utente_corrente,
-            nome_piattaforma,
-            url_piattaforma
+            self.password_utente_corrente,
+            nome_piattaforma
         )
-        if not successo:
-            QMessageBox.critical(self, "Accesso Negato", messaggio)
-
+        if esito == "successo":
+            contenuto, messaggio = dettaglio
+            QMessageBox.information(self,"Streaming Avviato", "🍿 Buona visione!\nRiproduzione di '{contenuto}' avviata.\nStato: {messaggio}")
+        else:
+            QMessageBox.critical( 
+            self, "Accesso Negato",
+            f"Impossibile avviare la piattaforma.\nMotivo: {dettaglio}"
+        )
 
 class FinestraRicerca(QDialog):
     def __init__(self, testo_iniziale="", parent=None):
