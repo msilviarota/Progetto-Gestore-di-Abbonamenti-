@@ -19,8 +19,7 @@ from repository.repositoryPreferenze import RepositoryPreferenze
 
 class GestoreRegistrazione:
 
-    def __init__(self, repoUtente: RepositoryUtente,
-                  repoPreferenze: RepositoryPreferenze):
+    def __init__(self, repoUtente: RepositoryUtente, repoPreferenze: RepositoryPreferenze,repoPagamento):
         self._nome = None
         self._cognome = None
         self._eta = None
@@ -30,10 +29,11 @@ class GestoreRegistrazione:
         self._preferenze = None
         self._repo_Utente = repoUtente
         self._repo_Preferenze = repoPreferenze
+        self._repo_Pagamento = repoPagamento
         return
     """Rappresenta il «control» Gestore Registrazione"""
 
-
+    
     def getModulo(self):
         return ["nome", "cognome", "eta", "email", "password", "preferenze"] # In un caso reale, questo potrebbe essere un oggetto più complesso o un template HTML
 
@@ -49,10 +49,8 @@ class GestoreRegistrazione:
         return
 
 
-    def inviaDati(self, metodo, titolare, carta):
-        print(f"[Control] Ricevuti dati per {metodo}. Salvo i dati...")
-        # Qui potremmo avere la logica per salvare i dati nel database o fare altre operazioni
-        self._registrazione_repo.salvaDati(titolare, carta)
+    def inviaDatiPagamento (self, titolare, carta):
+       self._repo_Pagamento.salvaDati(titolare,carta)
 
 
     def bloccaRegistrazione(self):
