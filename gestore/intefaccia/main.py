@@ -3,10 +3,20 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from PyQt6.QtWidgets import QApplication
+from repository.repositoryUtente import RepositoryUtente
+from repository.repositoryPreferenze import RepositoryPreferenze
+from Service.gestoreRicerca import GestoreRicerca 
+from Service.gestorePreferenze import GestorePreferenze
+from models.notifica import Notifica 
 from login import LoginWindow
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    finestra = LoginWindow()
+    repo_u = RepositoryUtente()
+    repo_p = RepositoryPreferenze()
+    notifica = Notifica()
+    gest_ricerca = GestoreRicerca(None)
+    gest_pref = GestorePreferenze(repo_u,repo_p, gest_ricerca , notifica)
+    finestra = LoginWindow(gest_pref)
     finestra.show()
     sys.exit(app.exec())
