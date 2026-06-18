@@ -34,6 +34,13 @@ class Notifica:
         print(f"-------------------------------------------")
         return "Email", self._messaggio
 
+    # inviamo un avviso all'utente sulla prossima scadena
+    def inviaAvviso(self, messaggio):
+        self._messaggio = messaggio
+        self._tipo = "Avviso"
+        return self._tipo, self._messaggio
+    
+    
     # Otteniamo informazioni sulla notifica
     def ottieni_info_notifica(self) -> dict:
         """Recupera le informazioni dell'ultima notifica generata."""

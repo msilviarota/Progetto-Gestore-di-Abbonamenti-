@@ -56,6 +56,38 @@ class RepositoryAbbonamento:
             return True # eliminazione riuscita
 
 
+    def duplicaPermessiAccesso(self, emailUtente, emailAmico, IDAbbonamento):
+        """Sposta o copia i permessi nel file JSON secondo la tua descrizione."""
+        # 1. Carica il dizionario degli abbonamenti dal PC
+        tutti_abbonamenti = self.caricaFile()
+        abbonamento_da_condividere = None
+
+        # 2. Cerca l'abbonamento specifico all'interno della lista dell'utente proprietario
+        if emailUtente in tutti_abbonamenti:
+            for abb in tutti_abbonamenti[emailUtente]:
+                if abb["codiceID"] == IDAbbonamento:
+                    abbonamento_da_condividere = abb
+                    break
+
+        # 3. Se l'abbonamento è stato trovato, duplica il permesso per l'amico
+        if abbonamento_da_condividere:
+            print(f"[Repository] Abbonamento trovato. Duplico l'accesso per {emailAmico}")
+            
+            # Se l'amico non ha ancora nessun abbonamento nel JSON, crea una lista vuota
+            if emailAmico not in tutti_abbonamenti:
+                tutti_abbonamenti[emailAmico] = []
+            
+            # Controlla per sicurezza che l'amico non abbia già quell'abbonamento
+            if abbonamento_da_condividere not in tutti_abbonamenti[emailAmico]:
+                # Aggiunge l'abbonamento alla lista dell'amico
+                tutti_abbonamenti[emailAmico].append(abbonamento_da_condividere)
+            
+            # 4. Salva il file JSON aggiornato in locale
+            self.salvaFile(tutti_abbonamenti)
+            print("[Repository] File JSON aggiornato con i nuovi permessi.")
+        else:
+            print("[Repository] Errore: Impossibile trovare l'abbonamento da condividere.")
+    
     def getAbbonamentiAttivi(self, email):
         return self.attivi.get(email, [])
     

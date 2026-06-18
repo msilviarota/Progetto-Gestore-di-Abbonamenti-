@@ -81,3 +81,55 @@ class GestoreAbbonamenti:
         self._repo_Abbonamento.elimina_abbonamento(abbonamentoScelto)
         return
     
+
+    #===================================================================================================================================================
+    # Qui scrviamo il codice per il caso d'uso 12
+    def ricordaScadenza(self):
+        print("[Control] Avvio il calcolo delle date di scadenza...")
+        
+        tutti_abbonamenti = self._repo_Abbonamento.caricaFile()
+
+        # 2. Prendi la data di oggi (senza ore e minuti, solo Anno-Mese-Giorno)
+        oggi = datetime.now().date()
+        print(f"[Control] Data di oggi: {oggi}")
+
+        # 3. Cicla tutti gli utenti e i loro abbonamenti
+        for email, lista_abbonamenti in tutti_abbonamenti.items():
+            for abb in lista_abbonamenti:
+                data_scadenza_abb = abb["scadenza"]
+                
+                if data_scadenza_abb:
+                    # Converte la stringa del JSON "AAAA-MM-GG" in una vera data Python
+                    data_scadenza = datetime.strptime(data_scadenza_abb, "%Y-%m-%d").date()
+                    
+                    # Calcola la differenza (data_scadenza - oggi)
+                    differenza = data_scadenza - oggi
+                    giorni_rimasti = differenza.days
+                    
+                    print(f"Abbonamento '{abb['tipo']}' di {email}: mancano {giorni_rimasti} giorni alla scadenza.")
+
+                    # --- CONDIZIONE PER FAR SCATTARE IL TIMER/NOTIFICA ---
+                    # Se i giorni rimasti sono 0 (scade oggi) o negativi (è già scaduto)
+                    if giorni_rimasti == 1:
+                        print(f"🚨 ATTENZIONE: L'abbonamento '{abb['tipo']}' sta per scadere! Attivo la notifica.")
+                        self._notifica.inviaAvviso("L'abbonamento" + str(abb) + "sta per scadere")
+
+                    elif giorni_rimasti <= 0:
+                        print(f"🚨 ATTENZIONE: L'abbonamento '{abb['tipo']}' è scaduto! Attivo la notifica.")
+                        self._notifica.inviaAvviso("L'abbonamento" + str(abb) + "è scaduto.")
+                        # Ritorna il messaggio di errore che salirà fino all'interfaccia
+                        return f"Il tuo abbonamento a {abb['tipo']} è scaduto il {data_scadenza_abb}!"
+                        
+        # Se nessun abbonamento è scaduto, ritorna None e il timer non farà nulla
+        return None
+
+    def getAbbonamento(self, abbonamento):
+        return(abbonamento)
+    
+    def avviaProceduraRinnovo(self, abbonamento_da_rinnovare):
+        nuovoAbbonamento = Abbonamento(self._email, abbonamento_da_rinnovare["nome"],
+                                       abbonamento_da_rinnovare["cognome"],
+                                       abbonamento_da_rinnovare["piattaforma"])
+        self._repo_Abbonamento.elimina_abbonamento(abbonamento_da_rinnovare)
+        self._repo_Abbonamento.salva_abbonamento(nuovoAbbonamento)
+        return

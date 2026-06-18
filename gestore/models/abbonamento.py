@@ -1,4 +1,6 @@
+import random
 from datetime import datetime, timedelta
+from database.repositoryAbbonamento import RepositoryAbbonamento
 
 class Abbonamento:
     def __init__(self, email : str, nome_utente: str, cognome_utente: str, piattaforma_nome: str):
@@ -9,6 +11,16 @@ class Abbonamento:
         self._data_scadenza = datetime.now() + timedelta(days=365)  # Scadenza dopo 365 giorni
         self._valido = True
         self._stato = "Attivo"
+
+        abbonamenti = RepositoryAbbonamento().caricaFile()
+        codiciAbbonamenti = []
+        for mail in abbonamenti.keys():
+            for abb in abbonamenti[mail]:
+                codiciAbbonamenti.append(abb["codiceID"])
+        
+        self._codiceID = [random.randint(0,10) for r in range(6)]
+        while self._codiceID in codiciAbbonamenti:
+            self._codiceID = [random.randint(0,10) for r in range(6)]
 
     def get_email(self): return self._email
 
@@ -24,6 +36,8 @@ class Abbonamento:
 
     def get_stato(self): return self._stato
 
+    def get_codiceID(self): return self._codiceID
+
     def to_dict(self):
         return{
             "email": self._email,
@@ -31,5 +45,6 @@ class Abbonamento:
             "cognome": self._cognome_utente,
             "dataScadenza": self._data_scadenza,
             "validità": self._valido,
-            "stato": self._stato
+            "stato": self._stato,
+            "codiceID": self._codiceID
         }
