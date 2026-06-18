@@ -21,9 +21,9 @@ from utils import BASE_DIR
 # Se sono in file separati, assicurati di avere gli import corretti in cima.
 
 class LoginWindow(QWidget):
-    def __init__(self, gest_pref):
+    def __init__(self, gestore_preferenze):
         super().__init__()
-        self.gest_pref = gest_pref
+        self.gestore_preferenze = gestore_preferenze
         self.setWindowTitle("Login")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
@@ -116,7 +116,7 @@ class LoginWindow(QWidget):
             self.main_window = FinestraPrincipale(
                 nome=nome_reale,
                 email=email,
-                gestore_preferenze=self.gest_pref
+                gestore_preferenze=self.gestore_preferenze
             )
             self.main_window.show()
             self.hide()
