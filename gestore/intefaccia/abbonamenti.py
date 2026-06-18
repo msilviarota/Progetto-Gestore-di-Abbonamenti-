@@ -127,22 +127,16 @@ class FinestraPresta(QDialog):
         layout.addWidget(btn_annulla)
 
     def presta(self):
-        nome_piattaforma = self.combo.currentText()
-        email_amico = self.email_input.text().strip()
-
-        if not email_amico:
-            QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico!")
-            return
-
-        # LA MODIFICA: Passa il nome della piattaforma (stringa) al gestore.
-        # È compito del GestorePrestiti trovare l'ID corrispondente.
-        risultato = self.gestore.avvia_prestito(email_amico, nome_piattaforma)
-        
+        nome = self.combo.currentText() # Prendi il testo (es: "Netflix")
+        amico = self.email_input.text().strip()
+    
+    # Il gestore ora fa tutto il lavoro sporco per te
+        risultato = self.gestore.avvia_prestito(amico, nome)
+    
         if risultato:
-            QMessageBox.information(self, "Inviato", f"{nome_piattaforma} prestato a {email_amico}!")
+            QMessageBox.information(self, "Successo", "Prestito inviato!")
             self.close()
-        else:
-            QMessageBox.critical(self, "Errore", "Impossibile prestare l'abbonamento.\nL'amico deve avere un account registrato!")
+            
 class FinestraAcquista(QDialog):
     def __init__(self, parent=None, email="", gestore_abbonamenti=None):
         super().__init__(parent)
