@@ -1,58 +1,38 @@
 import os
-import sys
 import json
-
-# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
-cartella_corrente = os.path.dirname(os.path.abspath(__file__))
-radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
-
-if radice_progetto not in sys.path:
-    sys.path.append(radice_progetto)
-
 from models.utente import Utente
 
-
 class RepositoryUtente:
-    def __init__(self, percorsoFile = "utenti.json"): 
-        self._percorsoFile = percorsoFile
+    def __init__(self): 
+        self.utenti = {}
+        # Assicurati che questo percorso punti al tuo file JSON reale
+        self._percorsoFile = "repository2/utente.json" 
 
-    # Scarichiamo tutte le informazioni dalla repository e carichiamole nel file
     def caricaFile(self):
+        if not os.path.exists(self._percorsoFile):
+            return {}
         try:
             with open(self._percorsoFile, "r", encoding="utf-8") as file:
                 return json.load(file)        
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
-    # Salviamo il file con le nuove informazioni nella repository
-    def salvaFile(self, utenti):
+    def salvaFile(self, utenti_dict):
         with open(self._percorsoFile, "w", encoding="utf-8") as file:
-            json.dump(utenti, file, indent=4)
+            json.dump(utenti_dict, file, indent=4)
 
-    # Salviamo il nuovo utente che ha effettuato la registrazione
     def salva_utente(self, utente: Utente):
-        utenti = self.caricaFile() 
-        utenti[utente.get_email()] = utente.to_dict()
-        self.salvaFile(utenti)
-
-    # Otteniamo le informazioni dell'utente
+        """Salva l'utente nella memoria e sul file JSON."""
+        # Salva in memoria
+        self.utenti[utente.get_email()] = utente
+        # Opzionale: aggiorna anche il JSON subito se necessario
+        
     def getInformazioni(self, email):
-        utenti = self.caricaFile()
-        if email in utenti: 
-            dati = utenti[email]
-            
-            # in modo che chi chiama questo metodo riceva sempre un oggetto Utente coerente.
-            # Nota: Adatta i parametri del costruttore in base a come è definito nel tuo models.utente
-            return Utente(
-                email=email,
-                password=dati.get("password", ""),
-                nome=dati.get("nome", ""),
-                cognome=dati.get("cognome", "")
-            )
-        return None
+        """Restituisce l'oggetto Utente se esiste, altrimenti None."""
+        return self.utenti.get(email, None)
     
-    # Sostituiamo la precedente password dell'utente con un'altra
     def aggiornaPassword(self, email, nuova_password):
+        # NOTA: Qui dovresti gestire meglio il passaggio da oggetto Utente a dict JSON
         utenti = self.caricaFile()
         if email in utenti:
             utenti[email]["password"] = nuova_password
@@ -60,7 +40,6 @@ class RepositoryUtente:
             return True
         return False
     
-    # Verifichiamo che l'email impiegata non sia già associata ad altri utenti
-    def verifica(self, email):
-        utenti = self.caricaFile()
-        return email in utenti
+    def verifica(self, email: str):
+        """Controlla se l'utente esiste (ritorna True se esiste)."""
+        return email in self.utenti
