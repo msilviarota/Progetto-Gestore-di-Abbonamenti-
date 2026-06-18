@@ -4,62 +4,75 @@ import webbrowser
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox
 from PyQt6.QtCore import Qt, QSize
 
-# Setup path per i modelli
-percorso_attuale = os.path.dirname(os.path.abspath(__file__))
-radice_progetto = os.path.dirname(percorso_attuale)
+# Configurazione path per gli import
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.dirname(cartella_corrente)
 if radice_progetto not in sys.path:
     sys.path.insert(0, radice_progetto)
 
-# Import dagli altri file dell'interfaccia
 from intefaccia.stile import *
 from intefaccia.utils import scarica_logo
 from models.piattaforma import CATALOGO_PIATTAFORME
 
-# IMPORTANTE: Se abbiamo spostato ProfiloDialog in profilo.py, 
-# dobbiamo importarlo qui affinché main_window lo trovi
+# Importiamo ProfiloDialog dal nuovo file profilo.py per mantenere la compatibilità
 try:
     from intefaccia.profilo import ProfiloDialog
 except ImportError:
-    ProfiloDialog = None # Fallback se il file non esiste ancora
+    # Se il file profilo.py non è ancora pronto, definiamo una classe vuota per evitare crash
+    class ProfiloDialog(QDialog): pass
 
-# --- AGGIUNTA RegisterWindow (richiesta da login.py [4]) ---
+# ============================================================
+# SCHEDA CATEGORIA (CDU18 - Riproduci) -> RICHIESTA DA main_window
+# ============================================================
+class SchedaCategoria(QDialog):
+    """Mostra le piattaforme di una categoria e ne permette l'avvio [2]."""
+    def __init__(self, titolo, servizi, email_utente, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(titolo)
+        self.setMinimumSize(400, 500)
+        self.setStyleSheet(STILE_SCHEDA_CATEGORIA)
+        self.email_utente = email_utente
+        self._build_ui(servizi)
+
+    def _build_ui(self, servizi):
+        layout = QVBoxLayout(self)
+        for nome, piattaforma in servizi.items():
+            btn = QPushButton(nome.capitalize())
+            icona = scarica_logo(piattaforma.logo)
+            if icona:
+                btn.setIcon(icona)
+                btn.setIconSize(QSize(100, 30))
+            btn.clicked.connect(lambda ch, p=piattaforma: webbrowser.open(p.link_login))
+            layout.addWidget(btn)
+
+# ============================================================
+# FINESTRA RICERCA (CDU4) -> RICHIESTA DA main_window
+# ============================================================
+class FinestraRicerca(QDialog):
+    def __init__(self, testo, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(f"Risultati per: {testo}")
+        self.setFixedSize(400, 500)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(f"Risultati della ricerca per '{testo}':"))
+
+# ============================================================
+# FINESTRE PER IL LOGIN (CDU3, CDU8) -> RICHIESTE DA login.py
+# ============================================================
 class RegisterWindow(QDialog):
-    """CDU3: Gestisce la registrazione di un nuovo utente [5, 6]."""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Registrazione Nuovo Utente")
+        self.setWindowTitle("Registrazione")
         self.setFixedSize(400, 500)
-        self.setStyleSheet(STILE_DIALOGO_PROFILO)
-        self._build_ui()
-
-    def _build_ui(self):
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Nome:"))
-        layout.addWidget(QLineEdit())
-        layout.addWidget(QLabel("Email:"))
-        layout.addWidget(QLineEdit())
-        btn = QPushButton("Registrati")
-        btn.clicked.connect(self.accept)
-        layout.addWidget(btn)
+        layout.addWidget(QLabel("Modulo di Registrazione"))
 
-# --- Altri dialoghi necessari ---
 class FinestraRecuperoPassword(QDialog):
-    """CDU8: Recupero password [7, 8]."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Recupero Password")
         self.setFixedSize(400, 250)
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Inserisci la tua email:"))
-        self.email = QLineEdit()
-        layout.addWidget(self.email)
-        btn = QPushButton("Invia Password Temporanea")
-        btn.clicked.connect(lambda: QMessageBox.information(self, "Info", "Email inviata"))
-        layout.addWidget(btn)
-
-class FinestraRicerca(QDialog):
-    """CDU4: Risultati ricerca globale [8, 9]."""
-    def __init__(self, testo, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle(f"Risultati: {testo}")
-        self.setFixedSize(400, 400)
+        layout.addWidget(QLabel("Inserisci Email:"))
+        layout.addWidget(QLineEdit())
