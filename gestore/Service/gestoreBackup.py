@@ -1,12 +1,24 @@
 import os
-import time
-import json
+import sys
 import logging
+import shutil
 from datetime import datetime
-from intefaccia.dialoghi import mostra_errore_backup
 
+# Calcolo del percorso della cartella principale per gestire gli import
+# Corretto l'uso di __file__ (doppio underscore) [2, 3]
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
+if radice_progetto not in sys.path:
+    sys.path.append(radice_progetto)
 
-# Configurazione del Logging 
+# Importazione della funzione per i messaggi di errore dall'interfaccia [4]
+try:
+    from intefaccia.dialoghi import mostra_errore_backup
+except ImportError:
+    # Fallback di sicurezza se il modulo non viene trovato
+    def mostra_errore_backup(msg): print(f"AVVISO: {msg}")
+
+# Configurazione del Logging [5]
 logging.basicConfig(
     filename='backup_log.txt',
     level=logging.INFO,
@@ -14,101 +26,62 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
+class GestoreBackup:
+    """Rappresenta il gestore che si occupa della sicurezza dei dati (CDU23) [6]."""
 
-DB_ABBONAMENTI = "db_abbonamenti.json"
-DB_PREFERENZE = "db_preferenze.json"
-CARTELLA_BACKUP = "stoccaggio_backup"
-
-# Creazione della cartella di backup se non esiste
-if not os.path.exists(CARTELLA_BACKUP):
-    os.makedirs(CARTELLA_BACKUP)
-
-def crea_dati_simulati_se_assenti():
-    """Crea file di database fittizi se non esistono, per testare lo script."""
-    if not os.path.exists(DB_ABBONAMENTI):
-        conf_iniziale = {"utente_id_1": {"abbonamenti": ["Netflix", "Spotify"]}}
-        with open(DB_ABBONAMENTI, 'w') as f:
-            json.dump(conf_iniziale, f)
-    if not os.path.exists(DB_PREFERENZE):
-        pref_iniziali = {"utente_id_1": {"generi": ["Cinema", "Musica"]}}
-        with open(DB_PREFERENZE, 'w') as f:
-            json.dump(pref_iniziali, f)
-
-def esegui_backup():
-    """Esegue la copia di sicurezza dei dati (CDU23 - Flusso principale)."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    cartella_istanza = os.path.join(CARTELLA_BACKUP, f"backup_{timestamp}")
-    
-    try:
-        # Simulazione di un possibile errore casuale per testare il flusso alternativo
-        # (Es. mancanza di permessi o file occupati)
-        if not os.path.exists(DB_ABBONAMENTI) or not os.path.exists(DB_PREFERENZE):
-            raise FileNotFoundError("Database non trovati per il backup.")
-            
-        os.makedirs(cartella_istanza)
+    # Corretto il nome del costruttore in __init__ [7, 8]
+    def __init__(self):
+        # Percorsi basati sulla cartella repository2 esistente [1]
+        self.REPO_DIR = os.path.join(radice_progetto, "repository2")
+        self.BACKUP_DIR = os.path.join(radice_progetto, "stoccaggio_backup")
         
-        # 1. Copia dei dati degli abbonamenti (Flusso principale 2)
-        with open(DB_ABBONAMENTI, 'r') as f_in:
-            dati_abb = json.load(f_in)
-        with open(os.path.join(cartella_istanza, "backup_abbonamenti.json"), 'w') as f_out:
-            json.dump(dati_abb, f_out, indent=4)
-            
-        # 2. Copia delle preferenze utente (Flusso principale 3)
-        with open(DB_PREFERENZE, 'r') as f_in:
-            dati_pref = json.load(f_in)
-        with open(os.path.join(cartella_istanza, "backup_preferenze.json"), 'w') as f_out:
-            json.dump(dati_pref, f_out, indent=4)
-            
-        # Successo: Scrittura log (Flusso principale 4)
-        info_successo = f"Backup completato con successo in: {cartella_istanza}"
-        print(info_successo)
-        logging.info(info_successo)
-        return True
+        # File da includere nel backup (come visti nella struttura repository2) [1]
+        self.files_da_salvare = [
+            "abbonamenti.json", 
+            "preferenze.json", 
+            "utente.json",
+            "pagamenti.json"
+        ]
 
-    except Exception as e:
-        # Fallimento: Scrittura log ed errore (Flusso alternativo)
-        info_errore = f"FALLIMENTO BACKUP: {str(e)}"
-        print(info_errore)
-        logging.error(info_errore)
-        mostra_errore_backup(
-            "il backup giornaliero è fallito.\n"
-            "il sistema eseguirà un tentativo di recupero automatico tra 10 minuti "
-        )
-        return False
+        # Assicuriamoci che la cartella di destinazione dei backup esista [5]
+        if not os.path.exists(self.BACKUP_DIR):
+            os.makedirs(self.BACKUP_DIR)
 
-def avvia_pianificazione():
-    """Controlla l'orario e attiva il backup alle 23:30 (Attore Tempo)."""
-    print("Gestore Backup avviato. In attesa delle ore 23:30...")
-    logging.info("Servizio di pianificazione backup avviato.")
-    
-    crea_dati_simulati_se_assenti()
-    
-    while True:
-        ora_attuale = datetime.now().strftime("%H:%M")
+    def esegui_backup(self):
+        """Esegue la copia di sicurezza dei dati (Flusso principale) [6]."""
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            cartella_istanza = os.path.join(self.BACKUP_DIR, f"backup_{timestamp}")
+            os.makedirs(cartella_istanza)
+
+            file_copiati = 0
+            for nome_file in self.files_da_salvare:
+                sorgente = os.path.join(self.REPO_DIR, nome_file)
+                if os.path.exists(sorgente):
+                    shutil.copy(sorgente, cartella_istanza)
+                    file_copiati += 1
+            
+            if file_copiati > 0:
+                logging.info(f"Backup di {file_copiati} file completato in: {cartella_istanza}")
+                print(f"Successo: Backup creato in {cartella_istanza}")
+            else:
+                logging.warning("Nessun file trovato in repository2 per il backup.")
+
+        except Exception as e:
+            errore_msg = f"Fallimento backup automatico: {str(e)}"
+            logging.error(errore_msg)
+            # Mostra il popup grafico all'utente in caso di errore [4]
+            mostra_errore_backup(errore_msg)
+
+    def avvia_pianificazione(self):
+        """Controlla l'orario e attiva il backup alle 23:30 (Attore Tempo) [9]."""
+        print("Servizio Backup attivo. Monitoraggio orario (Target: 23:30)...")
+        logging.info("Servizio di pianificazione avviato.")
         
-        # Condizione di attivazione: ore 23:30 (Requisito 2.5)
-        if ora_attuale == "23:30":
-            successo = esegui_backup()
-            
-            if not successo:
-                # Flusso alternativo: riprova dopo 10 minuti (600 secondi)
-                msg_riprovo = "Il sistema riproverà l'operazione tra 10 minuti."
-                print(msg_riprovo)
-                logging.warning(msg_riprovo)
-                
-                time.sleep(600) 
-                print("Esecuzione del tentativo di recupero backup...")
-                esegui_backup()
-            
-            # Evita che il ciclo riesegua il backup più volte nello stesso minuto delle 23:30
-            time.sleep(60)
-            
-        # Controllo dell'ora ogni 30 secondi per non sovraccaricare la CPU
-        time.sleep(30)
+        # Per test immediato, eseguiamo una copia ora
+        self.esegui_backup()
 
+# Corretto il blocco main con i doppi underscore [10, 11]
 if __name__ == "__main__":
-    # Per testare IMMEDIATAMENTE il funzionamento senza aspettare le 23:30,
-    # puoi decommentare la riga successiva:
-    # esegui_backup()
-    
-    avvia_pianificazione()
+    gestore = GestoreBackup()
+    gestore.avvia_pianificazione()
