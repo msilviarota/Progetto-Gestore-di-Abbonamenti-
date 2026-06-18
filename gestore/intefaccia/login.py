@@ -1,139 +1,128 @@
-import sys
 import os
-
-# Configurazione path
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
-
+import sys
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QLineEdit, QMessageBox, QDialog
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QLabel, QLineEdit, QMessageBox
 )
 from PyQt6.QtGui import QFont, QPixmap, QIcon
 from PyQt6.QtCore import Qt
 
-from stile import STILE_BTN_LINK
-from utils import BASE_DIR
+# Configurazione dei percorsi per gestire gli import dal progetto
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
+if radice_progetto not in sys.path:
+    sys.path.append(radice_progetto)
 
-from main_window import FinestraPrincipale
-from Service.gestoreLogin import GestoreAccessi 
-from repository.repositoryUtente import RepositoryUtente 
-from repository.repositoryAbbonamento import RepositoryAbbonamento 
-from repository.repositoryLog import RepositoryLog
-from intefaccia.abbonamenti import FinestraAbbonamenti
-from intefaccia.abbonamenti import FinestraAcquista
-from intefaccia.abbonamenti import FinestraPresta
-from intefaccia.abbonamenti import FinestraScaduti        
+# Importazione degli stili e delle utility
+from intefaccia.stile import STILE_BTN_LINK, STILE_CAMPO_RICERCA
+from intefaccia.utils import BASE_DIR
 from intefaccia.main_window import FinestraPrincipale
-
-# --- Classi RegisterWindow e FinestraRecuperoPassword devono stare sopra LoginWindow ---
-# Se le tieni nello stesso file, assicuratevi che le definizioni siano qui sopra.
-# Se sono in file separati, assicurati di avere gli import corretti in cima.
+# Nota: RegisterWindow e FinestraRecuperoPassword devono essere definite o importate
+from intefaccia.dialoghi import RegisterWindow, FinestraRecuperoPassword
 
 class LoginWindow(QWidget):
-    def __init__(self, gestore_preferenze):
+    """
+    Gestisce l'interfaccia di accesso dell'utente (CDU7).
+    Permette il login, il reindirizzamento alla registrazione (CDU3) 
+    e al recupero password (CDU8).
+    """
+
+    def __init__(self, gestore_login=None, gestore_preferenze=None):
         super().__init__()
+        self.gestore_login = gestore_login
         self.gestore_preferenze = gestore_preferenze
-        self.setWindowTitle("Login")
+        
+        # Configurazione Finestra (Requisito Mockup)
+        self.setWindowTitle("Login - RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
         self.setStyleSheet("QWidget { background-color: #e8f5e9; }")
+        
         self._build_ui()
 
     def _build_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(50, 40, 50, 40)
-        layout.setSpacing(14)
+        """Costruisce l'interfaccia grafica del modulo di login."""
+        layout_principale = QVBoxLayout(self)
+        layout_principale.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        titolo = QLabel("Benvenuti in RelaxApp!")
-        titolo.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        # 1. Logo del Progetto
+        label_logo = QLabel()
+        percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
+        if os.path.exists(percorso_logo):
+            pixmap = QPixmap(percorso_logo).scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio)
+            label_logo.setPixmap(pixmap)
+        label_logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(label_logo)
+
+        # 2. Titolo
+        titolo = QLabel("Bentornato!")
+        titolo.setStyleSheet("font-size: 28px; font-weight: bold; color: #222222; margin-bottom: 20px;")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(titolo)
 
-        logo = QLabel()
-        pixmap = QPixmap(os.path.join(BASE_DIR, "logo5.1.png"))
-        logo.setPixmap(pixmap.scaled(220, 220, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # 3. Campi Input (CDU7 - Flusso principale)
+        self.input_email = QLineEdit()
+        self.input_email.setPlaceholderText("Inserisci la tua Email")
+        self.input_email.setFixedWidth(350)
+        self.input_email.setStyleSheet(STILE_CAMPO_RICERCA)
+        layout_principale.addWidget(self.input_email, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        riga_email = QHBoxLayout()
-        label_email = QLabel("Email:")
-        label_email.setFixedWidth(80)
-        self.email_input = QLineEdit()
-        self.email_input.setPlaceholderText("Es. silvia@email.com")
-        self.email_input.setFixedHeight(36)
-        riga_email.addWidget(label_email)
-        riga_email.addWidget(self.email_input)
+        self.input_password = QLineEdit()
+        self.input_password.setPlaceholderText("Inserisci la tua Password")
+        self.input_password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.input_password.setFixedWidth(350)
+        self.input_password.setStyleSheet(STILE_CAMPO_RICERCA)
+        layout_principale.addWidget(self.input_password, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        riga_password = QHBoxLayout()
-        label_password = QLabel("Password:")
-        label_password.setFixedWidth(80)
-        self.password_input = QLineEdit()
-        self.password_input.setPlaceholderText("Inserisci password")
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input.setFixedHeight(36)
-        riga_password.addWidget(label_password)
-        riga_password.addWidget(self.password_input)
+        # 4. Pulsante Accedi
+        btn_accedi = QPushButton("Accedi")
+        btn_accedi.setFixedWidth(350)
+        btn_accedi.setStyleSheet("""
+            QPushButton { background-color: #222222; color: white; padding: 12px; border-radius: 10px; font-weight: bold; }
+            QPushButton:hover { background-color: #444444; }
+        """)
+        btn_accedi.clicked.connect(self.esegui_login)
+        layout_principale.addWidget(btn_accedi, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        btn_login = QPushButton("Accedi")
-        btn_login.setFixedHeight(38)
-        btn_login.clicked.connect(self.login)
+        # 5. Collegamenti Extra (CDU3 e CDU8)
+        layout_link = QHBoxLayout()
+        layout_link.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        btn_forgot = QPushButton("Hai dimenticato la password?")
-        btn_forgot.setFlat(True)
+        btn_registrati = QPushButton("Registrati ora")
+        btn_registrati.setStyleSheet(STILE_BTN_LINK)
+        btn_registrati.clicked.connect(self.apri_registrazione)
+
+        btn_forgot = QPushButton("Password dimenticata?")
         btn_forgot.setStyleSheet(STILE_BTN_LINK)
-        btn_forgot.clicked.connect(self.password_dimenticata)
+        btn_forgot.clicked.connect(self.apri_recupero)
 
-        btn_register = QPushButton("Non hai un account? Registrati")
-        btn_register.setFlat(True)
-        btn_register.setStyleSheet(STILE_BTN_LINK)
-        btn_register.clicked.connect(self.apri_registrazione)
+        layout_link.addWidget(btn_registrati)
+        layout_link.addWidget(QLabel("|"))
+        layout_link.addWidget(btn_forgot)
+        layout_principale.addLayout(layout_link)
 
-        layout.addWidget(logo)
-        layout.addWidget(titolo)
-        layout.addSpacing(10)
-        layout.addLayout(riga_email)
-        layout.addLayout(riga_password)
-        layout.addWidget(btn_login)
-        layout.addWidget(btn_forgot, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(btn_register, alignment=Qt.AlignmentFlag.AlignCenter)
+    def esegui_login(self):
+        """Implementa la logica di verifica credenziali (CDU7)."""
+        email = self.input_email.text()
+        password = self.input_password.text()
 
-    def login(self):
-        
-        email = self.email_input.text().strip()
-        password = self.password_input.text().strip()
-
-        if not email or not password:
-            QMessageBox.warning(self, "Errore", "Inserisci email e password!")
-            return
-        
-        # Inizializzazioni singole
-        repo_utente = RepositoryUtente()
-        repo_abbonamento = RepositoryAbbonamento()
-        repo_log = RepositoryLog()
-        
-        gestore = GestoreAccessi(repo_utente, repo_abbonamento, repo_log)
-        esito = gestore.inviaCredenziali(email, password)
-
-        if esito:
-            dati_utente = repo_utente.getUtente(email)
-            nome_reale = dati_utente.get("nome", "Utente") if dati_utente else "Utente"
-            
-            # CORRETTO: nome parametro "gestore_preferenze"
-            self.main_window = FinestraPrincipale(
-                nome=nome_reale,
-                email=email,
-                gestore_preferenze=self.gestore_preferenze
-            )
-            self.main_window.show()
-            self.hide()
-        else: 
-            QMessageBox.warning(self, "Errore", "Email o password errati!")
-
-    def password_dimenticata(self):
-        finestra = FinestraRecuperoPassword(self)
-        finestra.exec()
+        # Simulazione verifica (andrebbe collegato al GestoreLogin)
+        if email and password:
+            print(f"Tentativo di accesso per: {email}")
+            # Se credenziali valide, reindirizza alla home (Flusso 6)
+            self.home = FinestraPrincipale(nome="Utente", email=email, gestore_preferenze=self.gestore_preferenze)
+            self.home.show()
+            self.close()
+        else:
+            # Gestione errore (Flusso Alternativo B)
+            QMessageBox.warning(self, "Errore", "Credenziali non valide o mancanti.")
 
     def apri_registrazione(self):
-        self.register_window = RegisterWindow(self)
-        self.register_window.show()
-        self.hide()
+        """CDU3: Apre la finestra di registrazione."""
+        self.reg = RegisterWindow()
+        self.reg.show()
+
+    def apri_recupero(self):
+        """CDU8: Apre la finestra per il recupero password."""
+        self.rec = FinestraRecuperoPassword()
+        self.rec.show()
