@@ -190,7 +190,7 @@ class FinestraPrincipale(QWidget):
 
     def apri_presta(self):
         from abbonamenti import FinestraPresta
-        finestra = FinestraPresta(self)
+        finestra = FinestraPresta(self, self.email_utente)
         finestra.exec()
 
     def filtra_categorie(self):
