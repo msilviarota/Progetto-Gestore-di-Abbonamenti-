@@ -70,12 +70,17 @@ class FinestraAbbonamenti(QDialog):
             from database.repositoryAbbonamento import RepositoryAbbonamento
             from database.repositoryDatiPagamento import RepositoryDatiPagamento
             from database.repositoryUtente import RepositoryUtente
+            from models.piattaforma import Piattaforma
+            from models.notifica import Notifica
 
             repo_utente = RepositoryUtente()
             utente = repo_utente.getInformazioni(self.email_utente)
             repo_abb = RepositoryAbbonamento()
             repo_pag = RepositoryDatiPagamento()
-            gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, None)
+            piattaforma_obj = Piattaforma()
+            notifica_obj = Notifica()
+        
+            gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, piattaforma_obj, notifica_obj)
             gestore.eseguiDisdetta(nome)
             QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo")
 
@@ -138,7 +143,6 @@ class FinestraPresta(QDialog):
             QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico!")
             return
 
-        # Dizionario per convertire la selezione della stringa in ID int richiesto dal tuo GestorePrestiti
         mappa_id = {"Netflix": 1, "Spotify": 2, "Disney+": 3}
         id_abbonamento = mappa_id.get(abbonamento_testo, 1)
 
@@ -155,7 +159,6 @@ class FinestraPresta(QDialog):
         
         gestore_prestiti = GestorePrestiti(repo_u, repo_a, repo_l, notifica_servizio)
         
-        # Corretto l'uso della variabile email_amico coerente
         risultato_notifica = gestore_prestiti.avvia_prestito(email_amico, id_abbonamento)
         
         if risultato_notifica is not None:
@@ -284,12 +287,16 @@ class FinestraAcquista(QDialog):
         from database.repositoryAbbonamento import RepositoryAbbonamento
         from database.repositoryDatiPagamento import RepositoryDatiPagamento
         from database.repositoryUtente import RepositoryUtente
+        from models.piattaforma import Piattaforma
+        from models.notifica import Notifica
         repo_utente = RepositoryUtente()
         utente= repo_utente.getInformazioni(self.email_utente)
         repo_abb = RepositoryAbbonamento()
-        repo_pag = RepositoryDatiPagamento ()
-        gestore = GestoreAbbonamenti (utente, repo_abb, repo_pag , None)
-        gestore.inviaScelta(f"{piattaforma}-{piano}")
+        repo_pag = RepositoryDatiPagamento()
+        piattaforma_obj = Piattaforma()
+        notifica_obj = Notifica()
+        gestore = GestoreAbbonamenti (utente, repo_abb, repo_pag ,piattaforma_obj, notifica_obj)
+        esito_notifica = gestore.inviaScelta (f"{piattaforma}-{piano}")
         QMessageBox.information(self, "Successo", f"Abbonamento {piano} a {piattaforma} acquistato con successo!")
         self.close()
 
@@ -349,6 +356,33 @@ class FinestraScaduti(QDialog):
         btn_chiudi.setFixedHeight(40)
         btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
         btn_chiudi.clicked.connect(self.close)
+       
+        from Service.gestoreAbbonamenti import GestoreAbbonamenti
+        from database.repositoryAbbonamento import RepositoryAbbonamento
+        from database.repositoryDatiPagamento import RepositoryDatiPagamento
+        from database.repositoryUtente import RepositoryUtente
+        from models.piattaforma import Piattaforma
+        from models.notifica import Notifica
+
+        repo_utente = RepositoryUtente()
+        utente_obj = repo_utente.getInformazioni(self.email_utente)
+        
+        if not utente_obj:
+            from models.utente import Utente
+            utente_obj = Utente(email=self.email_utente)
+
+        gestore_scadenze = GestoreAbbonamenti(
+            utente_obj, 
+            RepositoryAbbonamento(), 
+            RepositoryDatiPagamento(), 
+            Piattaforma(), 
+            Notifica()
+        )
+        
+        esito_scadenza = gestore_scadenze.ricordaScadenza()
+        if esito_scadenza:
+            QMessageBox.warning(self, "Controllo Scadenze", esito_scadenza)
+        
         layout.addWidget(btn_chiudi, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def rinnova(self, nome):
@@ -358,7 +392,39 @@ class FinestraScaduti(QDialog):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if risposta == QMessageBox.StandardButton.Yes:
-            QMessageBox.information(self, "Rinnovato", f"{nome} rinnovato con successo!")
+            # 🟢 MODIFICA AGGIUNTIVA: Colleghiamo il comando reale del tuo backend
+            from Service.gestoreAbbonamenti import GestoreAbbonamenti
+            from database.repositoryAbbonamento import RepositoryAbbonamento
+            from database.repositoryDatiPagamento import RepositoryDatiPagamento
+            from database.repositoryUtente import RepositoryUtente
+            from models.piattaforma import Piattaforma
+            from models.notifica import Notifica
+
+            repo_utente = RepositoryUtente()
+            utente_obj = repo_utente.getInformazioni(self.email_utente)
+            if not utente_obj:
+                from models.utente import Utente
+                utente_obj = Utente(email=self.email_utente)
+
+            gestore = GestoreAbbonamenti(
+                utente_obj, 
+                RepositoryAbbonamento(), 
+                RepositoryDatiPagamento(), 
+                Piattaforma(), 
+                Notifica()
+            )
+
+            # Creiamo il dizionario fittizio con i dati dell'abbonamento da passare alla funzione
+            abbonamento_da_rinnovare = {
+                "nome": utente_obj.get_nome() if hasattr(utente_obj, 'get_nome') else "Utente",
+                "cognome": utente_obj.get_cognome() if hasattr(utente_obj, 'get_cognome') else "Registrato",
+                "piattaforma": nome
+            }
+
+            # Lanciamo il rinnovo sul backend
+            gestore.avviaProceduraRinnovo(abbonamento_da_rinnovare)
+
+            QMessageBox.information(self, "Rinnovato", f"{nome} rinnovato con successo nel sistema!")
 
     def elimina(self, nome):
         risposta = QMessageBox.question(
