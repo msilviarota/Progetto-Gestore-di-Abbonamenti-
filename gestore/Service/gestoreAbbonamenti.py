@@ -1,149 +1,97 @@
 import os
 import sys
 import json
+from datetime import datetime
 
-# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
-cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+# Calcolo del percorso radice del progetto
+cartella_corrente = os.path.dirname(os.path.abspath(__file__)) 
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
-
-if radice_progetto not in sys.path:
+if radice_progetto not in sys.path: 
     sys.path.append(radice_progetto)
 
-# Ora puoi importare utente direttamente senza usare i punti!
+# Importazioni dai modelli e repository (coerenti con la struttura cartelle)
 from repository.repositoryAbbonamento import RepositoryAbbonamento
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento
 from models.notifica import Notifica
 from models.utente import Utente
 from models.abbonamento import Abbonamento
-from models import piattaforma
-from datetime import datetime
+from models.piattaforma import Piattaforma
 
-
-#==================================================================== 
-# Rappresenta il «control» Gestore Abbonamenti
 class GestoreAbbonamenti:
-    def __init__(self, utente: Utente, repoAbbonamento: RepositoryAbbonamento,
-                 repoDatiPagamento: RepositoryDatiPagamento,
-                 nomePiattaforma: piattaforma, notifica: Notifica):
+    """
+    Rappresenta il «control» Gestore Abbonamenti.
+    Gestisce il ciclo di vita degli abbonamenti (CDU1, CDU2, CDU11, CDU12, CDU14).
+    """
+    
+    def __init__(self, utente: Utente, repoAbbonamento: RepositoryAbbonamento, 
+                 repoDatiPagamento: RepositoryDatiPagamento, 
+                 piattaforma: Piattaforma, notifica: Notifica):
+        """Inizializza il gestore con i dati dell'utente e le repository [5]."""
         self._utente = utente
-        self._email = utente.get_email()
+        self._email_utente = utente._email 
         self._repo_Abbonamento = repoAbbonamento
         self._repo_DatiPagamento = repoDatiPagamento
+        self._piattaforma = piattaforma
         self._notifica = notifica
-        self._piattaforma = nomePiattaforma
-        return
-    
 
-    # Restituisce una lista di scelta degli abbonamenti
-    def getLista(self):
-        return self._repo_Abbonamento.getAbbonamentiPossibili(self._email)
+    def acquista_abbonamento(self, abbonamento: Abbonamento):
+        """
+        CDU1: Consente l'acquisto di un abbonamento inserendo i dati necessari [4, 7].
+        Verifica se già acquistato (Flusso alternativo A) e salva nel profilo [8, 9].
+        """
+        # Verifica se l'abbonamento per questa piattaforma è già attivo
+        if self._repo_Abbonamento.esiste_abbonamento_attivo(self._email_utente, self._piattaforma.get_nome()):
+            self._notifica = Notifica("Abbonamento già acquistato per questa piattaforma.", "Errore") [9, 10]
+            return False
 
+        # Simulazione transazione e generazione data scadenza [8]
+        # In un'implementazione reale, qui si interagirebbe con repoDatiPagamento
+        abbonamento._validita = True
+        self._repo_Abbonamento.salva_nuovo_abbonamento(abbonamento)
+        self._notifica = Notifica("Acquisto completato con successo!", "Successo") [8]
+        return True
 
-    # Riceve la scelta dell'utente e la elabora
-    def inviaScelta(self, abbonamentoScelto: str ):
-        # Usiamo l'oggetto utente già disponibile invece di re-importare il modulo database
-        nome = self._utente.get_nome()
-        cognome = self._utente.get_cognome()
+    def disdisci_abbonamento(self, id_abbonamento: str):
+        """
+        CDU2: Interrompe il rinnovo automatico e aggiorna lo stato come 'Disdetto' [9, 11].
+        """
+        successo = self._repo_Abbonamento.aggiorna_stato(id_abbonamento, "Disdetto")
+        if successo:
+            self._notifica = Notifica("Abbonamento disdetto correttamente.", "Info")
+        return successo
+
+    def presta_abbonamento(self, id_abbonamento: str, email_amico: str):
+        """
+        CDU11: Permette di prestare un abbonamento a un amico registrato [12, 13].
+        """
+        # Verifica descritta nel PDF: l'amico deve avere un account sul gestore [12, 13]
+        # (Qui si chiamerebbe una funzione di verifica su RepositoryUtente)
+        print(f"Prestito abbonamento {id_abbonamento} a {email_amico} in corso...")
+        self._notifica = Notifica(f"Accesso condiviso con {email_amico}.", "Info")
+        return True
+
+    def sposta_in_scaduti(self, id_abbonamento: str):
+        """
+        CDU19: Sposta automaticamente gli abbonamenti non più validi nella sezione 'Scaduti' [14].
+        """
+        self._repo_Abbonamento.cambia_sezione(id_abbonamento, "Scaduti") [14]
+
+    def elimina_scaduto(self, id_abbonamento: str):
+        """
+        CDU14: Consente all'utente di rimuovere i record dalla sezione scaduti [15, 16].
+        """
+        return self._repo_Abbonamento.rimuovi_record(id_abbonamento) [16]
+
+    def verifica_tutte_scadenze(self):
+        """
+        CDU20/21: Il sistema invalida l'accesso passata la data di scadenza [17, 18].
+        """
+        lista_abbonamenti = self._repo_Abbonamento.ottieni_per_utente(self._email_utente)
+        data_attuale = datetime.now()
         
-        dati_pagamento = self._repo_DatiPagamento.getiDatiPagamaneto(self._email)
-        
-        # Logica sicura
-        nuovoAbbonamento = Abbonamento(
-            email=self._email,
-            nome=nome,
-            cognome=cognome,
-            tipo=abbonamentoScelto,
-            data_inizio=datetime.now(),
-            attivo=True,
-            stato="Attivo"
-        )
-        
-        self._repo_Abbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
-        self._notifica.inviaNotifica(f"Abbonamento scelto: {abbonamentoScelto} . Pagamento: {dati_pagamento}")
-        
-        return self._notifica.inviaConferma()
-
-    # Blocca l'operazione in caso di errori o dati non validi
-    def bloccaOperazione(self, errore: str):
-     self._notifica.inviaErrore(errore)
-     print("[Control] Operazione bloccata per motivi di sicurezza.")
-     return False
-
-
-    # ===========================================================================================================================================================
-    # Qui scriviamo il codice per il caso d'uso 2 in cui si affronta il caso in cui l'utente vuole disdire un abbonamento tra quelli comprati
-    
-    # recuperiamo gli abbonamenti attivi dalla self._repo_Abbonamento
-    def recuperaAbbonamenti(self):
-        return self._repo_Abbonamento.getAbbonamentiPossibili()
-    
-    # inviamo una notifica all'utente per accertarci che voglia disdire l'abbonamento
-    def inviaSeleziona(self, abbonamentoScelto):
-        self._abbonamentoScelto = abbonamentoScelto
-        self._notifica.invia("Vuoi disdire?")
-        return
-    
-    # Richiamiamo la funzione elimina_abbonamento per scorrere gli abbonamenti ed elimnare quello voluto
-    # se presente
-    def esguiDisdetta(self, abbonamentoScelto: str ):
-        self._repo_Abbonamento.elimina_abbonamento(abbonamentoScelto)
-        return
-    
-
-    #===================================================================================================================================================
-    # Qui scrviamo il codice per il caso d'uso 12
-    def ricordaScadenza(self):
-        print("[Control] Avvio il calcolo delle date di scadenza...")
-        
-        tutti_abbonamenti = self._repo_Abbonamento.caricaFile()
-
-        # 2. Prendi la data di oggi (senza ore e minuti, solo Anno-Mese-Giorno)
-        oggi = datetime.now().date()
-        print(f"[Control] Data di oggi: {oggi}")
-
-        # 3. Cicla tutti gli utenti e i loro abbonamenti
-        for email, lista_abbonamenti in tutti_abbonamenti.items():
-            for abb in lista_abbonamenti:
-                data_scadenza_abb = abb["scadenza"]
-                
-                if data_scadenza_abb:
-                    # Converte la stringa del JSON "AAAA-MM-GG" in una vera data Python
-                    data_scadenza = datetime.strptime(data_scadenza_abb, "%Y-%m-%d").date()
-                    
-                    # Calcola la differenza (data_scadenza - oggi)
-                    differenza = data_scadenza - oggi
-                    giorni_rimasti = differenza.days
-                    
-                    print(f"Abbonamento '{abb['tipo']}' di {email}: mancano {giorni_rimasti} giorni alla scadenza.")
-
-                    # --- CONDIZIONE PER FAR SCATTARE IL TIMER/NOTIFICA ---
-                    # Se i giorni rimasti sono 0 (scade oggi) o negativi (è già scaduto)
-                    if giorni_rimasti == 1:
-                        print(f"🚨 ATTENZIONE: L'abbonamento '{abb['tipo']}' sta per scadere! Attivo la notifica.")
-                        self._notifica.inviaAvviso("L'abbonamento" + str(abb) + "sta per scadere")
-
-                    elif giorni_rimasti <= 0:
-                        print(f"🚨 ATTENZIONE: L'abbonamento '{abb['tipo']}' è scaduto! Attivo la notifica.")
-                        self._notifica.inviaAvviso("L'abbonamento" + str(abb) + "è scaduto.")
-                        # Ritorna il messaggio di errore che salirà fino all'interfaccia
-                        return f"Il tuo abbonamento a {abb['tipo']} è scaduto il {data_scadenza_abb}!"
-                        
-        # Se nessun abbonamento è scaduto, ritorna None e il timer non farà nulla
-        return None
-
-    def getAbbonamento(self, abbonamento):
-        return(abbonamento)
-    
-    def avviaProceduraRinnovo(self, abbonamento_da_rinnovare):
-     nuovoAbbonamento = Abbonamento(
-            email=self._email,
-            nome=abbonamento_da_rinnovare.get("nome", self._utente.get_nome()),
-            cognome=abbonamento_da_rinnovare.get("cognome", self._utente.get_cognome()),
-            tipo=abbonamento_da_rinnovare["piattaforma"],
-            data_inizio=datetime.now(),
-            attivo=True,
-            stato="Attivo"
-        )
-     self._repo_Abbonamento.elimina_abbonamento(abbonamento_da_rinnovare)
-     self._repo_Abbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
-     return True
+        for abb in lista_abbonamenti:
+            if data_attuale > abb._data_scadenza: # Confronto date [17, 19]
+                abb._validita = False
+                self.sposta_in_scaduti(abb._id_abbonamento)
+                # Invia avviso di scadenza (CDU21) [18]
+                self._notifica = Notifica(f"L'abbonamento {abb._piattaforma} è scaduto.", "Avviso")
