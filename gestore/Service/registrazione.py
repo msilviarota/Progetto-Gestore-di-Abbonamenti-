@@ -1,75 +1,68 @@
 import os
 import sys
 import json
+import random # Necessario per generare il codice identificativo (CDU3)
 
-# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
+# Calcolo del percorso radice del progetto per gestire gli import
+# Corretto l'uso di __file__ (doppio underscore)
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-# Ora puoi importare utente direttamente senza usare i punti!
-import json
-import os
-from models.utente import Utente
+# Importazioni corrette dai moduli del progetto
 from repository.repositoryUtente import RepositoryUtente
-from repository.repositoryPreferenze import RepositoryPreferenze
-
+from models.utente import Utente
+from models.notifica import Notifica
 
 class GestoreRegistrazione:
+    """
+    Rappresenta il gestore che si occupa della creazione di nuovi profili (CDU3).
+    """
 
-    def __init__(self, repoUtente: RepositoryUtente, repoPreferenze: RepositoryPreferenze,repoPagamento):
-        self._nome = None
-        self._cognome = None
-        self._eta = None
-        self._email = None
-        self._password = None
-        self._passwordValida = None
-        self._preferenze = None
-        self._repo_Utente = repoUtente
-        self._repo_Preferenze = repoPreferenze
-        self._repo_Pagamento = repoPagamento
-        return
-    """Rappresenta il «control» Gestore Registrazione"""
+    def __init__(self, repo_utente: RepositoryUtente, notifica: Notifica):
+        """Inizializza il gestore con la repository degli utenti."""
+        self._repo_utente = repo_utente
+        self._notifica = notifica
 
-    
-    def getModulo(self):
-        return ["nome", "cognome", "eta", "email", "password", "preferenze"] # In un caso reale, questo potrebbe essere un oggetto più complesso o un template HTML
+    def genera_codice_identificativo(self):
+        """Genera un codice identificativo univoco per l'utente (Requisito 1.1.2)."""
+        return f"ID-{random.randint(1000, 9999)}"
 
+    def registra_nuovo_utente(self, nome, cognome, eta, email, password, conferma_password):
+        """
+        CDU3: Valida i dati e crea un nuovo profilo utente nel database.
+        """
+        # 1. Verifica che la password e la conferma coincidano (Requisito 1.1.1)
+        if password != conferma_password:
+            self._notifica = Notifica("Le password inserite non coincidono.", "Errore")
+            return None
 
-    def inviaModulo(self, nome, cognome, eta, email, password, preferenze):
-        self._nome = nome
-        self._cognome = cognome
-        self._eta = eta
-        self._email = email
-        self._password = password
-        self._preferenze = preferenze
-        print(f"[Control] Ricevuti dati: {nome}, {cognome}, {eta}, {email}. Validazione in corso...")
-        return
+        # 2. Flusso alternativo A: Verifica se l'email è già associata a un account
+        utente_esistente = self._repo_utente.ottieni_per_email(email)
+        if utente_esistente:
+            self._notifica = Notifica("Email già registrata. Accedi o usa un'altra email.", "Errore")
+            return None
 
+        # 3. Creazione dell'oggetto Modello Utente (CDU3 - Punto 3)
+        nuovo_utente = Utente(
+            nome=nome,
+            cognome=cognome,
+            eta=int(eta),
+            email=email,
+            password=password
+        )
 
-    def inviaDatiPagamento (self, titolare, carta):
-       self._repo_Pagamento.salvaDati(titolare,carta)
-
-
-    def bloccaRegistrazione(self):
-        print("[Control] Registrazione bloccata a causa di errori.")
-        # Qui potremmo avere la logica per bloccare ulteriori tentativi di registrazione
-
-
-    def valida(self):
-        # controllo se email esiste già 
+        # 4. Salvataggio nel database tramite Repository
+        successo = self._repo_utente.aggiungi_utente(nuovo_utente)
         
-        if self._repo_Utente.verifica(self._email):
-            print("[Control] Errore : Utente già esistente .")
-            self.bloccaRegistrazione()
-            return False
-        else:
-            password_sicura = "hashed_"+ self._password
-            nuovoUtente = Utente(self._nome, self._cognome,  self._eta, self._email, password_sicura)
-            self._repo_Utente.salva_utente(nuovoUtente)
-            self._repo_Preferenze.aggiornaPreferenze(self._preferenze)
-            print("[Control]registrazione completata con successo")
-            return True
-           
+        if successo:
+            # 5. Il sistema restituisce un codice identificativo (Requisito 1.1.2)
+            codice_id = self.genera_codice_identificativo()
+            self._notifica = Notifica(f"Registrazione completata! Il tuo codice è: {codice_id}", "Successo")
+            print(f"Utente {email} registrato con successo. Codice: {codice_id}")
+            return codice_id
+        
+        self._notifica = Notifica("Errore tecnico durante il salvataggio dei dati.", "Errore")
+        return None
