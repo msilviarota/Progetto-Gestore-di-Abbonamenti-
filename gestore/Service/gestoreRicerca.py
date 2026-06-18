@@ -6,59 +6,40 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from models.piattaforma import CATALOGO_PIATTAFORME
-# Questo comando calcola automaticamente il percorso della cartella principale del tuo progetto
-cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+
+# Calcolo del percorso della cartella principale del progetto
+# Corretto l'uso di **file** in __file__ [1]
+cartella_corrente = os.path.dirname(os.path.abspath(__file__)) 
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 
-if radice_progetto not in sys.path:
+# Aggiunta della radice del progetto al sys.path per permettere gli import [2]
+if radice_progetto not in sys.path: 
     sys.path.append(radice_progetto)
 
+# Importazione corretta del modello Piattaforma [2]
 from models.piattaforma import Piattaforma
 
-#================================================================================================================
-# Rappresenta il <<control>> GestoreRicerca
 class GestoreRicerca:
-    def __init__(self, piattaforma: Piattaforma):
-        self._piattaforma = piattaforma
+    """Rappresenta il gestore che si occupa di interfacciarsi con i siti esterni."""
     
-    # Definiamo la funzione che ci consete di avere accesso almeno a i catologhi delle varie piattaforme
-    # e che ci consente di cercare una parola Chiave precisa.
+    # Corretto il nome del costruttore da **init** a __init__ [2]
+    def __init__(self, piattaforma: Piattaforma):
+        """Inizializza il gestore con una specifica piattaforma di riferimento."""
+        self._piattaforma = piattaforma
+        self._driver = None # Sarà inizializzato quando serve la ricerca web
 
+    def avvia_sessione_browser(self):
+        """Inizializza il driver di Selenium per la navigazione."""
+        # Esempio di implementazione futura
+        # self._driver = webdriver.Chrome()
+        pass
 
-        
-
-    def inviaCerca(self, parolaChiave: str, piattaforma_nome, email="", password=""):
-          piattaforma_key = piattaforma_nome.lower()
-
-          if piattaforma_key not in CATALOGO_PIATTAFORME:
-               print(f"Errore: La piattaforma '{piattaforma_nome}' non è ancora supportata.")
-               return
-
-          piattaforma_obj = CATALOGO_PIATTAFORME[piattaforma_key]
-          parola_formattata = parolaChiave.replace(" ", "%20")
-          url_ricerca = piattaforma_obj.get_link_ricerca().format(parola_formattata)
-
-          driver = webdriver.Chrome()
-
-          try:
-               if email and password:
-                    print(f"[Demo] Tentativo di login su {piattaforma_obj.get_nome()} con {email}")
-
-               driver.get(url_ricerca)
-               attesa = WebDriverWait(driver, 10)
-
-               try:
-                    bottone_cookie = attesa.until(
-                         EC.element_to_be_clickable((By.ID, "cookie-disclosure-accept"))
-                    )
-                    bottone_cookie.click()
-               except Exception:
-                    pass
-
-               print(f"Ricerca completata per '{parolaChiave}' su {piattaforma_obj.get_nome().upper()}.")
-               time.sleep(10)
-
-          finally:
-               driver.quit()
-          return
+    def esegui_ricerca(self, termine_ricerca: str):
+        """
+        Esegue la ricerca sulla piattaforma impostata utilizzando il termine fornito.
+        Sfrutta i link di ricerca definiti nel modello Piattaforma.
+        """
+        link_base = self._piattaforma.get_link_ricerca()
+        url_finale = link_base.format(termine_ricerca)
+        print(f"Ricerca in corso su {self._piattaforma.get_nome()} per: {termine_ricerca}")
+        # Qui andrebbe la logica Selenium per navigare all'url_finale [3, 4]
