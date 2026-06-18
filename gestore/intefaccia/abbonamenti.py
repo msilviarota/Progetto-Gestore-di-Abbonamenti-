@@ -4,6 +4,14 @@ from PyQt6.QtWidgets import (
     QFrame, QMessageBox, QComboBox, QCheckBox
 )
 from PyQt6.QtCore import Qt
+from Service.gestoreAbbonamenti import GestoreAbbonamenti
+from repository.repositoryAbbonamento import RepositoryAbbonamento
+from repository.repositoryDatiPagamento import RepositoryDatiPagamento
+from repository.repositoryUtente import RepositoryUtente
+from Service.gestorePrestiti import GestorePrestiti
+from repository.repositoryLog import RepositoryLog
+from models.piattaforma import Piattaforma
+from models.notifica import Notifica
 
 from stile import (
     STILE_BTN_ESCI, STILE_BTN_CHIUDI, STILE_TITOLO_PROFILO, STILE_COMBO
@@ -11,9 +19,10 @@ from stile import (
 
 
 class FinestraAbbonamenti(QDialog):
-    def __init__(self, parent=None, email=""):
+    def __init__(self, parent=None, email="",gestore_abbonamenti=None):
         super().__init__(parent)
         self.email_utente=email
+        self.gestore = gestore_abbonamenti
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 400)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
@@ -60,35 +69,17 @@ class FinestraAbbonamenti(QDialog):
         layout.addWidget(btn_chiudi, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def disdici(self, nome):
-        risposta = QMessageBox.question(
-            self, "Conferma",
-            f"Vuoi disdire {nome}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
+        risposta = QMessageBox.question(...)
         if risposta == QMessageBox.StandardButton.Yes:
-            from Service.gestoreAbbonamenti import GestoreAbbonamenti
-            from database.repositoryAbbonamento import RepositoryAbbonamento
-            from database.repositoryDatiPagamento import RepositoryDatiPagamento
-            from database.repositoryUtente import RepositoryUtente
-            from models.piattaforma import Piattaforma
-            from models.notifica import Notifica
+            self.gestore.eseguiDisdetta(nome)
+            QMessageBox.information(self, "Disdetto",f"{nome} disdetto!")
 
-            repo_utente = RepositoryUtente()
-            utente = repo_utente.getInformazioni(self.email_utente)
-            repo_abb = RepositoryAbbonamento()
-            repo_pag = RepositoryDatiPagamento()
-            piattaforma_obj = Piattaforma()
-            notifica_obj = Notifica()
-        
-            gestore = GestoreAbbonamenti(utente, repo_abb, repo_pag, piattaforma_obj, notifica_obj)
-            gestore.eseguiDisdetta(nome)
-            QMessageBox.information(self, "Disdetto", f"{nome} disdetto con successo")
-
-
+       
 class FinestraPresta(QDialog):
-    def __init__(self, parent=None, email_utente=""):
+    def __init__(self, parent=None, email_utente="", gestore_prestiti=None):
         super().__init__(parent)
         self.email_utente_corrente = email_utente
+        self.gestore = gestore_prestiti
         self.setWindowTitle("Presta Abbonamento")
         self.setFixedSize(400, 300)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
@@ -136,43 +127,26 @@ class FinestraPresta(QDialog):
         layout.addWidget(btn_annulla)
 
     def presta(self):
-        abbonamento_testo = self.combo.currentText()
+        nome_piattaforma = self.combo.currentText()
         email_amico = self.email_input.text().strip()
 
         if not email_amico:
             QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico!")
             return
 
-        mappa_id = {"Netflix": 1, "Spotify": 2, "Disney+": 3}
-        id_abbonamento = mappa_id.get(abbonamento_testo, 1)
-
-        from database.repositoryUtente import RepositoryUtente
-        from database.repositoryAbbonamento import RepositoryAbbonamento
-        from database.repositoryLog import RepositoryLog
-        from models.notifica import Notifica 
-        from Service.gestorePrestiti import GestorePrestiti
+        # LA MODIFICA: Passa il nome della piattaforma (stringa) al gestore.
+        # È compito del GestorePrestiti trovare l'ID corrispondente.
+        risultato = self.gestore.avvia_prestito(email_amico, nome_piattaforma)
         
-        repo_u = RepositoryUtente()
-        repo_a = RepositoryAbbonamento()
-        repo_l = RepositoryLog()
-        notifica_servizio = Notifica()
-        
-        gestore_prestiti = GestorePrestiti(repo_u, repo_a, repo_l, notifica_servizio)
-        
-        risultato_notifica = gestore_prestiti.avvia_prestito(email_amico, id_abbonamento)
-        
-        if risultato_notifica is not None:
-            QMessageBox.information(self, "Inviato", f"{abbonamento_testo} prestato a {email_amico} con successo")
+        if risultato:
+            QMessageBox.information(self, "Inviato", f"{nome_piattaforma} prestato a {email_amico}!")
             self.close()
         else:
-            QMessageBox.critical(
-                self, "Errore di Condivisione", "Impossibile prestare l'abbonamento.\nL'amico inserito deve avere un account registrato!"
-            )
-
-
+            QMessageBox.critical(self, "Errore", "Impossibile prestare l'abbonamento.\nL'amico deve avere un account registrato!")
 class FinestraAcquista(QDialog):
-    def __init__(self, parent=None, email=""):
+    def __init__(self, parent=None, email="", gestore_abbonamenti=None):
         super().__init__(parent)
+        self.gestore = gestore_abbonamenti
         self.email_utente = email
         self.setWindowTitle("Acquista Abbonamento")
         self.setFixedSize(450, 520)
@@ -283,12 +257,6 @@ class FinestraAcquista(QDialog):
             QMessageBox.warning(self, "Errore", "Compila tutti i campi!")
             return
         
-        from Service.gestoreAbbonamenti import GestoreAbbonamenti 
-        from database.repositoryAbbonamento import RepositoryAbbonamento
-        from database.repositoryDatiPagamento import RepositoryDatiPagamento
-        from database.repositoryUtente import RepositoryUtente
-        from models.piattaforma import Piattaforma
-        from models.notifica import Notifica
         repo_utente = RepositoryUtente()
         utente= repo_utente.getInformazioni(self.email_utente)
         repo_abb = RepositoryAbbonamento()
@@ -302,8 +270,9 @@ class FinestraAcquista(QDialog):
 
 
 class FinestraScaduti(QDialog):
-    def __init__(self, parent=None, email=""):
+    def __init__(self, parent=None, email="", gestore_abbonamenti=None):
         super().__init__(parent)
+        self.gestore = gestore_abbonamenti
         self.email_utente = email
         self.setWindowTitle("Abbonamenti Scaduti")
         self.setFixedSize(500, 500)
@@ -357,13 +326,6 @@ class FinestraScaduti(QDialog):
         btn_chiudi.setStyleSheet(STILE_BTN_CHIUDI)
         btn_chiudi.clicked.connect(self.close)
        
-        from Service.gestoreAbbonamenti import GestoreAbbonamenti
-        from database.repositoryAbbonamento import RepositoryAbbonamento
-        from database.repositoryDatiPagamento import RepositoryDatiPagamento
-        from database.repositoryUtente import RepositoryUtente
-        from models.piattaforma import Piattaforma
-        from models.notifica import Notifica
-
         repo_utente = RepositoryUtente()
         utente_obj = repo_utente.getInformazioni(self.email_utente)
         
@@ -392,14 +354,7 @@ class FinestraScaduti(QDialog):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if risposta == QMessageBox.StandardButton.Yes:
-            # 🟢 MODIFICA AGGIUNTIVA: Colleghiamo il comando reale del tuo backend
-            from Service.gestoreAbbonamenti import GestoreAbbonamenti
-            from database.repositoryAbbonamento import RepositoryAbbonamento
-            from database.repositoryDatiPagamento import RepositoryDatiPagamento
-            from database.repositoryUtente import RepositoryUtente
-            from models.piattaforma import Piattaforma
-            from models.notifica import Notifica
-
+        
             repo_utente = RepositoryUtente()
             utente_obj = repo_utente.getInformazioni(self.email_utente)
             if not utente_obj:
