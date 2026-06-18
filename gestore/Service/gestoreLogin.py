@@ -11,9 +11,9 @@ if radice_progetto not in sys.path:
 
 # Ora puoi importare utente direttamente senza usare i punti!
 from models.notifica import Notifica
-from database.repositoryUtente import RepositoryUtente
-from database.repositoryAbbonamento import RepositoryAbbonamento
-from database.repositoryLog import RepositoryLog
+from repository.repositoryUtente import RepositoryUtente
+from repository.repositoryAbbonamento import RepositoryAbbonamento
+from repository.repositoryLog import RepositoryLog
 
 class GestoreAccessi():
 
@@ -66,17 +66,24 @@ class GestoreAccessi():
 
     # Effettuiamo il login all'app
     def login(self, email, password):
-        if self._repo_Utente.getInformazioni(email) is not None and self._repo_Utente.getInformazioni(email)["password"] == self.criptaPassword(password):
-            self._repo_Log.aggiungi_log()
-            return True
-        return None
+        utente =  self._repo_Utente.getInformazioni(email)
+        if utente is not None and utente.get_password() == self.criptaPassword(password):
+            self._repo_Log.aggiungi_log("Login effettuato da :" +  email)
+            self._email = email 
+            return True 
+        return False
 
 
     # Permettimao all'utente di cambiare password, se lo desidera, una volta fatto l'accesso
     def richiestaCambioPassword(self, vecchia_password, nuova_password, conferma_nuova_password):
+        utente = self._repo_Utente.getInformazioni(self._email)
+
         if nuova_password != conferma_nuova_password:
             self.bloccaOperazione("Le nuove password non corrispondono.")
             return False
+        elif self.criptaPassword(vecchia_password) != utente.get_password():
+             self.bloccaOperazione("La vecchia password non corrisponde")
+             return False
         elif vecchia_password != self._repo_Utente.getInformazioni(self._email)["password"]:
             self.bloccaOperazione("La vecchia password non corrisponde")
             return False
@@ -103,8 +110,8 @@ class GestoreAccessi():
         return self.login(email, password)
 
 
-    def richiestaLogout(self, abbonamento):
-        if abbonamento in self._repo_Abbonamento.getAbbonamentiAttivi(self._email):
-            del self._repo_Abbonamento.abbonamenti[abbonamento]
-        print("[Control] Logout richiesto. Procedo con il logout.")
-        return True
+    def richiestaLogout(self):
+       self._email= None
+       self._password = None
+       print ("[Control]Logout effettuato.")
+       return True 

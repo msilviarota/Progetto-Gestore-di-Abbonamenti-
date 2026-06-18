@@ -22,43 +22,12 @@ class Piattaforma:
           return self.logo
      def get_categoria(self):
           return self.categoria
+     def trasmettiDati(self, nome_contenuto , dati_abbonamnento):
+          print(f"[Piattaforma]Avvio {nome_contenuto}...")
+          return True
 
 
-
-     def inviaCerca(self, parolaChiave: str, piattaforma, email="", password=""):
-          piattaforma_key = piattaforma.lower()
-
-          if piattaforma_key not in CATALOGO_PIATTAFORME:
-               print(f"Errore: La piattaforma '{piattaforma}' non è ancora supportata.")
-               return
-
-          piattaforma_obj = CATALOGO_PIATTAFORME[piattaforma_key]
-          parola_formattata = parolaChiave.replace(" ", "%20")
-          url_ricerca = piattaforma_obj.get_link_ricerca().format(parola_formattata)
-
-          driver = webdriver.Chrome()
-
-          try:
-               if email and password:
-                    print(f"[Demo] Tentativo di login su {piattaforma_obj.get_nome()} con {email}")
-
-               driver.get(url_ricerca)
-               attesa = WebDriverWait(driver, 10)
-
-               try:
-                    bottone_cookie = attesa.until(
-                         EC.element_to_be_clickable((By.ID, "cookie-disclosure-accept"))
-                    )
-                    bottone_cookie.click()
-               except Exception:
-                    pass
-
-               print(f"Ricerca completata per '{parolaChiave}' su {piattaforma_obj.get_nome().upper()}.")
-               time.sleep(10)
-
-          finally:
-               driver.quit()
-          return
+    
 
 
 CATALOGO_PIATTAFORME ={
