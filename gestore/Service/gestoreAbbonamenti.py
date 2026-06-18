@@ -10,9 +10,8 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 # Ora puoi importare utente direttamente senza usare i punti!
-from database.repositoryAbbonamento import RepositoryAbbonamento
-from database import repositoryUtente
-from database.repositoryDatiPagamento import RepositoryDatiPagamento
+from repository.repositoryAbbonamento import RepositoryAbbonamento
+from repository.repositoryDatiPagamento import RepositoryDatiPagamento
 from models.notifica import Notifica
 from models.utente import Utente
 from models.abbonamento import Abbonamento
@@ -26,12 +25,12 @@ class GestoreAbbonamenti:
     def __init__(self, utente: Utente, repoAbbonamento: RepositoryAbbonamento,
                  repoDatiPagamento: RepositoryDatiPagamento,
                  nomePiattaforma: piattaforma, notifica: Notifica):
+        self._utente = utente
         self._email = utente.get_email()
         self._repo_Abbonamento = repoAbbonamento
         self._repo_DatiPagamento = repoDatiPagamento
         self._notifica = notifica
         self._piattaforma = nomePiattaforma
-        self._abbonamentoScelto = None
         return
     
 
@@ -41,19 +40,28 @@ class GestoreAbbonamenti:
 
 
     # Riceve la scelta dell'utente e la elabora
-    def inviaScelta(self, abbonamentoScelto):
-        print(f"[Control] Ricevuto abbonamento: {abbonamentoScelto}. Elaborazione in corso...")
-        self._repo_Abbonamento.getAbbonamentiPossibili(self._email)
-        self._repo_DatiPagamento.getiDatiPagamaneto(self._email)
-        self._notifica.inviaNotifica("Abbonamento scelto: " + Abbonamento + "Dati di Pagamento" + self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
-        self._piattaforma.inviaSceltaAbbonamento(self._piattaforma.getPiattaformaScelta())        
-        self._piattaforma.inviaDatiPagamento(self._piattaforma.getPiattaformaScelta(), self._repo_DatiPagamento.getiDatiPagamaneto(self._email))
-        nuovoAbbonamento = Abbonamento(self._email, repositoryUtente.getInformazioni(self._email).get_nome(),
-                                       repositoryUtente.getInformazioni(self._email).get_cognome(),
-                                       abbonamentoScelto, datetime.now(), True, "Attivo")
+    def inviaScelta(self, abbonamentoScelto: str ):
+        # Usiamo l'oggetto utente già disponibile invece di re-importare il modulo database
+        nome = self._utente.get_nome()
+        cognome = self._utente.get_cognome()
+        
+        dati_pagamento = self._repo_DatiPagamento.getiDatiPagamaneto(self._email)
+        
+        # Logica sicura
+        nuovoAbbonamento = Abbonamento(
+            email=self._email,
+            nome=nome,
+            cognome=cognome,
+            tipo=abbonamentoScelto,
+            data_inizio=datetime.now(),
+            attivo=True,
+            stato="Attivo"
+        )
+        
         self._repo_Abbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
+        self._notifica.inviaNotifica(f"Abbonamento scelto: {abbonamentoScelto} . Pagamento: {dati_pagamento}")
+        
         return self._notifica.inviaConferma()
-
 
     # Blocca l'operazione in caso di errori o dati non validi
     def bloccaOperazione(self, errore: str):
@@ -77,7 +85,7 @@ class GestoreAbbonamenti:
     
     # Richiamiamo la funzione elimina_abbonamento per scorrere gli abbonamenti ed elimnare quello voluto
     # se presente
-    def esguiDisdetta(self, abbonamentoScelto ):
+    def esguiDisdetta(self, abbonamentoScelto: str ):
         self._repo_Abbonamento.elimina_abbonamento(abbonamentoScelto)
         return
     
@@ -127,9 +135,15 @@ class GestoreAbbonamenti:
         return(abbonamento)
     
     def avviaProceduraRinnovo(self, abbonamento_da_rinnovare):
-        nuovoAbbonamento = Abbonamento(self._email, abbonamento_da_rinnovare["nome"],
-                                       abbonamento_da_rinnovare["cognome"],
-                                       abbonamento_da_rinnovare["piattaforma"])
-        self._repo_Abbonamento.elimina_abbonamento(abbonamento_da_rinnovare)
-        self._repo_Abbonamento.salva_abbonamento(nuovoAbbonamento)
-        return
+     nuovoAbbonamento = Abbonamento(
+            email=self._email,
+            nome=abbonamento_da_rinnovare.get("nome", self._utente.get_nome()),
+            cognome=abbonamento_da_rinnovare.get("cognome", self._utente.get_cognome()),
+            tipo=abbonamento_da_rinnovare["piattaforma"],
+            data_inizio=datetime.now(),
+            attivo=True,
+            stato="Attivo"
+        )
+     self._repo_Abbonamento.elimina_abbonamento(abbonamento_da_rinnovare)
+     self._repo_Abbonamento.salva_abbonamento(self._email, nuovoAbbonamento)
+     return True
