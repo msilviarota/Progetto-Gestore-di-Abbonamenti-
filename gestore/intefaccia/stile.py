@@ -15,7 +15,7 @@ QDialog { background-color: #e8f5e9; }
 QLabel { color: #222222; } 
 """
 
-STILE_FINESTRA_PRINCIPALE = "QWidget { background-color:#F7F4EF ; }"
+STILE_FINESTRA_PRINCIPALE = "QWidget { background-color:#F7F4EF; color: #222222; } QLabel { color: #222222; }"
 
 # Stili per i pulsanti della Home Page [2]
 STILE_BTN_PROFILO = """ 
