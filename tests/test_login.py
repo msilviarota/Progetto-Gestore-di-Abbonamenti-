@@ -1,7 +1,9 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+radice_progetto = os.path.abspath(os.path.join(cartella_corrente, "..", "gestore"))
+sys.path.insert(0, radice_progetto)
 
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryLog import RepositoryLog
