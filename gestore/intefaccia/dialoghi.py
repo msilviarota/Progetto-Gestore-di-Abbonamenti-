@@ -411,6 +411,18 @@ class FinestraRicerca(QDialog):
         return risultati
 
 
+    def carica_consigli(self):
+        preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
+        if not preferenze:
+            return []
+
+        risultati = []
+        for piattaforma in CATALOGO_PIATTAFORME.values():
+            if piattaforma.categoria in [p.replace("🎵 ", "").replace("🎬 ", "").replace("📚 ", "").replace("📡 ", "").replace("⚽ ", "") for p in preferenze]:
+                risultati.append(piattaforma)
+
+        return risultati
+
 
         
 class FinestraRegistrazione(QDialog):
