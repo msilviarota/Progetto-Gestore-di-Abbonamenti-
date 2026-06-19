@@ -1,7 +1,8 @@
 import os
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget,QPixmap
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget
 from PyQt6.QtCore import Qt, QSize
 from models.piattaforma import CATALOGO_PIATTAFORME
 
