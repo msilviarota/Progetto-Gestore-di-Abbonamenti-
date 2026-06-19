@@ -1,22 +1,21 @@
 import os
 import sys
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QLineEdit, QFrame, QScrollArea, QMessageBox
 )
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import Qt
 from intefaccia.profilo import ProfiloDialog
 from intefaccia.dialoghi import FinestraRicerca, SchedaCategoria
-# Calcolo del percorso radice del progetto
+
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-# Importazione degli stili, utility e dialoghi
 from intefaccia.stile import (
-    STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA, 
+    STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA,
     STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA
 )
 from intefaccia.utils import BASE_DIR
@@ -35,13 +34,12 @@ class FinestraPrincipale(QWidget):
         self.email_utente = email
         self.gestore_preferenze = gestore_preferenze
 
-        # Configurazione finestra
         self.setWindowTitle("RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
         self.setStyleSheet(STILE_FINESTRA_PRINCIPALE)
 
-        # Mappatura delle categorie con etichetta -> nome categoria reale (Requisito 1.4)
+        # Mappatura categorie -> piattaforme reali del catalogo (Requisito 1.4)
         self.mappa_categorie = {
             "🎵 Musica": "Musica",
             "📡 Streaming": "Streaming",
@@ -49,8 +47,6 @@ class FinestraPrincipale(QWidget):
             "🎬 Video": "Video",
             "⚽ Sport": "Sport"
         }
-
-        # Costruisce, per ogni categoria, un dizionario {nome: oggetto Piattaforma}
         self.link_categorie = {
             etichetta: {
                 p.nome: p for p in CATALOGO_PIATTAFORME.values()
@@ -60,53 +56,95 @@ class FinestraPrincipale(QWidget):
         }
 
         self._build_ui()
-        self.carica_suggerimenti() # Implementazione CDU17
-        self.controlla_notifiche() # Implementazione CDU21/CDU22
+        self.carica_suggerimenti()
+        self.controlla_notifiche()
 
     def _build_ui(self):
-        """Costruisce il layout della Home Page."""
-        self.layout_principale = QVBoxLayout(self)
+        layout_principale = QVBoxLayout(self)
+        layout_principale.setContentsMargins(20, 20, 20, 20)
+        layout_principale.setSpacing(15)
 
-        # 1. Barra Superiore: Saluto, Ricerca e Profilo
-        top_bar = QHBoxLayout()
-        label_saluto = QLabel(f"Ciao, {self.nome_utente}!")
-        label_saluto.setStyleSheet(STILE_SALUTO)
-        
-        self.campo_ricerca = QLineEdit()
-        self.campo_ricerca.setPlaceholderText("Cerca un film, una serie o un brano...")
-        self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
-        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca)
+        # Barra superiore: solo il profilo, in alto a destra
+        barra_top = QHBoxLayout()
+        barra_top.addStretch()
         btn_profilo = QPushButton("👤")
         btn_profilo.setFixedSize(50, 50)
         btn_profilo.setStyleSheet(STILE_BTN_PROFILO)
         btn_profilo.clicked.connect(self.apri_profilo)
+        barra_top.addWidget(btn_profilo)
+        layout_principale.addLayout(barra_top)
 
-        top_bar.addWidget(label_saluto)
-        top_bar.addStretch()
-        top_bar.addWidget(self.campo_ricerca)
-        top_bar.addWidget(btn_profilo)
-        self.layout_principale.addLayout(top_bar)
+        # Logo centrato
+        logo = QLabel()
+        percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
+        if os.path.exists(percorso_logo):
+            pixmap = QPixmap(percorso_logo)
+            logo.setPixmap(
+                pixmap.scaled(140, 140, Qt.AspectRatioMode.KeepAspectRatio,
+                              Qt.TransformationMode.SmoothTransformation)
+            )
+        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(logo)
 
-        # 2. Sezione Categorie (CDU4)
-        self.layout_principale.addWidget(QLabel("Esplora per Categoria"))
-        layout_cat = QHBoxLayout()
-        for cat_nome in self.link_categorie.keys():
-            btn_cat = QPushButton(cat_nome)
-            btn_cat.setStyleSheet(STILE_BTN_CATEGORIA)
-            btn_cat.clicked.connect(lambda ch, c=cat_nome: self.apri_categoria(c))
-            layout_cat.addWidget(btn_cat)
-        self.layout_principale.addLayout(layout_cat)
+        # Saluto centrato
+        saluto = QLabel(f"Ciao, {self.nome_utente}!")
+        saluto.setStyleSheet(STILE_SALUTO)
+        saluto.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(saluto)
 
-        # 3. Area Suggerimenti (CDU17)
-        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te"))
+        # Barra di ricerca centrata
+        barra_ricerca = QHBoxLayout()
+        barra_ricerca.addStretch()
+        self.campo_ricerca = QLineEdit()
+        self.campo_ricerca.setPlaceholderText("🔍  Cerca un film, una serie o un brano...")
+        self.campo_ricerca.setFixedWidth(400)
+        self.campo_ricerca.setFixedHeight(40)
+        self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
+        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca)
+        barra_ricerca.addWidget(self.campo_ricerca)
+        barra_ricerca.addStretch()
+        layout_principale.addLayout(barra_ricerca)
+
+        layout_principale.addStretch()
+
+        # Pulsanti categoria, emoji sopra + testo sotto
+        layout_categorie = QHBoxLayout()
+        layout_categorie.setSpacing(12)
+        for etichetta in self.link_categorie.keys():
+            emoji, nome = etichetta.split(" ", 1)
+            btn = QPushButton(f"{emoji}\n{nome}")
+            btn.setFixedHeight(110)
+            btn.setStyleSheet(STILE_BTN_CATEGORIA)
+            btn.clicked.connect(lambda ch, c=etichetta: self.apri_categoria(c))
+            layout_categorie.addWidget(btn)
+        layout_principale.addLayout(layout_categorie)
+
+        # Riga extra: Preferenze, Acquista, Scaduti
+        layout_extra = QHBoxLayout()
+        layout_extra.setSpacing(12)
+        extra = [
+            ("⭐  Preferenze", self.apri_preferenze),
+            ("🛒  Acquista", self.apri_acquista),
+            ("⏰  Scaduti", self.apri_scaduti),
+        ]
+        for nome, callback in extra:
+            btn = QPushButton(nome)
+            btn.setFixedHeight(70)
+            btn.setStyleSheet(STILE_BTN_EXTRA)
+            btn.clicked.connect(callback)
+            layout_extra.addWidget(btn)
+        layout_principale.addLayout(layout_extra)
+
+        # Area Suggerimenti (CDU17)
+        layout_principale.addWidget(QLabel("Contenuti Consigliati per Te"))
         self.scroll_suggerimenti = QScrollArea()
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
         self.scroll_suggerimenti.setWidget(self.container_suggerimenti)
         self.scroll_suggerimenti.setWidgetResizable(True)
-        self.layout_principale.addWidget(self.scroll_suggerimenti)
+        layout_principale.addWidget(self.scroll_suggerimenti)
 
-        self.layout_principale.addStretch()
+        layout_principale.addStretch()
 
     def apri_profilo(self):
         """CDU7: Apre il pannello di gestione del profilo."""
@@ -117,7 +155,6 @@ class FinestraPrincipale(QWidget):
         """CDU4: Avvia la ricerca globale interrogando le piattaforme."""
         testo = self.campo_ricerca.text()
         if testo:
-            # Aggrega i risultati e li mostra nella finestra dedicata
             dialogo = FinestraRicerca(testo, self)
             dialogo.exec()
 
@@ -127,22 +164,43 @@ class FinestraPrincipale(QWidget):
         dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self)
         dialogo.exec()
 
+    def apri_preferenze(self):
+        """CDU5: Apre la finestra per impostare le categorie preferite."""
+        from intefaccia.preferenze import FinestraPreferenze
+        finestra = FinestraPreferenze(self.gestore_preferenze, self.email_utente, self)
+        finestra.exec()
+
+    def apri_acquista(self):
+        """CDU1: Acquisto abbonamento (collegamento al backend in arrivo)."""
+        QMessageBox.information(
+            self, "In arrivo",
+            "La schermata di acquisto sarà collegata al backend abbonamenti a breve."
+        )
+
+    def apri_scaduti(self):
+        """CDU14/CDU19: Gestione abbonamenti scaduti (collegamento al backend in arrivo)."""
+        QMessageBox.information(
+            self, "In arrivo",
+            "La schermata degli abbonamenti scaduti sarà collegata al backend a breve."
+        )
+
     def carica_suggerimenti(self):
         """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
-        # Se le preferenze sono assenti, il sistema notifica l'assenza
-        if not self.gestore_preferenze or not self.gestore_preferenze.ottieni_preferenze(self.email_utente):
+        if not self.gestore_preferenze:
             self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!"))
             return
 
-        # Simula il caricamento dei suggerimenti basati sull'algoritmo di matching
-        suggerimenti = ["Film d'Azione (Netflix)", "Pop Hits (Spotify)", "Documentari (Disney+)"]
+        suggerimenti = self.gestore_preferenze.genera_suggerimenti(self.email_utente)
+        if not suggerimenti:
+            self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!"))
+            return
+
         for s in suggerimenti:
-            btn_sug = QPushButton(s)
+            btn_sug = QPushButton(str(s))
             btn_sug.setStyleSheet(STILE_BTN_EXTRA)
             self.layout_suggerimenti.addWidget(btn_sug)
 
     def controlla_notifiche(self):
         """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
-        # Esempio: Notifica periodica ogni settimana per le preferenze
         messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
         QMessageBox.information(self, "Avviso di Sistema", messaggio)
