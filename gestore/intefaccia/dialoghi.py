@@ -30,15 +30,83 @@ class SchedaCategoria(QDialog):
             btn.clicked.connect(lambda ch, p=piattaforma: webbrowser.open(p.link_login))
             layout.addWidget(btn)
 
-class FinestraRicerca(QDialog):
-    """Visualizza i risultati della ricerca globale (CDU4) [4]."""
-    def __init__(self, testo, parent=None):
+class FinestraCambiaPassword(QDialog):
+    """Modulo completo per cambiare la password (CDU9)."""
+    def __init__(self, email_utente, gestore_profilo, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"Risultati per: {testo}")
-        self.setFixedSize(400, 500)
+
+        self.email_utente = email_utente
+        self.gestore_profilo = gestore_profilo
+
+        self.setWindowTitle("Cambia Password")
+        self.setFixedSize(420, 320)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(f"Risultati trovati per '{testo}':"))
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("🔑 Cambia Password")
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        # Vecchia password
+        layout.addWidget(QLabel("Vecchia password:"))
+        self.vecchia_input = QLineEdit()
+        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.vecchia_input)
+
+        # Nuova password
+        layout.addWidget(QLabel("Nuova password:"))
+        self.nuova_input = QLineEdit()
+        self.nuova_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.nuova_input)
+
+        # Conferma
+        layout.addWidget(QLabel("Conferma nuova password:"))
+        self.conferma_input = QLineEdit()
+        self.conferma_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.conferma_input)
+
+        btn_salva = QPushButton("Salva")
+        btn_salva.clicked.connect(self.salva)
+        layout.addWidget(btn_salva)
+
+    def salva(self):
+        vecchia = self.vecchia_input.text()
+        nuova = self.nuova_input.text()
+        conferma = self.conferma_input.text()
+
+        if not vecchia or not nuova or not conferma:
+            QMessageBox.warning(self, "Errore", "Compila tutti i campi.")
+            return
+
+        if nuova != conferma:
+            QMessageBox.warning(self, "Errore", "Le password non coincidono.")
+            return
+
+        if len(nuova) < 6:
+            QMessageBox.warning(self, "Errore", "La password deve avere almeno 6 caratteri.")
+            return
+
+        successo = self.gestore_profilo.cambia_password_utente(
+            self.email_utente,
+            vecchia,
+            nuova
+        )
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Password cambiata correttamente.")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "La vecchia password non è corretta.")
+
 
 class RegisterWindow(QDialog):
     """Gestisce la creazione di un nuovo account (CDU3) [5]."""
