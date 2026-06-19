@@ -158,8 +158,8 @@ class ProfiloDialog(QDialog):
         finestra.exec()
 
     def apri_presta(self):
-
-        finestra = FinestraPrestitoAbbonamento(self.gestore_abbonamenti, self)
+        gestore_abbonamenti = getattr(self.finestra_principale, "gestore_abbonamenti", None)
+        finestra = FinestraPrestitoAbbonamento(gestore_abbonamenti, self)
         finestra.exec()
 
 
