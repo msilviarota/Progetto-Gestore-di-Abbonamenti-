@@ -30,17 +30,9 @@ class Piattaforma:
     def link_login(self):
         return self._link_login
 
-    def cerca(self, testo: str):
-        """Restituisce i contenuti che contengono il testo nel titolo."""
-        testo = testo.lower()
-        risultati = []
-
-        for contenuto in self.catalogo:
-            if testo in contenuto.titolo.lower():
-                risultati.append(contenuto)
-
-        return risultati
-
+    @property
+    def categoria(self):
+        return self._categoria
 
     def trasmettiDati(self, nome_contenuto, dati_abbonamento):
         """
