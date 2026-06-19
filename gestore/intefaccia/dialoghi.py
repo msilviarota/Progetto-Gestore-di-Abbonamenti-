@@ -1,7 +1,7 @@
 import os
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout
 from PyQt6.QtCore import Qt, QSize
 
 # Configurazione del path per permettere l'importazione dei moduli del progetto
@@ -14,22 +14,39 @@ from intefaccia.stile import *
 from intefaccia.utils import scarica_logo
 from models.abbonamento import Abbonamento
 class SchedaCategoria(QDialog):
-    """Mostra le piattaforme di una categoria e permette l'avvio (CDU18) [3]."""
-    def __init__(self, titolo, servizi, email_utente, parent=None):
+    """Mostra le piattaforme di una categoria, permette l'avvio (CDU18) e l'acquisto (CDU1)."""
+    def __init__(self, titolo, servizi, email_utente, gestore_abbonamenti, parent=None):
         super().__init__(parent)
         self.setWindowTitle(titolo)
         self.setMinimumSize(400, 500)
         self.setStyleSheet(STILE_SCHEDA_CATEGORIA)
+        self.gestore_abbonamenti = gestore_abbonamenti
+
         layout = QVBoxLayout(self)
         for nome, piattaforma in servizi.items():
+            riga = QHBoxLayout()
+
             btn = QPushButton(nome.capitalize())
             icona = scarica_logo(piattaforma.logo)
             if icona:
                 btn.setIcon(icona)
                 btn.setIconSize(QSize(100, 30))
             btn.clicked.connect(lambda ch, p=piattaforma: webbrowser.open(p.link_login))
-            layout.addWidget(btn)
+            riga.addWidget(btn)
 
+            btn_acquista = QPushButton("🛒 Acquista")
+            btn_acquista.clicked.connect(lambda ch, p=piattaforma: self.apri_acquisto(p))
+            riga.addWidget(btn_acquista)
+
+            layout.addLayout(riga)
+
+    def apri_acquisto(self, piattaforma):
+        if not self.gestore_abbonamenti:
+            QMessageBox.warning(self, "Errore", "Servizio abbonamenti non disponibile.")
+            return
+        self.gestore_abbonamenti._piattaforma = piattaforma
+        finestra = FinestraAcquisto(self.gestore_abbonamenti, self)
+        finestra.exec()
 class FinestraCambiaPassword(QDialog):
     """Modulo completo per cambiare la password (CDU9)."""
     def __init__(self, email_utente, gestore_profilo, parent=None):
