@@ -75,7 +75,17 @@ class FinestraPrincipale(QWidget):
         btn_profilo.clicked.connect(self.apri_profilo)
         barra_top.addWidget(btn_profilo)
         layout_principale.addLayout(barra_top)
+        
+        titolo_consigli = QLabel("✨ Consigliati per te")
+        titolo_consigli.setStyleSheet("font-size: 20px; font-weight: bold; margin-top: 20px;")
+        layout_principale.addWidget(titolo_consigli)
 
+        self.area_consigli = QVBoxLayout()
+        layout_principale.addLayout(self.area_consigli)
+
+        self.aggiorna_consigli()
+        
+        
         # Logo centrato
         logo = QLabel()
         percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
