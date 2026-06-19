@@ -159,3 +159,14 @@ class FinestraModificaPagamento(QDialog):
         btn = QPushButton("Salva")
         btn.clicked.connect(self.accept)
         layout.addWidget(btn)
+        
+class FinestraRicerca(QDialog):
+    """Visualizza i risultati della ricerca globale (CDU4)."""
+    def __init__(self, testo, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(f"Risultati per: {testo}")
+        self.setFixedSize(400, 500)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(f"Risultati trovati per '{testo}':"))
