@@ -338,4 +338,47 @@ class FinestraRegistrazione(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Email già registrata.")
+            
+class FinestraRecupero(QDialog):
+    def __init__(self, gestore_login, parent=None):
+        super().__init__(parent)
+
+        self.gestore_login = gestore_login
+
+        self.setWindowTitle("Recupero Password")
+        self.setFixedSize(420, 250)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("🔑 Recupero Password")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        layout.addWidget(titolo)
+
+        self.input_email = QLineEdit()
+        self.input_email.setPlaceholderText("Inserisci la tua email")
+        layout.addWidget(self.input_email)
+
+        btn_invia = QPushButton("Invia nuova password")
+        btn_invia.clicked.connect(self.recupera)
+        layout.addWidget(btn_invia)
+
+    def recupera(self):
+        email = self.input_email.text()
+
+        if not email:
+            QMessageBox.warning(self, "Errore", "Inserisci un'email.")
+            return
+
+        successo = self.gestore_login.recupera_password(email)
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Nuova password inviata!")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Email non trovata.")
+
 
