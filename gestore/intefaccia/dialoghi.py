@@ -119,9 +119,12 @@ class FinestraRecuperoPassword(QDialog):
         self.setFixedSize(420, 260)
         self.setStyleSheet("""
          QDialog { background-color: #e8f5e9; }
+         QLabel {
+         color: black !important;
+         font-size: 14px;}
          QLineEdit {
          color: black !important;
-         background-color: black !important;
+         background-color: white !important;
          border: 1px solid #888;
          padding: 6px;
          border-radius: 6px;}
@@ -134,6 +137,7 @@ class FinestraRecuperoPassword(QDialog):
          font-weight: bold;}
          QPushButton:hover {
          background-color: #c8c8c8 !important;}""")
+
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
