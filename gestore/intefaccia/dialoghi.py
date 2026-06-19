@@ -7,6 +7,7 @@ from PyQt6.QtCore import Qt, QSize
 from models.piattaforma import CATALOGO_PIATTAFORME
 
 
+
 # Configurazione del path per permettere l'importazione dei moduli del progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.dirname(cartella_corrente)
@@ -345,7 +346,13 @@ class FinestraRicerca(QDialog):
 
                 # Icona piattaforma
                 icona = QLabel()
-                icona.setPixmap(QPixmap(r["logo"]).scaled(60, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                icona.setPixmap(
+                    QPixmap(r["logo"]).scaled(
+                      60,
+                     60,
+                     Qt.AspectRatioMode.KeepAspectRatio,
+                     Qt.TransformationMode.SmoothTransformation ))
+
                 card_layout.addWidget(icona)
 
                 # Testo
