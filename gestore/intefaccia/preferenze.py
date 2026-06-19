@@ -30,6 +30,26 @@ class FinestraPreferenze(QDialog):
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
+        self.setStyleSheet("""
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+                border: 2px solid black;
+                border-radius: 4px;
+                background: white;
+            }
+
+            QCheckBox::indicator:hover {
+                border: 2px solid #333;
+            }
+
+            QCheckBox::indicator:checked {
+                background-color: black;
+                image: none;
+            }
+            """)
+
+
         titolo = QLabel("Le mie Preferenze")
         titolo.setStyleSheet(STILE_TITOLO_PROFILO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
