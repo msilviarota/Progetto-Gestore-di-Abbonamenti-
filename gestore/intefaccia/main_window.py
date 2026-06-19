@@ -8,6 +8,7 @@ from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import Qt
 from intefaccia.profilo import ProfiloDialog
 from intefaccia.dialoghi import FinestraRicerca, SchedaCategoria
+from intefaccia.dialoghi import FinestraAcquisto
 
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
@@ -176,10 +177,8 @@ class FinestraPrincipale(QWidget):
 
     def apri_acquista(self):
         """CDU1: Acquisto abbonamento (collegamento al backend in arrivo)."""
-        QMessageBox.information(
-            self, "In arrivo",
-            "La schermata di acquisto sarà collegata al backend abbonamenti a breve."
-        )
+        finestra = FinestraAcquisto(self.gestore_abbonamenti,self)
+        finestra.exec
 
     def apri_scaduti(self):
         """CDU14/CDU19: Gestione abbonamenti scaduti (collegamento al backend in arrivo)."""
