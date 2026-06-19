@@ -19,8 +19,7 @@ class ProfiloDialog(QDialog):
         self.finestra_principale = finestra_principale
         self.setWindowTitle("Il mio Account")
         self.setFixedSize(430, 650)
-        self.setStyleSheet("""QDialog{background-color:red;}
-                           QWidget{background_color:red;}""")
+        self.setStyleSheet(STILE_DIALOGO_PROFILO)
         self._build_ui()
 
     def _build_ui(self):
