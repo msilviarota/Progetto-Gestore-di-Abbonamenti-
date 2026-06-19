@@ -6,7 +6,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QFont, QPixmap, QIcon
 from PyQt6.QtCore import Qt
-
+from intefaccia.dialoghi import FinestraRegistrazione
+from intefaccia.dialoghi import FinestraRecuperoPassword
 # Configurazione dei percorsi per gestire gli import dal progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
@@ -113,9 +114,9 @@ class LoginWindow(QWidget):
 
         if self.gestore_login:
             risultato = self.gestore_login.verifica_accesso(email, password)
-        if not risultato:
-            QMessageBox.warning(self, "Errore", "Email o password errati.")
-            return
+            if not risultato:
+                QMessageBox.warning(self, "Errore", "Email o password errati.")
+                return
             nome_utente = risultato.get("nome", "Utente")
         else:
             nome_utente = "Utente"
@@ -159,10 +160,10 @@ class LoginWindow(QWidget):
 
     def apri_registrazione(self):
         """CDU3: Apre la finestra di registrazione."""
-        self.reg = RegisterWindow()
-        self.reg.show()
+        self.reg = FinestraRegistrazione(self.gestore_login,self)
+        self.reg.exec()
 
     def apri_recupero(self):
         """CDU8: Apre la finestra per il recupero password."""
-        self.rec = FinestraRecuperoPassword()
-        self.rec.show()
+        self.rec = FinestraRecuperoPassword(self.gestore_login,self)
+        self.rec.exec()
