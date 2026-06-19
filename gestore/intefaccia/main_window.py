@@ -36,9 +36,9 @@ class FinestraPrincipale(QWidget):
 
         # Configurazione finestra
         self.setWindowTitle("RelaxApp")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png"))) [2]
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png"))) 
         self.showMaximized()
-        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE) [3]
+        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE) 
 
         # Mappatura completa delle categorie e piattaforme (Requisito 1.4)
         self.link_categorie = {
@@ -78,17 +78,16 @@ class FinestraPrincipale(QWidget):
         # 1. Barra Superiore: Saluto, Ricerca e Profilo
         top_bar = QHBoxLayout()
         label_saluto = QLabel(f"Ciao, {self.nome_utente}!")
-        label_saluto.setStyleSheet(STILE_SALUTO) [5]
+        label_saluto.setStyleSheet(STILE_SALUTO) 
         
         self.campo_ricerca = QLineEdit()
         self.campo_ricerca.setPlaceholderText("Cerca un film, una serie o un brano...")
         self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
-        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca) [6]
-
+        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca) 
         btn_profilo = QPushButton("👤")
         btn_profilo.setFixedSize(50, 50)
         btn_profilo.setStyleSheet(STILE_BTN_PROFILO)
-        btn_profilo.clicked.connect(self.apri_profilo) [7]
+        btn_profilo.clicked.connect(self.apri_profilo) 
 
         top_bar.addWidget(label_saluto)
         top_bar.addStretch()
@@ -107,7 +106,7 @@ class FinestraPrincipale(QWidget):
         self.layout_principale.addLayout(layout_cat)
 
         # 3. Area Suggerimenti (CDU17)
-        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te")) [8]
+        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te")) 
         self.scroll_suggerimenti = QScrollArea()
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
@@ -119,7 +118,7 @@ class FinestraPrincipale(QWidget):
 
     def apri_profilo(self):
         """CDU7: Apre il pannello di gestione del profilo."""
-        dialogo = ProfiloDialog(self) [9, 10]
+        dialogo = ProfiloDialog(self) 
         dialogo.exec()
 
     def esegui_ricerca(self):
@@ -127,13 +126,13 @@ class FinestraPrincipale(QWidget):
         testo = self.campo_ricerca.text()
         if testo:
             # Aggrega i risultati e li mostra nella finestra dedicata [11]
-            dialogo = FinestraRicerca(testo, self) [12, 13]
+            dialogo = FinestraRicerca(testo, self) 
             dialogo.exec()
 
     def apri_categoria(self, nome_categoria):
         """CDU18: Mostra le piattaforme per avviare la riproduzione."""
         servizi = self.link_categorie.get(nome_categoria, [])
-        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self) [12, 13]
+        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self) 
         dialogo.exec()
 
     def carica_suggerimenti(self):
