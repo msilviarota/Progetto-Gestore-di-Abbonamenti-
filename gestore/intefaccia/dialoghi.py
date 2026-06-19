@@ -118,29 +118,22 @@ class FinestraRecuperoPassword(QDialog):
         self.setWindowTitle("Recupero Password")
         self.setFixedSize(420, 260)
         self.setStyleSheet("""
-            QDialog { background-color: #e8f5e9; }
-
-            QLineEdit {
-                color: black;
-                background-color: white;
-                border: 1px solid #888;
-                padding: 6px;
-                border-radius: 6px;
-            }
-
-            QPushButton {
-                color: black;
-                background-color: #dcdcdc;
-                border: 1px solid #555;
-                padding: 8px;
-                border-radius: 6px;
-                font-weight: bold;
-            }
-
-            QPushButton:hover {
-                background-color: #c8c8c8;
-            }
-        """)
+         QDialog { background-color: #e8f5e9; }
+         QLineEdit {
+         color: black !important;
+         background-color: white !important;
+         border: 1px solid #888;
+         padding: 6px;
+         border-radius: 6px;}
+         QPushButton {
+         color: black !important;
+         background-color: #dcdcdc !important;
+         border: 1px solid #555;
+         padding: 8px;
+         border-radius: 6px;
+         font-weight: bold;}
+         QPushButton:hover {
+         background-color: #c8c8c8 !important;}""")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
