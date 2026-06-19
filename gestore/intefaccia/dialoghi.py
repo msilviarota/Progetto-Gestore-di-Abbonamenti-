@@ -413,7 +413,7 @@ class FinestraAcquisto(QDialog):
         layout.addWidget(QLabel("Metodo di pagamento registrato:"))
 
         carta = self.gestore_abbonamenti.repoDatiPagamento.ottieni_numero_carta(
-            self.gestore_abbonamenti.utente.email
+            self.gestore_abbonamenti.email
         )
 
         if carta:
