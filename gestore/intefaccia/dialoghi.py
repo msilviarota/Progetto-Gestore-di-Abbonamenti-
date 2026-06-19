@@ -246,6 +246,7 @@ class FinestraRicerca(QDialog):
 
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(f"Risultati trovati per '{testo}':"))
+        layout.addStretch()
         
 class FinestraRegistrazione(QDialog):
     def __init__(self, gestore_login, parent=None):
@@ -283,6 +284,7 @@ class FinestraRegistrazione(QDialog):
         btn_registra = QPushButton("Crea account")
         btn_registra.clicked.connect(self.registra)
         layout.addWidget(btn_registra)
+
 
     def registra(self):
         nome = self.input_nome.text()
