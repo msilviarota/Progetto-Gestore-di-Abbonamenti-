@@ -28,12 +28,13 @@ class FinestraPrincipale(QWidget):
     Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
     """
 
-    def __init__(self, gestore_profilo,nome="Utente", email="utente@email.com", gestore_preferenze=None, parent=None):
+    def __init__(self, gestore_profilo,gestore_abbonamenti,nome="Utente", email="utente@email.com", gestore_preferenze=None, parent=None):
         super().__init__()
         self.nome_utente = nome
         self.email_utente = email
         self.gestore_preferenze = gestore_preferenze
         self.gestore_profilo = gestore_profilo
+        self.gestore_abbonamenti = gestore_abbonamenti
 
         self.setWindowTitle("RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
