@@ -10,6 +10,8 @@ from intefaccia.stile import (
 )
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraModificaPagamento
+from intefaccia.dialoghi import FinestraAbbonamenti
+
 class ProfiloDialog(QDialog):
     """Hub per la gestione dell'account (CDU7, CDU9, CDU15, CDU16)."""
 
@@ -149,11 +151,10 @@ class ProfiloDialog(QDialog):
 
 
     def apri_abbonamenti(self):
-        from PyQt6.QtWidgets import QMessageBox
-        QMessageBox.information(
-            self, "In arrivo",
-            "La sezione 'I miei abbonamenti' sarà collegata al backend a breve."
-        )
+       
+        gestore_abbonamenti = getattr(self.finestra_principale, "gestore_abbonamenti", None)
+        finestra = FinestraAbbonamenti(gestore_abbonamenti, parent=self)
+        finestra.exec()
 
     def apri_presta(self):
         from intefaccia.dialoghi import FinestraModificaPagamento

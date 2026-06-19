@@ -548,3 +548,90 @@ class FinestraScaduti(QDialog):
             self.carica_scaduti()
         else:
             QMessageBox.warning(self, "Errore", "Impossibile rimuovere l'abbonamento.")
+
+class FinestraAbbonamenti(QDialog):
+    """Mostra tutti gli abbonamenti dell'utente, attivi e scaduti, e permette la disdetta (CDU13, CDU2)."""
+    def __init__(self, gestore_abbonamenti, parent=None):
+        super().__init__(parent)
+        self.gestore_abbonamenti = gestore_abbonamenti
+
+        self.setWindowTitle("I miei Abbonamenti")
+        self.setFixedSize(450, 450)
+        self.setStyleSheet("""
+            QDialog { background-color: #e8f5e9; }
+            QLabel { color: black; font-size: 14px; }
+            QPushButton {
+                color: black;
+                background-color: #dcdcdc;
+                border: 1px solid #555;
+                padding: 6px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #c8c8c8; }
+        """)
+
+        layout_principale = QVBoxLayout(self)
+        layout_principale.setContentsMargins(20, 20, 20, 20)
+        layout_principale.setSpacing(12)
+
+        titolo = QLabel("📋 I miei Abbonamenti")
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        layout_principale.addWidget(sep)
+
+        self.area_scroll = QScrollArea()
+        self.area_scroll.setWidgetResizable(True)
+        self.contenitore = QWidget()
+        self.layout_lista = QVBoxLayout(self.contenitore)
+        self.area_scroll.setWidget(self.contenitore)
+        layout_principale.addWidget(self.area_scroll)
+
+        self.carica_abbonamenti()
+
+    def carica_abbonamenti(self):
+        while self.layout_lista.count():
+            item = self.layout_lista.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        if not self.gestore_abbonamenti:
+            self.layout_lista.addWidget(QLabel("Servizio abbonamenti non disponibile."))
+            return
+
+        abbonamenti = self.gestore_abbonamenti.ottieni_tutti()
+
+        if not abbonamenti:
+            self.layout_lista.addWidget(QLabel("Non hai ancora nessun abbonamento."))
+            return
+
+        for abb in abbonamenti:
+            riga = QFrame()
+            riga.setStyleSheet("background-color: white; border-radius: 8px; padding: 8px;")
+            riga_layout = QHBoxLayout(riga)
+
+            testo = QLabel(
+                f"{abb['piattaforma'].capitalize()}  —  {abb['stato']}\n"
+                f"Scadenza: {abb['data_scadenza']}"
+            )
+            riga_layout.addWidget(testo)
+
+            if abb["stato"] == "Attivo":
+                btn_disdici = QPushButton("Disdici")
+                btn_disdici.clicked.connect(lambda ch, id_abb=abb["id_abbonamento"]: self.disdici(id_abb))
+                riga_layout.addWidget(btn_disdici)
+
+            self.layout_lista.addWidget(riga)
+
+    def disdici(self, id_abbonamento):
+        successo = self.gestore_abbonamenti.disdisci_abbonamento(id_abbonamento)
+        if successo:
+            QMessageBox.information(self, "Disdetto", "Rinnovo automatico interrotto.")
+            self.carica_abbonamenti()
+        else:
+            QMessageBox.warning(self, "Errore", "Impossibile disdire l'abbonamento.")

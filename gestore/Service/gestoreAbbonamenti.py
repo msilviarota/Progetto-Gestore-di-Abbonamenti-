@@ -100,4 +100,7 @@ class GestoreAbbonamenti:
     def ottieni_scaduti(self):
         """CDU14/CDU19: Restituisce solo gli abbonamenti nella sezione 'Scaduti' dell'utente."""
         tutti = self._repo_Abbonamento.ottieni_per_utente(self._email_utente)
-        return [abb for abb in tutti if abb.get("sezione") == "Scaduti"]            
+        return [abb for abb in tutti if abb.get("sezione") == "Scaduti"] 
+    def ottieni_tutti(self):
+        """CDU13: Restituisce tutti gli abbonamenti (attivi e scaduti) dell'utente."""
+        return self._repo_Abbonamento.ottieni_per_utente(self._email_utente)           
