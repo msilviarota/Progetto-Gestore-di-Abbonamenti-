@@ -136,7 +136,10 @@ class FinestraPrincipale(QWidget):
         layout_principale.addLayout(layout_extra)
 
         # Area Suggerimenti (CDU17)
-        layout_principale.addWidget(QLabel("Contenuti Consigliati per Te"))
+        # Area Suggerimenti (CDU17)
+        titolo_suggerimenti = QLabel("Contenuti Consigliati per Te")
+        titolo_suggerimenti.setStyleSheet("color: #222222; font-size: 16px; font-weight: bold;")
+        layout_principale.addWidget(titolo_suggerimenti)
         self.scroll_suggerimenti = QScrollArea()
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
@@ -187,18 +190,17 @@ class FinestraPrincipale(QWidget):
     def carica_suggerimenti(self):
         """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
         if not self.gestore_preferenze:
-            self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!"))
+            label_vuoto = QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!")
+            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            self.layout_suggerimenti.addWidget(label_vuoto)
             return
 
         suggerimenti = self.gestore_preferenze.genera_suggerimenti(self.email_utente)
         if not suggerimenti:
-            self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!"))
+            label_vuoto = QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!")
+            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            self.layout_suggerimenti.addWidget(label_vuoto)
             return
-
-        for s in suggerimenti:
-            btn_sug = QPushButton(str(s))
-            btn_sug.setStyleSheet(STILE_BTN_EXTRA)
-            self.layout_suggerimenti.addWidget(btn_sug)
 
     def controlla_notifiche(self):
         """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
