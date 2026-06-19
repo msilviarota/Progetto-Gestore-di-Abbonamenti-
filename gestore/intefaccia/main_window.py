@@ -122,14 +122,28 @@ class FinestraPrincipale(QWidget):
         # Pulsanti categoria, emoji sopra + testo sotto
         layout_categorie = QHBoxLayout()
         layout_categorie.setSpacing(12)
+
+        # Ottieni le categorie consigliate
+        categorie_star = self.categorie_consigliate()
+
         for etichetta in self.link_categorie.keys():
             emoji, nome = etichetta.split(" ", 1)
-            btn = QPushButton(f"{emoji}\n{nome}")
+
+            # Se la categoria è consigliata → aggiungi la stellina
+            if nome in categorie_star:
+                nome_visualizzato = f"⭐ {nome}"
+            else:
+                nome_visualizzato = nome
+
+            btn = QPushButton(f"{emoji}\n{nome_visualizzato}")
             btn.setFixedHeight(110)
             btn.setStyleSheet(STILE_BTN_CATEGORIA)
             btn.clicked.connect(lambda ch, c=etichetta: self.apri_categoria(c))
             layout_categorie.addWidget(btn)
+
         layout_principale.addLayout(layout_categorie)
+
+
 
         # Riga extra: Preferenze, Acquista, Scaduti
         layout_extra = QHBoxLayout()
@@ -247,6 +261,25 @@ class FinestraPrincipale(QWidget):
         """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
         messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
         QMessageBox.information(self, "Avviso di Sistema", messaggio)
+    def categorie_consigliate(self):
+        """
+        Restituisce l'elenco delle categorie che hanno almeno una piattaforma consigliata.
+        """
+        preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
+        if not preferenze:
+            return []
+
+        # Normalizza le categorie (rimuove emoji)
+        categorie_pulite = [p.split(" ", 1)[1] if " " in p else p for p in preferenze]
+
+        categorie_trovate = set()
+
+        for piattaforma in CATALOGO_PIATTAFORME.values():
+            if piattaforma.categoria.lower() in [c.lower() for c in categorie_pulite]:
+                categorie_trovate.add(piattaforma.categoria)
+
+        return list(categorie_trovate)
+
 
 class FinestraCambiaCarta(QDialog):
     """Modulo completo per cambiare il numero della carta (simile al cambio password)."""
