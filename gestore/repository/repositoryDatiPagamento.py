@@ -49,6 +49,13 @@ class RepositoryDatiPagamento:
         """Recupera i dati di pagamento associati a una specifica email."""
         return self._database.get(email)
 
+    def ottieni_numero_carta(self, email):
+        """Restituisce il numero della carta associata all'utente."""
+        dati = self._database.get(email)
+        if not dati:
+            return None
+        return dati.get("numero_carta")
+
     def aggiornaDatiPagamento(self, email, dati: DatiPagamento):
         """
         CDU16: Modifica i dati di pagamento sovrascrivendo i precedenti.
