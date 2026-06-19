@@ -342,3 +342,108 @@ class FinestraRegistrazione(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Email già registrata.")
+class FinestraAcquisto(QDialog):
+    """Schermata completa per acquistare un abbonamento (CDU15)."""
+    def __init__(self, gestore_abbonamenti, parent=None):
+        super().__init__(parent)
+
+        self.gestore_abbonamenti = gestore_abbonamenti
+
+        self.setWindowTitle("Acquista Abbonamento")
+        self.setFixedSize(450, 420)
+        self.setStyleSheet("""
+            QDialog { background-color: #e8f5e9; }
+
+            QLabel {
+                color: black;
+                font-size: 15px;
+            }
+
+            QLineEdit {
+                color: black;
+                background-color: white;
+                border: 1px solid #888;
+                padding: 6px;
+                border-radius: 6px;
+            }
+
+            QPushButton {
+                color: black;
+                background-color: #dcdcdc;
+                border: 1px solid #555;
+                padding: 10px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+
+            QPushButton:hover {
+                background-color: #c8c8c8;
+            }
+        """)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        # Titolo
+        titolo = QLabel("🛒 Acquista Abbonamento")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titolo.setStyleSheet("font-size: 22px; font-weight: bold;")
+        layout.addWidget(titolo)
+
+        # Separator
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        # Scelta piano
+        layout.addWidget(QLabel("Seleziona il piano:"))
+
+        self.btn_mensile = QPushButton("Mensile - 9,99€")
+        self.btn_annuale = QPushButton("Annuale - 79,99€")
+
+        self.btn_mensile.clicked.connect(lambda: self.seleziona_piano("mensile"))
+        self.btn_annuale.clicked.connect(lambda: self.seleziona_piano("annuale"))
+
+        layout.addWidget(self.btn_mensile)
+        layout.addWidget(self.btn_annuale)
+
+        # Metodo di pagamento
+        layout.addWidget(QLabel("Metodo di pagamento registrato:"))
+
+        carta = self.gestore_abbonamenti.repoDatiPagamento.ottieni_numero_carta(
+            self.gestore_abbonamenti.utente.email
+        )
+
+        if carta:
+            carta_mascherata = "**** **** **** " + carta[-4:]
+        else:
+            carta_mascherata = "Nessuna carta registrata"
+
+        self.label_carta = QLabel(carta_mascherata)
+        layout.addWidget(self.label_carta)
+
+        # Pulsante conferma
+        self.btn_conferma = QPushButton("Conferma acquisto")
+        self.btn_conferma.clicked.connect(self.conferma_acquisto)
+        layout.addWidget(self.btn_conferma)
+
+        self.piano_scelto = None
+
+    def seleziona_piano(self, piano):
+        self.piano_scelto = piano
+        QMessageBox.information(self, "Piano selezionato", f"Hai scelto il piano {piano}.")
+
+    def conferma_acquisto(self):
+        if not self.piano_scelto:
+            QMessageBox.warning(self, "Errore", "Seleziona un piano prima di continuare.")
+            return
+
+        successo = self.gestore_abbonamenti.acquista_abbonamento(self.piano_scelto)
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Abbonamento acquistato correttamente!")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Impossibile completare l'acquisto.")
