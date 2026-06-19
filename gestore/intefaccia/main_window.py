@@ -166,7 +166,7 @@ class FinestraPrincipale(QWidget):
     def apri_categoria(self, nome_categoria):
         """CDU18: Mostra le piattaforme per avviare la riproduzione."""
         servizi = self.link_categorie.get(nome_categoria, {})
-        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self)
+        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente,self.gestore_abbonamenti, self)
         dialogo.exec()
 
     def apri_preferenze(self):
@@ -176,10 +176,12 @@ class FinestraPrincipale(QWidget):
         finestra.exec()
 
     def apri_acquista(self):
-        """CDU1: Acquisto abbonamento (collegamento al backend in arrivo)."""
-        finestra = FinestraAcquisto(self.gestore_abbonamenti,self)
-        finestra.exec()
-
+        """CDU1: L'acquisto ora si avvia dalla scheda di una categoria/piattaforma."""
+        QMessageBox.information(
+        self, "Seleziona una piattaforma",
+        "Per acquistare un abbonamento, apri una categoria (es. 🎵 Musica, 📡 Streaming...) "
+        "e clicca su 'Acquista' accanto alla piattaforma che vuoi."
+        )
     def apri_scaduti(self):
         """CDU14/CDU19: Gestione abbonamenti scaduti (collegamento al backend in arrivo)."""
         QMessageBox.information(
