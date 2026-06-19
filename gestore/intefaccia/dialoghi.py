@@ -121,7 +121,7 @@ class FinestraRecuperoPassword(QDialog):
          QDialog { background-color: #e8f5e9; }
          QLineEdit {
          color: black !important;
-         background-color: white !important;
+         background-color: black !important;
          border: 1px solid #888;
          padding: 6px;
          border-radius: 6px;}
