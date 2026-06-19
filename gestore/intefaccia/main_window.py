@@ -2,7 +2,7 @@ import os
 import sys
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QLineEdit, QFrame, QScrollArea, QMessageBox
+    QLabel, QLineEdit, QFrame, QScrollArea, QMessageBox,QDialog
 )
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import Qt
@@ -206,3 +206,81 @@ class FinestraPrincipale(QWidget):
         """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
         messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
         QMessageBox.information(self, "Avviso di Sistema", messaggio)
+
+class FinestraCambiaCarta(QDialog):
+    """Modulo completo per cambiare il numero della carta (simile al cambio password)."""
+    def __init__(self, email_utente, gestore_profilo, parent=None):
+        super().__init__(parent)
+
+        self.email_utente = email_utente
+        self.gestore_profilo = gestore_profilo
+
+        self.setWindowTitle("Modifica Carta")
+        self.setFixedSize(420, 320)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("💳 Modifica Carta")
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        # Vecchio numero carta
+        layout.addWidget(QLabel("Vecchio numero carta:"))
+        self.vecchia_input = QLineEdit()
+        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.vecchia_input)
+
+        # Nuovo numero carta
+        layout.addWidget(QLabel("Nuovo numero carta:"))
+        self.nuova_input = QLineEdit()
+        self.nuova_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.nuova_input)
+
+        # Conferma nuovo numero carta
+        layout.addWidget(QLabel("Conferma nuovo numero:"))
+        self.conferma_input = QLineEdit()
+        self.conferma_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.conferma_input)
+
+        btn_salva = QPushButton("Salva")
+        btn_salva.clicked.connect(self.salva)
+        layout.addWidget(btn_salva)
+
+    def salva(self):
+        vecchia = self.vecchia_input.text()
+        nuova = self.nuova_input.text()
+        conferma = self.conferma_input.text()
+
+        if not vecchia or not nuova or not conferma:
+            QMessageBox.warning(self, "Errore", "Compila tutti i campi.")
+            return
+
+        if nuova != conferma:
+            QMessageBox.warning(self, "Errore", "I numeri non coincidono.")
+            return
+
+        if len(nuova) < 12:
+            QMessageBox.warning(self, "Errore", "Il numero carta deve avere almeno 12 cifre.")
+            return
+
+        # Qui chiami il tuo gestore (devi aggiungere il metodo)
+        successo = self.gestore_profilo.cambia_carta_utente(
+            self.email_utente,
+            vecchia,
+            nuova
+        )
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Carta aggiornata correttamente.")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
