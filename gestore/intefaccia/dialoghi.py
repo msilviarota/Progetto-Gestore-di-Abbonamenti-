@@ -256,7 +256,14 @@ class FinestraRegistrazione(QDialog):
 
         self.setWindowTitle("Crea un nuovo account")
         self.setFixedSize(420, 380)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }QLinedEdit { color: black; background-color : write}""")
+        self.setStyleSheet("""
+          QDialog { background-color: #e8f5e9; }
+         QLineEdit {
+         color: black;
+         background-color: white;
+         border: 1px solid #888;
+         padding: 6px;
+         border-radius: 6px; }""")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
