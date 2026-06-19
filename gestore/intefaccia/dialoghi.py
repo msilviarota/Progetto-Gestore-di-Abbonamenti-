@@ -1,7 +1,7 @@
 import os
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame
 from PyQt6.QtCore import Qt, QSize
 
 # Configurazione del path per permettere l'importazione dei moduli del progetto
