@@ -157,11 +157,15 @@ class FinestraPrincipale(QWidget):
         dialogo.exec()
 
     def esegui_ricerca(self):
-        """CDU4: Avvia la ricerca globale interrogando le piattaforme."""
-        testo = self.campo_ricerca.text()
-        if testo:
-            dialogo = FinestraRicerca(testo, self)
-            dialogo.exec()
+        testo = self.campo_ricerca.text().strip()
+
+        if not testo:
+            QMessageBox.warning(self, "Errore", "Inserisci un testo da cercare.")
+            return
+  
+        finestra = FinestraRicerca(testo, self)
+        finestra.exec()
+
 
     def apri_categoria(self, nome_categoria):
         """CDU18: Mostra le piattaforme per avviare la riproduzione."""

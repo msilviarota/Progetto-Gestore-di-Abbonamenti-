@@ -274,16 +274,70 @@ class FinestraModificaPagamento(QDialog):
 
 
 class FinestraRicerca(QDialog):
-    """Visualizza i risultati della ricerca globale (CDU4)."""
-    def __init__(self, testo, parent=None):
+    """Visualizza i risultati della ricerca globale interrogando le piattaforme (CDU4)."""
+    def __init__(self, testo, finestra_principale, parent=None):
         super().__init__(parent)
+
+        self.testo = testo
+        self.finestra_principale = finestra_principale
+
         self.setWindowTitle(f"Risultati per: {testo}")
-        self.setFixedSize(400, 500)
+        self.setFixedSize(500, 600)
         self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(f"Risultati trovati per '{testo}':"))
-        layout.addStretch()
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
+
+        titolo = QLabel(f"Risultati trovati per '{testo}':")
+        titolo.setStyleSheet("font-size: 18px; font-weight: bold; color: #222;")
+        layout.addWidget(titolo)
+
+        # Area scrollabile
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        contenitore = QWidget()
+        layout_scroll = QVBoxLayout(contenitore)
+
+        # 🔍 ESEGUIAMO LA RICERCA SU TUTTE LE PIATTAFORME
+        risultati = self.esegui_ricerca_globale(testo)
+
+        if not risultati:
+            layout_scroll.addWidget(QLabel("Nessun risultato trovato."))
+        else:
+            for r in risultati:
+                box = QFrame()
+                box.setStyleSheet("background-color: white; border: 1px solid #ccc; padding: 10px;")
+                box_layout = QVBoxLayout(box)
+
+                box_layout.addWidget(QLabel(f"🎬 Titolo: {r['titolo']}"))
+                box_layout.addWidget(QLabel(f"📡 Piattaforma: {r['piattaforma']}"))
+
+                btn = QPushButton("Apri contenuto")
+                btn.clicked.connect(lambda ch, link=r["link"]: webbrowser.open(link))
+                box_layout.addWidget(btn)
+
+                layout_scroll.addWidget(box)
+
+        scroll.setWidget(contenitore)
+        layout.addWidget(scroll)
+
+    def esegui_ricerca_globale(self, testo):
+        """Interroga tutte le piattaforme del catalogo."""
+        risultati = []
+
+        for piattaforma in CATALOGO_PIATTAFORME.values():
+            contenuti = piattaforma.cerca(testo)  # deve esistere nel tuo modello
+
+            for c in contenuti:
+                risultati.append({
+                    "titolo": c.titolo,
+                    "piattaforma": piattaforma.nome,
+                    "link": piattaforma.link_login
+                })
+
+        return risultati
+
         
 class FinestraRegistrazione(QDialog):
     def __init__(self, gestore_login, parent=None):
