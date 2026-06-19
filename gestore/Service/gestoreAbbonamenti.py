@@ -29,6 +29,8 @@ class GestoreAbbonamenti:
         """Inizializza il gestore con i dati dell'utente e le repository [5]."""
         self._utente = utente
         self._email_utente = utente._email 
+        self.email = utente._email
+        self.utente = utente
         self._repo_Abbonamento = repoAbbonamento
         self._repo_DatiPagamento = repoDatiPagamento
         self._piattaforma = piattaforma
