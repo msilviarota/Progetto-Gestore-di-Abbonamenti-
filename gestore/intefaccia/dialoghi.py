@@ -1,7 +1,7 @@
 import os
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget
 from PyQt6.QtCore import Qt, QSize
 
 # Configurazione del path per permettere l'importazione dei moduli del progetto
@@ -466,3 +466,85 @@ class FinestraAcquisto(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Impossibile completare l'acquisto.")
+class FinestraScaduti(QDialog):
+    """Mostra gli abbonamenti scaduti e permette di rimuoverli (CDU14)."""
+    def __init__(self, gestore_abbonamenti, parent=None):
+        super().__init__(parent)
+        self.gestore_abbonamenti = gestore_abbonamenti
+
+        self.setWindowTitle("Abbonamenti Scaduti")
+        self.setFixedSize(450, 450)
+        self.setStyleSheet("""
+            QDialog { background-color: #e8f5e9; }
+            QLabel { color: black; font-size: 14px; }
+            QPushButton {
+                color: black;
+                background-color: #dcdcdc;
+                border: 1px solid #555;
+                padding: 6px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #c8c8c8; }
+        """)
+
+        layout_principale = QVBoxLayout(self)
+        layout_principale.setContentsMargins(20, 20, 20, 20)
+        layout_principale.setSpacing(12)
+
+        titolo = QLabel("⏰ Abbonamenti Scaduti")
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout_principale.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        layout_principale.addWidget(sep)
+
+        self.area_scroll = QScrollArea()
+        self.area_scroll.setWidgetResizable(True)
+        self.contenitore = QWidget()
+        self.layout_lista = QVBoxLayout(self.contenitore)
+        self.area_scroll.setWidget(self.contenitore)
+        layout_principale.addWidget(self.area_scroll)
+
+        self.carica_scaduti()
+
+    def carica_scaduti(self):
+        while self.layout_lista.count():
+            item = self.layout_lista.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        if not self.gestore_abbonamenti:
+            self.layout_lista.addWidget(QLabel("Servizio abbonamenti non disponibile."))
+            return
+
+        scaduti = self.gestore_abbonamenti.ottieni_scaduti()
+
+        if not scaduti:
+            self.layout_lista.addWidget(QLabel("Nessun abbonamento scaduto al momento."))
+            return
+
+        for abb in scaduti:
+            riga = QFrame()
+            riga.setStyleSheet("background-color: white; border-radius: 8px; padding: 8px;")
+            riga_layout = QHBoxLayout(riga)
+
+            testo = QLabel(f"{abb['piattaforma'].capitalize()}\nScaduto il {abb['data_scadenza']}")
+            riga_layout.addWidget(testo)
+
+            btn_rimuovi = QPushButton("🗑️ Rimuovi")
+            btn_rimuovi.clicked.connect(lambda ch, id_abb=abb["id_abbonamento"]: self.rimuovi(id_abb))
+            riga_layout.addWidget(btn_rimuovi)
+
+            self.layout_lista.addWidget(riga)
+
+    def rimuovi(self, id_abbonamento):
+        successo = self.gestore_abbonamenti.elimina_scaduto(id_abbonamento)
+        if successo:
+            QMessageBox.information(self, "Rimosso", "Abbonamento rimosso dalla cronologia.")
+            self.carica_scaduti()
+        else:
+            QMessageBox.warning(self, "Errore", "Impossibile rimuovere l'abbonamento.")
