@@ -640,3 +640,84 @@ class FinestraAbbonamenti(QDialog):
             self.carica_abbonamenti()
         else:
             QMessageBox.warning(self, "Errore", "Impossibile disdire l'abbonamento.")
+
+class FinestraPrestitoAbbonamento(QDialog):
+    """Permette di prestare un abbonamento a un amico (CDU11)."""
+    def __init__(self, gestore_abbonamenti, parent=None):
+        super().__init__(parent)
+
+        self.gestore_abbonamenti = gestore_abbonamenti
+
+        self.setWindowTitle("Presta Abbonamento")
+        self.setFixedSize(420, 350)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("🤝 Presta un abbonamento")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        layout.addWidget(titolo)
+
+        # Separator
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        # Lista abbonamenti attivi
+        layout.addWidget(QLabel("Seleziona un abbonamento da prestare:"))
+
+        self.lista_abbonamenti = self.gestore_abbonamenti._repo_Abbonamento.ottieni_per_utente(
+            self.gestore_abbonamenti.email
+        )
+
+        if not self.lista_abbonamenti:
+            layout.addWidget(QLabel("Nessun abbonamento attivo."))
+            return
+
+        self.btns = []
+        for abb in self.lista_abbonamenti:
+            btn = QPushButton(f"{abb._piattaforma} ({abb._piano})")
+            btn.clicked.connect(lambda ch, a=abb: self.seleziona_abbonamento(a))
+            layout.addWidget(btn)
+            self.btns.append(btn)
+
+        # Campo email amico
+        layout.addWidget(QLabel("Email dell'amico:"))
+        self.input_email = QLineEdit()
+        layout.addWidget(self.input_email)
+
+        # Pulsante conferma
+        self.btn_conferma = QPushButton("Condividi accesso")
+        self.btn_conferma.clicked.connect(self.conferma)
+        layout.addWidget(self.btn_conferma)
+
+        self.abbonamento_scelto = None
+
+    def seleziona_abbonamento(self, abb):
+        self.abbonamento_scelto = abb
+        QMessageBox.information(self, "Selezionato", f"Hai scelto {abb._piattaforma}.")
+
+    def conferma(self):
+        if not self.abbonamento_scelto:
+            QMessageBox.warning(self, "Errore", "Seleziona un abbonamento.")
+            return
+
+        email_amico = self.input_email.text()
+        if not email_amico:
+            QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico.")
+            return
+
+        successo = self.gestore_abbonamenti.presta_abbonamento(
+            self.abbonamento_scelto._id_abbonamento,
+            email_amico
+        )
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Accesso condiviso correttamente!")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Impossibile prestare l'abbonamento.")

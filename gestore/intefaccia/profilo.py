@@ -11,6 +11,7 @@ from intefaccia.stile import (
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraAbbonamenti
+from intefaccia.dialoghi import FinestraPrestitoAbbonamento
 
 class ProfiloDialog(QDialog):
     """Hub per la gestione dell'account (CDU7, CDU9, CDU15, CDU16)."""
@@ -157,12 +158,10 @@ class ProfiloDialog(QDialog):
         finestra.exec()
 
     def apri_presta(self):
-        from intefaccia.dialoghi import FinestraModificaPagamento
-        QMessageBox.information(
-            self, "In arrivo",
-            "La funzione 'Presta abbonamento' sarà collegata al backend a breve."
-        )
-  
+
+        finestra = FinestraPrestitoAbbonamento(self.gestore_abbonamenti, self)
+        finestra.exec()
+
 
     def apri_modifica_pagamento(self):
         finestra = FinestraModificaPagamento(
