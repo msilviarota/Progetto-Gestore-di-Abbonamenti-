@@ -134,18 +134,7 @@ class FinestraRecuperoPassword(QDialog):
         btn.clicked.connect(lambda: QMessageBox.information(self, "Info", "Email inviata"))
         layout.addWidget(btn)
 
-class FinestraCambiaPassword(QDialog):
-    """Modulo per impostare una nuova password (CDU9) [6]."""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Cambia Password")
-        self.setFixedSize(400, 350)
-        layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Nuova Password:"))
-        layout.addWidget(QLineEdit())
-        btn = QPushButton("Conferma")
-        btn.clicked.connect(self.accept)
-        layout.addWidget(btn)
+
 
 class FinestraModificaPagamento(QDialog):
     """Modifica i dati della carta (CDU16) [7]."""
@@ -159,7 +148,7 @@ class FinestraModificaPagamento(QDialog):
         btn = QPushButton("Salva")
         btn.clicked.connect(self.accept)
         layout.addWidget(btn)
-        
+
 class FinestraRicerca(QDialog):
     """Visualizza i risultati della ricerca globale (CDU4)."""
     def __init__(self, testo, parent=None):
