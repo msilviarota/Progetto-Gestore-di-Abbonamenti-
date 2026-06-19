@@ -285,3 +285,57 @@ class FinestraCambiaCarta(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
+class FinestraRegistrazione(QDialog):
+    def __init__(self, gestore_login, parent=None):
+        super().__init__(parent)
+
+        self.gestore_login = gestore_login
+
+        self.setWindowTitle("Crea un nuovo account")
+        self.setFixedSize(420, 380)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("📝 Registrazione")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        layout.addWidget(titolo)
+
+        # Campi
+        self.input_nome = QLineEdit()
+        self.input_nome.setPlaceholderText("Nome")
+        layout.addWidget(self.input_nome)
+
+        self.input_email = QLineEdit()
+        self.input_email.setPlaceholderText("Email")
+        layout.addWidget(self.input_email)
+
+        self.input_password = QLineEdit()
+        self.input_password.setPlaceholderText("Password")
+        self.input_password.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.input_password)
+
+        btn_registra = QPushButton("Crea account")
+        btn_registra.clicked.connect(self.registra)
+        layout.addWidget(btn_registra)
+
+    def registra(self):
+        nome = self.input_nome.text()
+        email = self.input_email.text()
+        password = self.input_password.text()
+
+        if not nome or not email or not password:
+            QMessageBox.warning(self, "Errore", "Compila tutti i campi.")
+            return
+
+        successo = self.gestore_login.registra_utente(nome, email, password)
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Account creato!")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Email già registrata.")
+
