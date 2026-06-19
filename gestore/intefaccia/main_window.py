@@ -20,6 +20,7 @@ from intefaccia.stile import (
     STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA
 )
 from intefaccia.utils import BASE_DIR
+from models.piattaforma import CATALOGO_PIATTAFORME
 
 
 class FinestraPrincipale(QWidget):
@@ -36,36 +37,27 @@ class FinestraPrincipale(QWidget):
 
         # Configurazione finestra
         self.setWindowTitle("RelaxApp")
-        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png"))) 
+        self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
-        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE) 
+        self.setStyleSheet(STILE_FINESTRA_PRINCIPALE)
 
-        # Mappatura completa delle categorie e piattaforme (Requisito 1.4)
+        # Mappatura delle categorie con etichetta -> nome categoria reale (Requisito 1.4)
+        self.mappa_categorie = {
+            "🎵 Musica": "Musica",
+            "📡 Streaming": "Streaming",
+            "📚 Libri": "Libri",
+            "🎬 Video": "Video",
+            "⚽ Sport": "Sport"
+        }
+
+        # Costruisce, per ogni categoria, un dizionario {nome: oggetto Piattaforma}
         self.link_categorie = {
-            "🎵 Musica": [
-                ("Apple Music", "https://www.apple.com/it/apple-music/", "loghi/appmusic.png"),
-                ("Spotify", "https://open.spotify.com/intl-it", "loghi/spotify.png"),
-                ("Amazon Music", "https://music.amazon.it/", "loghi/amazonmusic.png")
-            ],
-            "📡 Streaming": [
-                ("Netflix", "https://www.netflix.com/browse", "loghi/netflix.png"),
-                ("Disney+", "https://www.disneyplus.com/it-it", "loghi/disney.png"),
-                ("Mediaset Infinity", "https://www.mediasetplay.mediaset.it/", "loghi/mediasetinfinity.png"),
-                ("RaiPlay", "https://www.raiplay.it/", "loghi/raiplay.png"),
-                ("Prime Video", "https://www.primevideo.com/", "loghi/primevideo.png")
-            ],
-            "📚 Libri": [
-                ("Kobo", "https://www.kobo.com/it/it", "loghi/kobo.png"),
-                ("Kindle", "https://leggi.amazon.it/landing", "loghi/kindle.png")
-            ],
-            "🎬 Video": [
-                ("YouTube", "https://www.youtube.com", "loghi/youtube.png")
-            ],
-            "⚽ Sport": [
-                ("Sky Sport", "https://sport.sky.it/", "loghi/skysport.png"),
-                ("Now TV", "https://www.nowtv.it/sport", "loghi/nowtv.png")
-            ]
-        } 
+            etichetta: {
+                p.nome: p for p in CATALOGO_PIATTAFORME.values()
+                if p.categoria == nome_reale
+            }
+            for etichetta, nome_reale in self.mappa_categorie.items()
+        }
 
         self._build_ui()
         self.carica_suggerimenti() # Implementazione CDU17
@@ -78,16 +70,16 @@ class FinestraPrincipale(QWidget):
         # 1. Barra Superiore: Saluto, Ricerca e Profilo
         top_bar = QHBoxLayout()
         label_saluto = QLabel(f"Ciao, {self.nome_utente}!")
-        label_saluto.setStyleSheet(STILE_SALUTO) 
+        label_saluto.setStyleSheet(STILE_SALUTO)
         
         self.campo_ricerca = QLineEdit()
         self.campo_ricerca.setPlaceholderText("Cerca un film, una serie o un brano...")
         self.campo_ricerca.setStyleSheet(STILE_CAMPO_RICERCA)
-        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca) 
+        self.campo_ricerca.returnPressed.connect(self.esegui_ricerca)
         btn_profilo = QPushButton("👤")
         btn_profilo.setFixedSize(50, 50)
         btn_profilo.setStyleSheet(STILE_BTN_PROFILO)
-        btn_profilo.clicked.connect(self.apri_profilo) 
+        btn_profilo.clicked.connect(self.apri_profilo)
 
         top_bar.addWidget(label_saluto)
         top_bar.addStretch()
@@ -106,7 +98,7 @@ class FinestraPrincipale(QWidget):
         self.layout_principale.addLayout(layout_cat)
 
         # 3. Area Suggerimenti (CDU17)
-        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te")) 
+        self.layout_principale.addWidget(QLabel("Contenuti Consigliati per Te"))
         self.scroll_suggerimenti = QScrollArea()
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
@@ -118,31 +110,31 @@ class FinestraPrincipale(QWidget):
 
     def apri_profilo(self):
         """CDU7: Apre il pannello di gestione del profilo."""
-        dialogo = ProfiloDialog(self) 
+        dialogo = ProfiloDialog(self)
         dialogo.exec()
 
     def esegui_ricerca(self):
         """CDU4: Avvia la ricerca globale interrogando le piattaforme."""
         testo = self.campo_ricerca.text()
         if testo:
-            # Aggrega i risultati e li mostra nella finestra dedicata [11]
-            dialogo = FinestraRicerca(testo, self) 
+            # Aggrega i risultati e li mostra nella finestra dedicata
+            dialogo = FinestraRicerca(testo, self)
             dialogo.exec()
 
     def apri_categoria(self, nome_categoria):
         """CDU18: Mostra le piattaforme per avviare la riproduzione."""
-        servizi = self.link_categorie.get(nome_categoria, [])
-        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self) 
+        servizi = self.link_categorie.get(nome_categoria, {})
+        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self)
         dialogo.exec()
 
     def carica_suggerimenti(self):
         """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
-        # Se le preferenze sono assenti, il sistema notifica l'assenza [8]
+        # Se le preferenze sono assenti, il sistema notifica l'assenza
         if not self.gestore_preferenze or not self.gestore_preferenze.ottieni_preferenze(self.email_utente):
             self.layout_suggerimenti.addWidget(QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!"))
             return
 
-        # Simula il caricamento dei suggerimenti basati sull'algoritmo di matching [14]
+        # Simula il caricamento dei suggerimenti basati sull'algoritmo di matching
         suggerimenti = ["Film d'Azione (Netflix)", "Pop Hits (Spotify)", "Documentari (Disney+)"]
         for s in suggerimenti:
             btn_sug = QPushButton(s)
@@ -151,6 +143,6 @@ class FinestraPrincipale(QWidget):
 
     def controlla_notifiche(self):
         """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
-        # Esempio: Notifica periodica ogni settimana per le preferenze [15]
+        # Esempio: Notifica periodica ogni settimana per le preferenze
         messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
         QMessageBox.information(self, "Avviso di Sistema", messaggio)
