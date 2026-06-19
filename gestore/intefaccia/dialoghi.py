@@ -12,7 +12,7 @@ if radice_progetto not in sys.path:
 
 from intefaccia.stile import *
 from intefaccia.utils import scarica_logo
-
+from models.abbonamento import Abbonamento
 class SchedaCategoria(QDialog):
     """Mostra le piattaforme di una categoria e permette l'avvio (CDU18) [3]."""
     def __init__(self, titolo, servizi, email_utente, parent=None):
@@ -440,8 +440,10 @@ class FinestraAcquisto(QDialog):
             QMessageBox.warning(self, "Errore", "Seleziona un piano prima di continuare.")
             return
 
-        successo = self.gestore_abbonamenti.acquista_abbonamento(self.piano_scelto)
-
+        abbonamento = Abbonamento( email_utente=self.gestore_abbonamenti.email,
+                                   piattaforma=self.gestore_abbonamenti._piattaforma.get_nome(),
+                                   piano=self.piano_scelto)
+        successo= self.gestore_abbonamenti.acquista_abbonamento(abbonamento)
         if successo:
             QMessageBox.information(self, "Successo", "Abbonamento acquistato correttamente!")
             self.close()
