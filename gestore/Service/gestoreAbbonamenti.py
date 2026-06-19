@@ -41,14 +41,14 @@ class GestoreAbbonamenti:
         """
         # Verifica se l'abbonamento per questa piattaforma è già attivo
         if self._repo_Abbonamento.esiste_abbonamento_attivo(self._email_utente, self._piattaforma.get_nome()):
-            self._notifica = Notifica("Abbonamento già acquistato per questa piattaforma.", "Errore") [9, 10]
+            self._notifica = Notifica("Abbonamento già acquistato per questa piattaforma.", "Errore") 
             return False
 
         # Simulazione transazione e generazione data scadenza [8]
         # In un'implementazione reale, qui si interagirebbe con repoDatiPagamento
         abbonamento._validita = True
         self._repo_Abbonamento.salva_nuovo_abbonamento(abbonamento)
-        self._notifica = Notifica("Acquisto completato con successo!", "Successo") [8]
+        self._notifica = Notifica("Acquisto completato con successo!", "Successo") 
         return True
 
     def disdisci_abbonamento(self, id_abbonamento: str):
@@ -74,13 +74,13 @@ class GestoreAbbonamenti:
         """
         CDU19: Sposta automaticamente gli abbonamenti non più validi nella sezione 'Scaduti' [14].
         """
-        self._repo_Abbonamento.cambia_sezione(id_abbonamento, "Scaduti") [14]
+        self._repo_Abbonamento.cambia_sezione(id_abbonamento, "Scaduti") 
 
     def elimina_scaduto(self, id_abbonamento: str):
         """
         CDU14: Consente all'utente di rimuovere i record dalla sezione scaduti [15, 16].
         """
-        return self._repo_Abbonamento.rimuovi_record(id_abbonamento) [16]
+        return self._repo_Abbonamento.rimuovi_record(id_abbonamento) 
 
     def verifica_tutte_scadenze(self):
         """
