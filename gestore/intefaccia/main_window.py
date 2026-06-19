@@ -178,7 +178,7 @@ class FinestraPrincipale(QWidget):
     def apri_acquista(self):
         """CDU1: Acquisto abbonamento (collegamento al backend in arrivo)."""
         finestra = FinestraAcquisto(self.gestore_abbonamenti,self)
-        finestra.exec
+        finestra.exec()
 
     def apri_scaduti(self):
         """CDU14/CDU19: Gestione abbonamenti scaduti (collegamento al backend in arrivo)."""
