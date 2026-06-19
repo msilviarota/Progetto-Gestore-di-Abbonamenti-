@@ -121,6 +121,7 @@ class LoginWindow(QWidget):
 
         print(f"Tentativo di accesso per: {email}")
         self.home = FinestraPrincipale(nome=nome_utente, email=email, gestore_preferenze=self.gestore_preferenze)
+        self.home.login_window = self
         self.home.show()
         self.close()
 
