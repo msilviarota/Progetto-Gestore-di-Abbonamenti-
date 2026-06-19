@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit,
-    QFormLayout, QFrame, QScrollArea, QWidget
+    QFormLayout, QFrame, QScrollArea, QWidget,QMessageBox
 )
 from PyQt6.QtCore import Qt
 
@@ -9,7 +9,7 @@ from intefaccia.stile import (
     STILE_TITOLO_PROFILO, STILE_LABEL_PROFILO, STILE_BTN_SERVIZIO
 )
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
-
+from intefaccia.dialoghi import FinestraModificaPagamento
 
 class ProfiloDialog(QDialog):
     """Hub per la gestione dell'account (CDU7, CDU9, CDU15, CDU16)."""
@@ -153,8 +153,17 @@ class ProfiloDialog(QDialog):
         )
 
     def apri_presta(self):
-        from PyQt6.QtWidgets import QMessageBox
+        from intefaccia.dialoghi import FinestraModificaPagamento
         QMessageBox.information(
             self, "In arrivo",
             "La funzione 'Presta abbonamento' sarà collegata al backend a breve."
         )
+  
+
+    def apri_modifica_pagamento(self):
+        finestra = FinestraModificaPagamento(
+        email_utente=self.campo_email.text(),
+        gestore_profilo=self.finestra_principale.gestore_profilo,
+        parent=self
+    )
+        finestra.exec()
