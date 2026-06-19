@@ -6,46 +6,33 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from models.contenuto import Contenuto
 class Piattaforma:
     """
-    Rappresenta un servizio messo a disposizione da un amministratore
-    e accessibile dall’utente previo acquisto di un abbonamento.
+    Rappresenta una piattaforma (Netflix, Prime Video, Spotify, ecc.)
+    con un catalogo di contenuti ricercabili.
     """
 
-    # Corretto: rinominato da **init** a __init__ [1]
-    def __init__(self, nome, link_ricerca, link_login, logo, categoria):
-        self.nome = nome
-        self.link_ricerca = link_ricerca
-        self.link_login = link_login
-        self.logo = logo
-        self.categoria = categoria
+    def __init__(self, nome: str, logo: str, link_login: str, catalogo: list):
+        self._nome = nome
+        self._logo = logo
+        self._link_login = link_login
+        self.catalogo = catalogo  # LISTA DI Contenuto
 
-    def get_nome(self):
-        return self.nome
+    @property
+    def nome(self):
+        return self._nome
 
-    def get_link_ricerca(self):
-        return self.link_ricerca
+    @property
+    def logo(self):
+        return self._logo
 
-    def get_link_login(self):
-        return self.link_login
+    @property
+    def link_login(self):
+        return self._link_login
 
-    def get_logo(self):
-        return self.logo
-
-    def get_categoria(self):
-        return self.categoria
-
-    def trasmettiDati(self, nome_contenuto, dati_abbonamento):
-        """
-        Simula la trasmissione dei dati alla piattaforma esterna 
-        per l'avvio della riproduzione (CDU18).
-        """
-        print(f"[Piattaforma] Avvio {nome_contenuto}...")
-        return True
-    
-    def cerca(self, testo):
-        """Restituisce i contenuti della piattaforma che contengono il testo cercato."""
+    def cerca(self, testo: str):
+        """Restituisce i contenuti che contengono il testo nel titolo."""
         testo = testo.lower()
         risultati = []
 
@@ -54,6 +41,16 @@ class Piattaforma:
                 risultati.append(contenuto)
 
         return risultati
+
+
+    def trasmettiDati(self, nome_contenuto, dati_abbonamento):
+        """
+        Simula la trasmissione dei dati alla piattaforma esterna 
+        per l'avvio della riproduzione (CDU18).
+        """
+        print(f"[Piattaforma] Avvio {nome_contenuto}...")
+        return True
+ 
 
 # ====================================================================
 # CATALOGO COMPLETO DELLE PIATTAFORME SUPPORTATE
@@ -64,7 +61,12 @@ CATALOGO_PIATTAFORME = {
         link_ricerca="https://www.netflix.com/search?q={}",
         link_login="https://www.netflix.com/login",
         logo="loghi/netflix.png",
-        categoria="Streaming"
+        categoria="Streaming",
+         catalogo=[
+            Contenuto("n1", "Stranger Things", "Netflix", "Serie"),
+            Contenuto("n2", "The Witcher", "Netflix", "Serie"),
+            Contenuto("n3", "Red Notice", "Netflix", "Film"),
+        ]
     ),
     "prime video": Piattaforma(
         nome="Prime Video",
