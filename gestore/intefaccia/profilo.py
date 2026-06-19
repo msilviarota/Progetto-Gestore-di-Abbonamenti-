@@ -134,7 +134,13 @@ class ProfiloDialog(QDialog):
         self.finestra_principale.close()
 
     def apri_cambia_password(self):
-        FinestraCambiaPassword(self).exec()
+     finestra = FinestraCambiaPassword(
+      email_utente=self.campo_email.text(),
+        gestore_profilo=self.finestra_principale.gestore_profilo,
+        parent=self
+    )
+     finestra.exec()
+
 
     def apri_pagamento(self):
         FinestraModificaPagamento(self).exec()
