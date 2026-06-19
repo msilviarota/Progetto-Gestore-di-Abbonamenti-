@@ -311,6 +311,14 @@ class FinestraRicerca(QDialog):
             QPushButton:hover {
                 background-color: #357ABD;
             }
+            QScrollArea {
+                background-color: white;
+            }
+
+            QWidget {
+                background-color: white;
+                }
+
         """)
 
         layout = QVBoxLayout(self)
