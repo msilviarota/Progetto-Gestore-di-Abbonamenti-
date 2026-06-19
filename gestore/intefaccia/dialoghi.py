@@ -325,20 +325,28 @@ class FinestraRicerca(QDialog):
         layout.addWidget(scroll)
 
     def esegui_ricerca_globale(self, testo):
-        """Interroga tutte le piattaforme del catalogo."""
+        testo = testo.lower()
         risultati = []
 
         for piattaforma in CATALOGO_PIATTAFORME.values():
-            contenuti = piattaforma.cerca(testo)  # deve esistere nel tuo modello
-
-            for c in contenuti:
+        # Cerca per categoria
+            if testo in piattaforma._categoria.lower():
                 risultati.append({
-                    "titolo": c.titolo,
-                    "piattaforma": piattaforma.nome,
-                    "link": piattaforma.link_login
-                })
+                "titolo": piattaforma.nome,
+                "piattaforma": piattaforma.nome,
+                "link": piattaforma.link_login
+            })
+
+        # Cerca per nome piattaforma
+            elif testo in piattaforma.nome.lower():
+                risultati.append({
+                "titolo": piattaforma.nome,
+                "piattaforma": piattaforma.nome,
+                "link": piattaforma.link_login
+            })
 
         return risultati
+
 
         
 class FinestraRegistrazione(QDialog):
