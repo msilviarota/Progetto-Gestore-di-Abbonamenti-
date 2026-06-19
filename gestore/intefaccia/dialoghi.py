@@ -559,14 +559,19 @@ class FinestraAbbonamenti(QDialog):
 
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 450)
-        self.area_scroll = QScrollArea()
-        self.area_scroll.setWidgetResizable(True)
-        self.area_scroll.setStyleSheet("QScrollArea { border: none; background-color: #e8f5e9; }")
-        self.contenitore = QWidget()
-        self.contenitore.setStyleSheet("background-color: #e8f5e9;")
-        self.layout_lista = QVBoxLayout(self.contenitore)
-        self.area_scroll.setWidget(self.contenitore)
-        layout_principale.addWidget(self.area_scroll)
+        self.setStyleSheet("""
+            QDialog { background-color: #e8f5e9; }
+            QLabel { color: black; font-size: 14px; }
+            QPushButton {
+                color: black;
+                background-color: #dcdcdc;
+                border: 1px solid #555;
+                padding: 6px;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #c8c8c8; }
+        """)
 
         layout_principale = QVBoxLayout(self)
         layout_principale.setContentsMargins(20, 20, 20, 20)
@@ -583,7 +588,10 @@ class FinestraAbbonamenti(QDialog):
 
         self.area_scroll = QScrollArea()
         self.area_scroll.setWidgetResizable(True)
+        self.area_scroll.setStyleSheet("QScrollArea { border: none; background-color: #e8f5e9; }")
+
         self.contenitore = QWidget()
+        self.contenitore.setStyleSheet("background-color: #e8f5e9;")
         self.layout_lista = QVBoxLayout(self.contenitore)
         self.area_scroll.setWidget(self.contenitore)
         layout_principale.addWidget(self.area_scroll)
