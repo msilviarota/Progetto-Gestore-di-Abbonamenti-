@@ -43,6 +43,17 @@ class Piattaforma:
         """
         print(f"[Piattaforma] Avvio {nome_contenuto}...")
         return True
+    
+    def cerca(self, testo):
+        """Restituisce i contenuti della piattaforma che contengono il testo cercato."""
+        testo = testo.lower()
+        risultati = []
+
+        for contenuto in self.catalogo:
+            if testo in contenuto.titolo.lower():
+                risultati.append(contenuto)
+
+        return risultati
 
 # ====================================================================
 # CATALOGO COMPLETO DELLE PIATTAFORME SUPPORTATE
