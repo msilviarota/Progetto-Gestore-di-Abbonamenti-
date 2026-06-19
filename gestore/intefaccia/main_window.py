@@ -161,6 +161,32 @@ class FinestraPrincipale(QWidget):
 
         layout_principale.addStretch()
 
+
+    def aggiorna_consigli(self):
+        # Svuota la sezione
+        while self.area_consigli.count():
+            item = self.area_consigli.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        # Recupera preferenze salvate
+        preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
+        if not preferenze:
+            self.area_consigli.addWidget(QLabel("Nessun consiglio disponibile."))
+            return
+
+        # Normalizza le categorie (rimuove emoji)
+        categorie_pulite = [p.split(" ", 1)[1] if " " in p else p for p in preferenze]
+
+        # Cerca piattaforme compatibili
+        for piattaforma in CATALOGO_PIATTAFORME.values():
+            if piattaforma.categoria.lower() in [c.lower() for c in categorie_pulite]:
+                lbl = QLabel(f"• {piattaforma.nome} ({piattaforma.categoria})")
+                lbl.setStyleSheet("font-size: 16px;")
+                self.area_consigli.addWidget(lbl)
+
+
     def apri_profilo(self):
         """CDU7: Apre il pannello di gestione del profilo."""
         dialogo = ProfiloDialog(self)
