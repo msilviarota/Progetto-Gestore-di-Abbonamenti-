@@ -31,7 +31,6 @@ def avvia_applicazione():
     # Nota: GestorePreferenze richiede anche un GestoreRicerca; per ora None
     # (è usato solo in un punto non ancora implementato nel backend)
     gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, None, notifica)
-    finestra = FinestraPrincipale(gestore_profilo)
     window = LoginWindow(gestore_login=gestore_login, gestore_preferenze=gestore_preferenze)
     window.show()
     sys.exit(app.exec())
