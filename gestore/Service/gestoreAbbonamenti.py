@@ -33,7 +33,7 @@ class GestoreAbbonamenti:
         self._repo_DatiPagamento = repoDatiPagamento
         self._piattaforma = piattaforma
         self._notifica = notifica
-
+        self.repoDatiPagamento = repoDatiPagamento
     def acquista_abbonamento(self, abbonamento: Abbonamento):
         """
         CDU1: Consente l'acquisto di un abbonamento inserendo i dati necessari [4, 7].
