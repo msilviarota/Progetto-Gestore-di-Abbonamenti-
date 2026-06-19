@@ -97,3 +97,7 @@ class GestoreAbbonamenti:
                 self.sposta_in_scaduti(abb._id_abbonamento)
                 # Invia avviso di scadenza (CDU21) [18]
                 self._notifica = Notifica(f"L'abbonamento {abb._piattaforma} è scaduto.", "Avviso")
+    def ottieni_scaduti(self):
+        """CDU14/CDU19: Restituisce solo gli abbonamenti nella sezione 'Scaduti' dell'utente."""
+        tutti = self._repo_Abbonamento.ottieni_per_utente(self._email_utente)
+        return [abb for abb in tutti if abb.get("sezione") == "Scaduti"]            
