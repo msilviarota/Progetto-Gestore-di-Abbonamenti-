@@ -18,8 +18,6 @@ if radice_progetto not in sys.path:
 from intefaccia.stile import STILE_BTN_LINK, STILE_CAMPO_RICERCA
 from intefaccia.utils import BASE_DIR
 from intefaccia.main_window import FinestraPrincipale
-# Nota: RegisterWindow e FinestraRecuperoPassword devono essere definite o importate
-from intefaccia.dialoghi import RegisterWindow, FinestraRecuperoPassword
 
 class LoginWindow(QWidget):
     """
