@@ -137,17 +137,82 @@ class FinestraRecuperoPassword(QDialog):
 
 
 class FinestraModificaPagamento(QDialog):
-    """Modifica i dati della carta (CDU16) [7]."""
-    def __init__(self, parent=None):
+    """Modulo completo per cambiare il numero della carta (CDU16)."""
+    def __init__(self, email_utente, gestore_profilo, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Modifica Pagamento")
-        self.setFixedSize(400, 400)
+
+        self.email_utente = email_utente
+        self.gestore_profilo = gestore_profilo
+
+        self.setWindowTitle("Modifica Carta")
+        self.setFixedSize(420, 320)
+        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Nuovo Numero Carta:"))
-        layout.addWidget(QLineEdit())
-        btn = QPushButton("Salva")
-        btn.clicked.connect(self.accept)
-        layout.addWidget(btn)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("💳 Modifica Carta")
+        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("color: #cccccc;")
+        layout.addWidget(sep)
+
+        # Vecchia carta
+        layout.addWidget(QLabel("Vecchio numero carta:"))
+        self.vecchia_input = QLineEdit()
+        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.vecchia_input)
+
+        # Nuova carta
+        layout.addWidget(QLabel("Nuovo numero carta:"))
+        self.nuova_input = QLineEdit()
+        self.nuova_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.nuova_input)
+
+        # Conferma
+        layout.addWidget(QLabel("Conferma nuovo numero:"))
+        self.conferma_input = QLineEdit()
+        self.conferma_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.conferma_input)
+
+        btn_salva = QPushButton("Salva")
+        btn_salva.clicked.connect(self.salva)
+        layout.addWidget(btn_salva)
+
+    def salva(self):
+        vecchia = self.vecchia_input.text()
+        nuova = self.nuova_input.text()
+        conferma = self.conferma_input.text()
+
+        if not vecchia or not nuova or not conferma:
+            QMessageBox.warning(self, "Errore", "Compila tutti i campi.")
+            return
+
+        if nuova != conferma:
+            QMessageBox.warning(self, "Errore", "I numeri non coincidono.")
+            return
+
+        if len(nuova) < 12:
+            QMessageBox.warning(self, "Errore", "Il numero carta deve avere almeno 12 cifre.")
+            return
+
+        successo = self.gestore_profilo.cambia_carta_utente(
+            self.email_utente,
+            vecchia,
+            nuova
+        )
+
+        if successo:
+            QMessageBox.information(self, "Successo", "Carta aggiornata correttamente.")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
+
 
 class FinestraRicerca(QDialog):
     """Visualizza i risultati della ricerca globale (CDU4)."""
