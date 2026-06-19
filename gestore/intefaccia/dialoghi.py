@@ -1,7 +1,7 @@
 import os
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget,QPixmap
 from PyQt6.QtCore import Qt, QSize
 from models.piattaforma import CATALOGO_PIATTAFORME
 
@@ -276,7 +276,6 @@ class FinestraModificaPagamento(QDialog):
 
 
 class FinestraRicerca(QDialog):
-    """Visualizza i risultati della ricerca globale interrogando le piattaforme (CDU4)."""
     def __init__(self, testo, finestra_principale, parent=None):
         super().__init__(parent)
 
@@ -284,68 +283,92 @@ class FinestraRicerca(QDialog):
         self.finestra_principale = finestra_principale
 
         self.setWindowTitle(f"Risultati per: {testo}")
-        self.setFixedSize(500, 600)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setFixedSize(520, 650)
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #F2F7FF;
+            }
+            QLabel#titolo {
+                font-size: 22px;
+                font-weight: bold;
+                color: #1A3E73;
+            }
+            QFrame#card {
+                background-color: white;
+                border-radius: 12px;
+                border: 1px solid #D0D7E2;
+            }
+            QFrame#card:hover {
+                border: 1px solid #4A90E2;
+                background-color: #F7FAFF;
+            }
+            QPushButton {
+                background-color: #4A90E2;
+                color: white;
+                border-radius: 8px;
+                padding: 6px 12px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #357ABD;
+            }
+        """)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
 
         titolo = QLabel(f"Risultati trovati per '{testo}':")
-        titolo.setStyleSheet("font-size: 18px; font-weight: bold; color: #222;")
+        titolo.setObjectName("titolo")
         layout.addWidget(titolo)
 
-        # Area scrollabile
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         contenitore = QWidget()
         layout_scroll = QVBoxLayout(contenitore)
+        layout_scroll.setSpacing(15)
 
-        # 🔍 ESEGUIAMO LA RICERCA SU TUTTE LE PIATTAFORME
         risultati = self.esegui_ricerca_globale(testo)
 
         if not risultati:
-            layout_scroll.addWidget(QLabel("Nessun risultato trovato."))
+            nessuno = QLabel("Nessun risultato trovato.")
+            nessuno.setStyleSheet("font-size: 16px; color: #444;")
+            layout_scroll.addWidget(nessuno)
         else:
             for r in risultati:
-                box = QFrame()
-                box.setStyleSheet("background-color: white; border: 1px solid #ccc; padding: 10px;")
-                box_layout = QVBoxLayout(box)
+                card = QFrame()
+                card.setObjectName("card")
+                card_layout = QHBoxLayout(card)
+                card_layout.setContentsMargins(15, 15, 15, 15)
+                card_layout.setSpacing(15)
 
-                box_layout.addWidget(QLabel(f"🎬 Titolo: {r['titolo']}"))
-                box_layout.addWidget(QLabel(f"📡 Piattaforma: {r['piattaforma']}"))
+                # Icona piattaforma
+                icona = QLabel()
+                icona.setPixmap(QPixmap(r["logo"]).scaled(60, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                card_layout.addWidget(icona)
 
-                btn = QPushButton("Apri contenuto")
+                # Testo
+                testo_box = QVBoxLayout()
+                titolo_lbl = QLabel(f"{r['titolo']}")
+                titolo_lbl.setStyleSheet("font-size: 18px; font-weight: bold; color: #1A3E73;")
+                testo_box.addWidget(titolo_lbl)
+
+                categoria_lbl = QLabel(f"Categoria: {r['categoria']}")
+                categoria_lbl.setStyleSheet("font-size: 14px; color: #555;")
+                testo_box.addWidget(categoria_lbl)
+
+                card_layout.addLayout(testo_box)
+
+                # Pulsante apri
+                btn = QPushButton("Apri")
                 btn.clicked.connect(lambda ch, link=r["link"]: webbrowser.open(link))
-                box_layout.addWidget(btn)
+                card_layout.addWidget(btn)
 
-                layout_scroll.addWidget(box)
+                layout_scroll.addWidget(card)
 
         scroll.setWidget(contenitore)
         layout.addWidget(scroll)
 
-    def esegui_ricerca_globale(self, testo):
-        testo = testo.lower()
-        risultati = []
-
-        for piattaforma in CATALOGO_PIATTAFORME.values():
-        # Cerca per categoria
-            if testo in piattaforma._categoria.lower():
-                risultati.append({
-                "titolo": piattaforma.nome,
-                "piattaforma": piattaforma.nome,
-                "link": piattaforma.link_login
-            })
-
-        # Cerca per nome piattaforma
-            elif testo in piattaforma.nome.lower():
-                risultati.append({
-                "titolo": piattaforma.nome,
-                "piattaforma": piattaforma.nome,
-                "link": piattaforma.link_login
-            })
-
-        return risultati
 
 
         
