@@ -27,11 +27,11 @@ class LoginWindow(QWidget):
     e al recupero password (CDU8).
     """
 
-    def __init__(self, gestore_login=None, gestore_preferenze=None):
+    def __init__(self, gestore_login=None, gestore_preferenze=None,gestore_profilo=None):
         super().__init__()
         self.gestore_login = gestore_login
         self.gestore_preferenze = gestore_preferenze
-        
+        self.gestore_profilo = gestore_profilo
         # Configurazione Finestra (Requisito Mockup)
         self.setWindowTitle("Login - RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
@@ -120,7 +120,7 @@ class LoginWindow(QWidget):
             nome_utente = "Utente"
 
         print(f"Tentativo di accesso per: {email}")
-        self.home = FinestraPrincipale(nome=nome_utente, email=email, gestore_preferenze=self.gestore_preferenze)
+        self.home = FinestraPrincipale(nome=nome_utente, email=email, gestore_preferenze=self.gestore_preferenze,gestore_profilo=self.gestore_profilo)
         self.home.login_window = self
         self.home.show()
         self.close()
