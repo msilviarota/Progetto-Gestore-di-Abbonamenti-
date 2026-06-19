@@ -10,7 +10,6 @@ from intefaccia.stile import (
 )
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraModificaPagamento
-
 class ProfiloDialog(QDialog):
     """Hub per la gestione dell'account (CDU7, CDU9, CDU15, CDU16)."""
 
@@ -105,7 +104,7 @@ class ProfiloDialog(QDialog):
         btn_pagamento = QPushButton("💳 Modifica pagamento")
         btn_pagamento.setFixedHeight(38)
         btn_pagamento.setStyleSheet(STILE_BTN_SERVIZIO)
-        btn_pagamento.clicked.connect(self.apri_pagamento)
+        btn_pagamento.clicked.connect(self.apri_modifica_pagamento)
         layout.addWidget(btn_pagamento)
 
         sep3 = QFrame()
@@ -141,9 +140,13 @@ class ProfiloDialog(QDialog):
     )
      finestra.exec()
 
-
     def apri_pagamento(self):
-        FinestraModificaPagamento(self).exec()
+      FinestraModificaPagamento(
+        email_utente=self.campo_email.text(),
+        gestore_profilo=self.finestra_principale.gestore_profilo,
+        parent=self
+     ).exec()
+
 
     def apri_abbonamenti(self):
         from PyQt6.QtWidgets import QMessageBox
