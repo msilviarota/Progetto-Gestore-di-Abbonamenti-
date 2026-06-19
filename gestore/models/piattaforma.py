@@ -13,12 +13,11 @@ class Piattaforma:
     con un catalogo di contenuti ricercabili.
     """
 
-    def __init__(self, nome: str, logo: str, link_login: str, catalogo: list):
+    def __init__(self, nome: str, logo: str, link_login: str, categoria: str):
         self._nome = nome
         self._logo = logo
         self._link_login = link_login
-        self.catalogo = catalogo  # LISTA DI Contenuto
-
+        self._categoria = categoria
     @property
     def nome(self):
         return self._nome
@@ -58,10 +57,10 @@ class Piattaforma:
 CATALOGO_PIATTAFORME = {
     "netflix": Piattaforma(
         nome="Netflix",
-       # link_ricerca="https://www.netflix.com/search?q={}",
+        link_ricerca="https://www.netflix.com/search?q={}",
         link_login="https://www.netflix.com/login",
         logo="loghi/netflix.png",
-       # categoria="Streaming",
+        categoria="Streaming",
          catalogo=[
             Contenuto("n1", "Stranger Things", "Netflix", "Serie"),
             Contenuto("n2", "The Witcher", "Netflix", "Serie"),
@@ -70,84 +69,84 @@ CATALOGO_PIATTAFORME = {
     ),
     "prime video": Piattaforma(
         nome="Prime Video",
-        #link_ricerca="https://www.primevideo.com/search/ref=atv_nb_sr?phrase={}",
+        link_ricerca="https://www.primevideo.com/search/ref=atv_nb_sr?phrase={}",
         link_login="https://www.primevideo.com",
         logo="loghi/primevideo.png",
         categoria="Streaming"
     ),
     "youtube": Piattaforma(
         nome="YouTube",
-        #link_ricerca="https://www.youtube.com/results?search_query={}",
+        link_ricerca="https://www.youtube.com/results?search_query={}",
         link_login="https://www.youtube.com",
         logo="loghi/youtube.png",
         categoria="Video"
     ),
     "disney +": Piattaforma(
         nome="Disney+",
-       # link_ricerca="https://www.disneyplus.com/search/{}",
+        link_ricerca="https://www.disneyplus.com/search/{}",
         link_login="https://www.disneyplus.com/it-it",
         logo="loghi/disney.png",
         categoria="Streaming"
     ),
     "applemusic": Piattaforma(
         nome="Apple Music",
-        #link_ricerca="https://music.apple.com/search?term={}",
+        link_ricerca="https://music.apple.com/search?term={}",
         link_login="https://www.apple.com/it/apple-music/",
         logo="loghi/appmusic.png",
         categoria="Musica"
     ),
     "spotify": Piattaforma(
         nome="Spotify",
-       # link_ricerca="https://open.spotify.com/search/{}",
+        link_ricerca="https://open.spotify.com/search/{}",
         link_login="https://open.spotify.com/intl-it",
         logo="loghi/spotify.png",
         categoria="Musica"
     ),
     "amazon music": Piattaforma(
         nome="Amazon Music",
-       # link_ricerca="https://music.amazon.it/search/{}",
+        link_ricerca="https://music.amazon.it/search/{}",
         link_login="https://music.amazon.it/",
         logo="loghi/amazonmusic.png",
         categoria="Musica"
     ),
     "mediaset infinity": Piattaforma(
         nome="Mediaset Infinity",
-        #link_ricerca="https://www.mediasetinfinity.mediaset.it/ricerca/{}",
+        link_ricerca="https://www.mediasetinfinity.mediaset.it/ricerca/{}",
         link_login="https://www.mediasetplay.mediaset.it/",
         logo="loghi/mediasetinfinity.png",
         categoria="Streaming"
     ),
     "raiplay": Piattaforma(
         nome="RaiPlay",
-       # link_ricerca="https://www.raiplay.it/cerca?q={}",
+        link_ricerca="https://www.raiplay.it/cerca?q={}",
         link_login="https://www.raiplay.it/",
         logo="loghi/raiplay.png",
         categoria="Streaming"
     ),
     "kobo": Piattaforma(
         nome="Kobo",
-        #link_ricerca="https://www.kobo.com/it/it/search?query={}",
+        link_ricerca="https://www.kobo.com/it/it/search?query={}",
         link_login="https://www.kobo.com/it/it",
         logo="loghi/kobo.png",
         categoria="Libri"
     ),
     "kindle": Piattaforma(
         nome="Kindle",
-       # link_ricerca="https://www.amazon.it/s?k={}",
+        link_ricerca="https://www.amazon.it/s?k={}",
         link_login="https://leggi.amazon.it/landing",
         logo="loghi/kindle.png",
         categoria="Libri"
     ),
     "sky sport": Piattaforma(
         nome="Sky Sport",
-       # link_ricerca="https://sport.sky.it/ricerca?q={}",
+        link_ricerca="https://sport.sky.it/ricerca?q={}",
         link_login="https://sport.sky.it/",
         logo="loghi/skysport.png",
         categoria="Sport"
     ),
     "now tv": Piattaforma(
         nome="Now TV",
-       # link_ricerca="https://www.nowtv.it/cerca?q={}",
+        link_ricerca="https://www.nowtv.it/cerca?q={}",
         link_login="https://www.nowtv.it/sport",
         logo="loghi/nowtv.png",
         categoria="Sport"
