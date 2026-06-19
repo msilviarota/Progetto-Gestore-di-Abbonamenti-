@@ -5,9 +5,6 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget
 from PyQt6.QtCore import Qt, QSize
 from models.piattaforma import CATALOGO_PIATTAFORME
-
-
-
 # Configurazione del path per permettere l'importazione dei moduli del progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.dirname(cartella_corrente)

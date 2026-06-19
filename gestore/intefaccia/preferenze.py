@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QCheckBox
 from PyQt6.QtCore import Qt
 
 from intefaccia.stile import STILE_TITOLO_PROFILO, STILE_BTN_CHIUDI, STILE_BTN_ESCI
+from intefaccia.dialoghi import FinestraRicerca
 
 
 class FinestraPreferenze(QDialog):
@@ -89,4 +90,10 @@ class FinestraPreferenze(QDialog):
         if self.gestore_preferenze:
             self.gestore_preferenze.salva_preferenze(self.email_utente, selezionate)
         QMessageBox.information(self, "Salvato", "Preferenze salvate con successo!")
+        # 🔍 Mostra i risultati delle preferenze salvate
+
+        testo_ricerca = " ".join(selezionate)  # unisce le categorie selezionate
+        finestra_risultati = FinestraRicerca(testo_ricerca, None)
+        finestra_risultati.exec()
+
         self.close()

@@ -1,0 +1,9 @@
+{
+    "silvia@email.com": {
+        "nome": "Silvia",
+        "cognome": "Test",
+        "eta": 22,
+        "email": "silvia@email.com",
+        "password": "password123"
+    }
+}
