@@ -183,11 +183,10 @@ class FinestraPrincipale(QWidget):
         "e clicca su 'Acquista' accanto alla piattaforma che vuoi."
         )
     def apri_scaduti(self):
-        """CDU14/CDU19: Gestione abbonamenti scaduti (collegamento al backend in arrivo)."""
-        QMessageBox.information(
-            self, "In arrivo",
-            "La schermata degli abbonamenti scaduti sarà collegata al backend a breve."
-        )
+        """CDU14/CDU19: Mostra gli abbonamenti scaduti e permette di rimuoverli."""
+        from intefaccia.dialoghi import FinestraScaduti
+        dialogo = FinestraScaduti(self.gestore_abbonamenti, self)
+        dialogo.exec()
 
     def carica_suggerimenti(self):
         """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
