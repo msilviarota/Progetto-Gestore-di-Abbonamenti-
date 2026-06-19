@@ -64,3 +64,14 @@ class GestoreProfilo:
         
         self._notifica = Notifica("La vecchia password non è corretta.", "Errore")
         return False
+    def cambia_carta_utente(self, email: str, vecchia: str, nuova: str):
+        utente = self.ottieni_dati_utente(email)
+
+        if utente and utente._carta == vecchia:
+         utente._carta = nuova
+         self._repo_Utente.aggiorna_utente(utente)
+         self._notifica = Notifica("Carta aggiornata correttamente.", "Successo")
+         return True
+
+        self._notifica = Notifica("Il vecchio numero carta non è corretto.", "Errore")
+        return False
