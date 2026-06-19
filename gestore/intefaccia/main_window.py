@@ -28,7 +28,7 @@ class FinestraPrincipale(QWidget):
     Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
     """
 
-    def __init__(self, nome="Utente", email="utente@email.com", gestore_preferenze=None,gestore_profilo=None):
+    def __init__(self, gestore_profilo,nome="Utente", email="utente@email.com", gestore_preferenze=None, parent=None):
         super().__init__()
         self.nome_utente = nome
         self.email_utente = email
