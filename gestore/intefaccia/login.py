@@ -106,16 +106,23 @@ class LoginWindow(QWidget):
         email = self.input_email.text()
         password = self.input_password.text()
 
-        # Simulazione verifica (andrebbe collegato al GestoreLogin)
-        if email and password:
-            print(f"Tentativo di accesso per: {email}")
-            # Se credenziali valide, reindirizza alla home (Flusso 6)
-            self.home = FinestraPrincipale(nome="Utente", email=email, gestore_preferenze=self.gestore_preferenze)
-            self.home.show()
-            self.close()
-        else:
-            # Gestione errore (Flusso Alternativo B)
+        if not email or not password:
             QMessageBox.warning(self, "Errore", "Credenziali non valide o mancanti.")
+            return
+
+        if self.gestore_login:
+            risultato = self.gestore_login.verifica_accesso(email, password)
+            if not risultato:
+                QMessageBox.warning(self, "Errore", "Email o password errati.")
+                return
+            nome_utente = risultato.get("nome", "Utente")
+        else:
+            nome_utente = "Utente"
+
+        print(f"Tentativo di accesso per: {email}")
+        self.home = FinestraPrincipale(nome=nome_utente, email=email, gestore_preferenze=self.gestore_preferenze)
+        self.home.show()
+        self.close()
 
     def apri_registrazione(self):
         """CDU3: Apre la finestra di registrazione."""
