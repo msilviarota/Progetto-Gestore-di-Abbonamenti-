@@ -31,6 +31,7 @@ class ProfiloDialog(QDialog):
         scroll.setStyleSheet("QScrollArea { border: none; }")
 
         contenuto = QWidget()
+        contenuto.setStyleSheet("background-color: #F7F4EF;")
         layout = QVBoxLayout(contenuto)
         layout.setSpacing(15)
         layout.setContentsMargins(30, 30, 30, 30)
