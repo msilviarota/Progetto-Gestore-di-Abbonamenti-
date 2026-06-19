@@ -58,8 +58,7 @@ class FinestraPrincipale(QWidget):
 
         self._build_ui()
         self.carica_suggerimenti()
-        self.controlla_notifiche()
-
+        
     def _build_ui(self):
         layout_principale = QVBoxLayout(self)
         layout_principale.setContentsMargins(20, 20, 20, 20)
