@@ -62,11 +62,7 @@ CATALOGO_PIATTAFORME = {
         link_login="https://www.netflix.com/login",
         logo="loghi/netflix.png",
         categoria="Streaming",
-         catalogo=[
-            Contenuto("n1", "Stranger Things", "Netflix", "Serie"),
-            Contenuto("n2", "The Witcher", "Netflix", "Serie"),
-            Contenuto("n3", "Red Notice", "Netflix", "Film"),
-        ]
+     
     ),
     "prime video": Piattaforma(
         nome="Prime Video",
