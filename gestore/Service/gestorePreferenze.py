@@ -44,6 +44,21 @@ class GestorePreferenze:
             self._notifica = Notifica("Preferenze aggiornate con successo.", "Successo")
         return successo
 
+
+    def ottieni_preferenze(self, email_utente: str):
+        """
+        Restituisce la lista delle categorie preferite dell'utente.
+        Se non esistono preferenze salvate, restituisce una lista vuota.
+        """
+        dati = self._repo_Preferenze.ottieni_per_utente(email_utente)
+
+        if not dati:
+            return []
+
+        # Il repository salva un dizionario: {"categorie": [...], "ultima_modifica": "..."}
+        return dati.get("categorie", [])
+
+
     def genera_suggerimenti(self, email_utente: str):
         """
         CDU17: Incrocia le preferenze salvate con i database delle piattaforme.
