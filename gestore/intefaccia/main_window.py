@@ -65,7 +65,7 @@ class FinestraPrincipale(QWidget):
                 ("Sky Sport", "https://sport.sky.it/", "loghi/skysport.png"),
                 ("Now TV", "https://www.nowtv.it/sport", "loghi/nowtv.png")
             ]
-        } [3, 4]
+        } 
 
         self._build_ui()
         self.carica_suggerimenti() # Implementazione CDU17
