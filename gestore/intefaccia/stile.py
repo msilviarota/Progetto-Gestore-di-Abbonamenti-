@@ -3,11 +3,24 @@
 ### ==============================
 
 # Stili per i contenitori e dialoghi principali [1]
-STILE_DIALOGO_PROFILO = """ 
-QDialog { background-color: #e8f5e9; } 
-QLabel { color: #222222; font-size: 13px; } 
-QLineEdit { background-color: #f5f5f5; color: #222222; border: 1px solid #cccccc; border-radius: 8px; padding: 8px 12px; font-size: 13px; } 
-QLineEdit:focus { border: 1px solid #222222; } 
+STILE_DIALOGO_PROFILO = """
+QDialog {
+    background-color: #F7F4EF;
+}
+
+QLabel {
+    color: #222222;
+    font-size: 13px;
+}
+
+QLineEdit {
+    background-color: #f5f5f5;
+    color: #222222;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+}
 """
 
 STILE_SCHEDA_CATEGORIA = """ 
