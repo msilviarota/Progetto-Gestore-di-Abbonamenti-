@@ -53,9 +53,9 @@ QPushButton {
     border-radius: 14px; 
     font-size: 17px; 
     font-weight: bold; 
-    min-width: 220px;
-    min-height: 90px;
-    padding: 20px 26px;
+    min-width: 180px;
+    min-height: 70px;
+    padding: 14px 20px;
 } 
 
 QPushButton:hover { 
@@ -63,6 +63,7 @@ QPushButton:hover {
     color: white; 
 } 
 """
+
 
 STILE_BTN_EXTRA = """ 
 QPushButton { 
@@ -83,6 +84,8 @@ QPushButton:hover {
 } 
 """
 
+
+
 # Stili per i pulsanti di servizio e chiusura [3]
 STILE_BTN_SERVIZIO = """ 
 QPushButton { 
@@ -92,9 +95,9 @@ QPushButton {
     border-radius: 14px; 
     font-size: 17px; 
     font-weight: bold; 
-    min-width: 220px;
-    min-height: 90px;
-    padding: 20px 26px;
+    min-width: 180px;
+    min-height: 70px;
+    padding: 14px 20px;
 } 
 
 QPushButton:hover { 
@@ -102,6 +105,7 @@ QPushButton:hover {
     color: white; 
 } 
 """
+
 
 STILE_BTN_ESCI = """ 
 QPushButton { 
