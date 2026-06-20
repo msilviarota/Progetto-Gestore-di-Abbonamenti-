@@ -17,7 +17,10 @@ if radice_progetto not in sys.path:
 
 from intefaccia.stile import (
     STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA,
-    STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA
+    STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA,
+    STILE_TITOLO_SEZIONE, STILE_SCROLL_TRASPARENTE, STILE_TESTO_VUOTO,
+    STILE_DIALOGO_VERDE, STILE_TITOLO_DIALOGO, STILE_SEPARATORE,
+    STILE_FINESTRA_REGISTRAZIONE
 )
 from intefaccia.utils import BASE_DIR
 from models.piattaforma import CATALOGO_PIATTAFORME
@@ -111,7 +114,6 @@ class FinestraPrincipale(QWidget):
         layout_principale.addStretch()
 
         # Pulsanti categoria, emoji sopra + testo sotto, con stellina se consigliata
-        # Pulsanti categoria, emoji sopra + testo sotto, con stellina se consigliata
         layout_categorie = QHBoxLayout()
         layout_categorie.setSpacing(12)
         self.bottoni_categoria = []
@@ -144,13 +146,13 @@ class FinestraPrincipale(QWidget):
 
         # Unica sezione "Consigliati per te" — una fila orizzontale scorrevole
         titolo_suggerimenti = QLabel("✨ Consigliati per te")
-        titolo_suggerimenti.setStyleSheet("color: #222222; font-size: 16px; font-weight: bold;")
+        titolo_suggerimenti.setStyleSheet(STILE_TITOLO_SEZIONE)
         layout_principale.addWidget(titolo_suggerimenti)
 
         self.scroll_suggerimenti = QScrollArea()
         self.scroll_suggerimenti.setWidgetResizable(True)
         self.scroll_suggerimenti.setFixedHeight(90)
-        self.scroll_suggerimenti.setStyleSheet("QScrollArea { border: none; }")
+        self.scroll_suggerimenti.setStyleSheet(STILE_SCROLL_TRASPARENTE)
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
         self.layout_suggerimenti.setSpacing(10)
@@ -169,14 +171,14 @@ class FinestraPrincipale(QWidget):
 
         if not self.gestore_preferenze:
             label_vuoto = QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!")
-            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            label_vuoto.setStyleSheet(STILE_TESTO_VUOTO)
             self.layout_suggerimenti.addWidget(label_vuoto)
             return
 
         preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
         if not preferenze:
             label_vuoto = QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!")
-            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            label_vuoto.setStyleSheet(STILE_TESTO_VUOTO)
             self.layout_suggerimenti.addWidget(label_vuoto)
             return
 
@@ -195,7 +197,7 @@ class FinestraPrincipale(QWidget):
 
         if not trovate:
             label_vuoto = QLabel("Nessun consiglio disponibile per le categorie selezionate.")
-            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            label_vuoto.setStyleSheet(STILE_TESTO_VUOTO)
             self.layout_suggerimenti.addWidget(label_vuoto)
 
     def apri_profilo(self):
@@ -261,7 +263,11 @@ class FinestraPrincipale(QWidget):
 
 
 class FinestraCambiaCarta(QDialog):
-    """Modulo completo per cambiare il numero della carta (simile al cambio password)."""
+    """Modulo completo per cambiare il numero della carta (simile al cambio password).
+
+    NOTA: questa classe sembra un doppione di FinestraModificaPagamento in dialoghi.py.
+    Valuta se eliminarla per evitare di mantenere due copie della stessa logica.
+    """
     def __init__(self, email_utente, gestore_profilo, parent=None):
         super().__init__(parent)
 
@@ -270,20 +276,20 @@ class FinestraCambiaCarta(QDialog):
 
         self.setWindowTitle("Modifica Carta")
         self.setFixedSize(420, 320)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
         titolo = QLabel("💳 Modifica Carta")
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         # Vecchio numero carta
@@ -337,7 +343,12 @@ class FinestraCambiaCarta(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
+
+
 class FinestraRegistrazione(QDialog):
+    """NOTA: questa classe sembra un doppione (versione semplificata) di FinestraRegistrazione
+    in dialoghi.py, che ha più campi (cognome, età, conferma password). Valuta se serve davvero
+    o se è codice rimasto da una versione precedente."""
     def __init__(self, gestore_login, parent=None):
         super().__init__(parent)
 
@@ -345,7 +356,7 @@ class FinestraRegistrazione(QDialog):
 
         self.setWindowTitle("Crea un nuovo account")
         self.setFixedSize(420, 380)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -353,7 +364,7 @@ class FinestraRegistrazione(QDialog):
 
         titolo = QLabel("📝 Registrazione")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         # Campi
@@ -392,6 +403,7 @@ class FinestraRegistrazione(QDialog):
             QMessageBox.warning(self, "Errore", "Email già registrata.")
             
 class FinestraRecupero(QDialog):
+    """NOTA: questa classe sembra un doppione di FinestraRecuperoPassword in dialoghi.py."""
     def __init__(self, gestore_login, parent=None):
         super().__init__(parent)
 
@@ -399,7 +411,7 @@ class FinestraRecupero(QDialog):
 
         self.setWindowTitle("Recupero Password")
         self.setFixedSize(420, 250)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -407,7 +419,7 @@ class FinestraRecupero(QDialog):
 
         titolo = QLabel("🔑 Recupero Password")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         self.input_email = QLineEdit()
@@ -432,5 +444,3 @@ class FinestraRecupero(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Email non trovata.")
-
-
