@@ -22,6 +22,7 @@ from models.notifica import Notifica
 from intefaccia.stile import STILE_MESSAGEBOX
 def avvia_applicazione():
     app = QApplication(sys.argv)
+    app.setStyleSheet(STILE_MESSAGEBOX)
 
     # --- Creazione delle dipendenze di backend ---
     repo_utente = RepositoryUtente()
@@ -30,17 +31,20 @@ def avvia_applicazione():
     notifica = Notifica("", "")
     gestore_profilo = GestoreProfilo(repo_utente, notifica)
     gestore_login = GestoreLogin(repo_utente, repo_log, notifica)
-    # Nota: GestorePreferenze richiede anche un GestoreRicerca; per ora None
-    # (è usato solo in un punto non ancora implementato nel backend)
     gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, None, notifica)
     gestore_registrazione = GestoreRegistrazione(repo_utente, notifica)
-    notifica=notifica
-    app = QApplication(sys.argv)
-    app.setStyleSheet(STILE_MESSAGEBOX)
-    window = LoginWindow(gestore_login=gestore_login, gestore_preferenze=gestore_preferenze,gestore_profilo=gestore_profilo,gestore_abbonamenti=None,gestore_registrazione=gestore_registrazione)
+
+    window = LoginWindow(
+        gestore_login=gestore_login,
+        gestore_preferenze=gestore_preferenze,
+        gestore_profilo=gestore_profilo,
+        gestore_abbonamenti=None,
+        gestore_registrazione=gestore_registrazione
+    )
     window.show()
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
     avvia_applicazione()
+
