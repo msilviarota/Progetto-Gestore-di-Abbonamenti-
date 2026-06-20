@@ -301,22 +301,22 @@ QCheckBox::indicator:checked {
 """
 STILE_MESSAGEBOX = """
 QMessageBox {
-    background-color: #2b2b2b;
+    background-color: #2b2b2b !important;
 }
 QMessageBox QLabel {
-    color: white;
+    color: white !important;
     font-size: 13px;
 }
 QMessageBox QPushButton {
-    background-color: #444444;
-    color: white;
+    background-color: #444444 !important;
+    color: white !important;
     border: 1px solid #666;
     border-radius: 6px;
-    padding: 6px 16px;S
+    padding: 6px 16px;
     font-weight: bold;
 }
 QMessageBox QPushButton:hover {
-    background-color: #666666;
+    background-color: #666666 !important;
 }
 """
 
