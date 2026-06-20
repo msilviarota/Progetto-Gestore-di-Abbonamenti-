@@ -387,32 +387,27 @@ class FinestraRicerca(QDialog):
 
         scroll.setWidget(contenitore)
         layout.addWidget(scroll)
+    
     def esegui_ricerca_globale(self, testo):
-        testo = testo.lower()
+        parole = [p for p in testo.lower().split() if p]
         risultati = []
+        visti = set()
 
         for piattaforma in CATALOGO_PIATTAFORME.values():
+            nome_l = piattaforma.nome.lower()
+            categoria_l = piattaforma.categoria.lower()
 
-         # 1. Cerca per categoria
-            if testo in piattaforma.categoria.lower():
-                risultati.append({
-                "titolo": piattaforma.nome,
-                "piattaforma": piattaforma.nome,
-                "link": piattaforma.link_login,
-                "logo": piattaforma.logo,
-                "categoria": piattaforma.categoria
-            })
-                continue
+            corrisponde = any(p in nome_l or p in categoria_l for p in parole)
 
-         # 2. Cerca per nome piattaforma
-            if testo in piattaforma.nome.lower():
+            if corrisponde and piattaforma.nome not in visti:
                 risultati.append({
-                "titolo": piattaforma.nome,
-                "piattaforma": piattaforma.nome,
-                "link": piattaforma.link_login,
-                "logo": piattaforma.logo,
-                "categoria": piattaforma.categoria
-            })
+                    "titolo": piattaforma.nome,
+                    "piattaforma": piattaforma.nome,
+                    "link": piattaforma.link_login,
+                    "logo": piattaforma.logo,
+                    "categoria": piattaforma.categoria
+                })
+                visti.add(piattaforma.nome)
 
         return risultati
 
