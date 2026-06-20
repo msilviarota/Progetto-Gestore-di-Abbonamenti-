@@ -1,7 +1,8 @@
 import os
 from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtCore import Qt
-
+from PyQt6.QtWidgets import QMessageBox
+from intefaccia.stile import STILE_MESSAGEBOX
 # Corretto l'uso di __file__ per identificare la cartella dell'interfaccia [1]
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,3 +25,12 @@ def scarica_logo(percorso):
     except Exception as e:
         print(f"Errore nel caricamento logo: {e}")
     return None
+
+def mostra_messaggio(parent, titolo, testo, icona=QMessageBox.Icon.Warning):
+    """Mostra un popup con lo stile scuro applicato direttamente sull'istanza."""
+    msg = QMessageBox(parent)
+    msg.setIcon(icona)
+    msg.setWindowTitle(titolo)
+    msg.setText(testo)
+    msg.setStyleSheet(STILE_MESSAGEBOX)
+    msg.exec()

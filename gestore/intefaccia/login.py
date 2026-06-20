@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
     QLabel, QLineEdit, QMessageBox
 )
+from intefaccia.utils import mostra_messaggio
 from PyQt6.QtGui import QFont, QPixmap, QIcon
 from PyQt6.QtCore import Qt
 from intefaccia.dialoghi import FinestraRegistrazione
@@ -113,13 +114,13 @@ class LoginWindow(QWidget):
         password = self.input_password.text()
 
         if not email or not password:
-            QMessageBox.warning(self, "Errore", "Credenziali non valide o mancanti.")
+            mostra_messaggio(self, "Errore", "Credenziali non valide o mancanti.", QMessageBox.Icon.Warning)
             return
 
         if self.gestore_login:
             risultato = self.gestore_login.verifica_accesso(email, password)
             if not risultato:
-                QMessageBox.warning(self, "Errore", "Email o password errati.")
+                mostra_messaggio(self, "Errore", "Email o password errati.", QMessageBox.Icon.Warning)
                 return
             nome_utente = risultato.get("nome", "Utente")
         else:
@@ -137,30 +138,27 @@ class LoginWindow(QWidget):
         repo_pagamenti = RepositoryDatiPagamento()
 
         gestore_abbonamenti = GestoreAbbonamenti(
-        utente=utente,
-        repoAbbonamento=repo_abbonamenti,
-        repoDatiPagamento=repo_pagamenti,
-        piattaforma=None,
-        notifica=self.gestore_login._notifica
+            utente=utente,
+            repoAbbonamento=repo_abbonamenti,
+            repoDatiPagamento=repo_pagamenti,
+            piattaforma=None,
+            notifica=self.gestore_login._notifica
         )
 
-        # Salvo il gestore abbonamenti nell'istanza
         self.gestore_abbonamenti = gestore_abbonamenti
 
         print(f"Tentativo di accesso per: {email}")
 
-    # Apro la finestra principale
         self.home = FinestraPrincipale(
-        nome=nome_utente,
-        email=email,
-        gestore_preferenze=self.gestore_preferenze,
-        gestore_profilo=self.gestore_profilo,
-        gestore_abbonamenti=self.gestore_abbonamenti
-      )
+            nome=nome_utente,
+            email=email,
+            gestore_preferenze=self.gestore_preferenze,
+            gestore_profilo=self.gestore_profilo,
+            gestore_abbonamenti=self.gestore_abbonamenti
+        )
         self.home.login_window = self
         self.home.show()
         self.close()
-
 
     def apri_registrazione(self):
         """CDU3: Apre la finestra di registrazione."""
