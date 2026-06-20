@@ -14,7 +14,7 @@ QLabel {
 }
 
 QLineEdit {
-    background-color: #f5f5f5;
+    background-color: #D6D6D6;
     color: #222222;
     border: 1px solid #cccccc;
     border-radius: 8px;
@@ -47,7 +47,7 @@ QPushButton:hover {
 
 STILE_BTN_CATEGORIA = """ 
 QPushButton { 
-    background-color: #f5f5f5; 
+    background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 14px; 
@@ -63,7 +63,7 @@ QPushButton:hover {
 
 STILE_BTN_EXTRA = """ 
 QPushButton { 
-    background-color: #f5f5f5; 
+    background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 14px; 
@@ -80,7 +80,7 @@ QPushButton:hover {
 # Stili per i pulsanti di servizio e chiusura [3]
 STILE_BTN_SERVIZIO = """ 
 QPushButton { 
-    background-color: #f5f5f5; 
+    background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 10px; 
@@ -126,7 +126,7 @@ QPushButton:hover {
 # Stili per campi di input e testi informativi [4]
 STILE_CAMPO_RICERCA = """ 
 QLineEdit { 
-    background-color: #f5f5f5; 
+    background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 20px; 
@@ -140,7 +140,7 @@ QLineEdit:focus {
 
 STILE_COMBO = """ 
 QComboBox { 
-    background-color: #f5f5f5; 
+    background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 8px; 
