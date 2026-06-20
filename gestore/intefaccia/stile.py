@@ -299,6 +299,26 @@ QCheckBox::indicator:checked {
     image: none;
 }
 """
+STILE_MESSAGEBOX = """
+QMessageBox {
+    background-color: #2b2b2b;
+}
+QMessageBox QLabel {
+    color: white;
+    font-size: 13px;
+}
+QMessageBox QPushButton {
+    background-color: #444444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 6px;
+    padding: 6px 16px;S
+    font-weight: bold;
+}
+QMessageBox QPushButton:hover {
+    background-color: #666666;
+}
+"""
 
 STILE_TITOLO_RICERCA_ITEM = "font-size: 18px; font-weight: bold; color: #1A3E73;"
 STILE_LABEL_CATEGORIA_RICERCA = "font-size: 14px; color: #555;"

@@ -19,6 +19,7 @@ from Service.gestorePreferenze import GestorePreferenze
 from intefaccia.main_window import FinestraPrincipale
 from Service.registrazione import GestoreRegistrazione
 from models.notifica import Notifica
+from intefaccia.stile import STILE_MESSAGEBOX
 def avvia_applicazione():
     app = QApplication(sys.argv)
 
@@ -34,7 +35,8 @@ def avvia_applicazione():
     gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, None, notifica)
     gestore_registrazione = GestoreRegistrazione(repo_utente, notifica)
     notifica=notifica
-
+    app = QApplication(sys.argv)
+    app.setStyleSheet(STILE_MESSAGEBOX)
     window = LoginWindow(gestore_login=gestore_login, gestore_preferenze=gestore_preferenze,gestore_profilo=gestore_profilo,gestore_abbonamenti=None,gestore_registrazione=gestore_registrazione)
     window.show()
     sys.exit(app.exec())
