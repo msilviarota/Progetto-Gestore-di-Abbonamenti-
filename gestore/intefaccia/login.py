@@ -26,11 +26,14 @@ class LoginWindow(QWidget):
     e al recupero password (CDU8).
     """
 
-    def __init__(self, gestore_login=None, gestore_preferenze=None,gestore_profilo=None,gestore_abbonamenti=None):
+    def __init__(self, gestore_login=None, gestore_preferenze=None, gestore_profilo=None,
+                 gestore_abbonamenti=None, gestore_registrazione=None):
         super().__init__()
         self.gestore_login = gestore_login
         self.gestore_preferenze = gestore_preferenze
         self.gestore_profilo = gestore_profilo
+        self.gestore_abbonamenti = gestore_abbonamenti
+        self.gestore_registrazione = gestore_registrazione
         self.gestore_abbonamenti = gestore_abbonamenti
         # Configurazione Finestra (Requisito Mockup)
         self.setWindowTitle("Login - RelaxApp")
@@ -158,7 +161,7 @@ class LoginWindow(QWidget):
 
     def apri_registrazione(self):
         """CDU3: Apre la finestra di registrazione."""
-        self.reg = FinestraRegistrazione(self.gestore_login,self)
+        self.reg = FinestraRegistrazione(self.gestore_registrazione, self)
         self.reg.exec()
 
     def apri_recupero(self):

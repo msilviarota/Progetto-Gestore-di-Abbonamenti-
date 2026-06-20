@@ -17,7 +17,7 @@ from models.notifica import Notifica
 from Service.gestoreLogin import GestoreLogin
 from Service.gestorePreferenze import GestorePreferenze
 from intefaccia.main_window import FinestraPrincipale
-
+from Service.registrazione import GestoreRegistrazione
 from models.notifica import Notifica
 def avvia_applicazione():
     app = QApplication(sys.argv)
@@ -32,10 +32,10 @@ def avvia_applicazione():
     # Nota: GestorePreferenze richiede anche un GestoreRicerca; per ora None
     # (è usato solo in un punto non ancora implementato nel backend)
     gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, None, notifica)
-
+    gestore_registrazione = GestoreRegistrazione(repo_utente, notifica)
     notifica=notifica
 
-    window = LoginWindow(gestore_login=gestore_login, gestore_preferenze=gestore_preferenze,gestore_profilo=gestore_profilo)
+    window = LoginWindow(gestore_login=gestore_login, gestore_preferenze=gestore_preferenze,gestore_profilo=gestore_profilo,gestore_abbonamenti=None,gestore_registrazione=gestore_registrazione)
     window.show()
     sys.exit(app.exec())
 
