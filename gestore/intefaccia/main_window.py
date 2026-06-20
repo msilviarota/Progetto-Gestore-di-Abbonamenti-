@@ -29,7 +29,14 @@ class FinestraPrincipale(QWidget):
     Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
     """
 
-    def __init__(self, gestore_profilo,gestore_abbonamenti,nome="Utente", email="utente@email.com", gestore_preferenze=None, parent=None):
+class FinestraPrincipale(QWidget):
+    """
+    Rappresenta l'interfaccia principale del gestore (Home Page).
+    Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
+    """
+
+    def __init__(self, gestore_profilo, gestore_abbonamenti, nome="Utente", email="utente@email.com",
+                 gestore_preferenze=None, parent=None):
         super().__init__()
         self.nome_utente = nome
         self.email_utente = email
@@ -50,6 +57,7 @@ class FinestraPrincipale(QWidget):
             "🎬 Video": "Video",
             "⚽ Sport": "Sport"
         }
+        self.categoria_to_etichetta = {v: k for k, v in self.mappa_categorie.items()}
         self.link_categorie = {
             etichetta: {
                 p.nome: p for p in CATALOGO_PIATTAFORME.values()
@@ -59,8 +67,8 @@ class FinestraPrincipale(QWidget):
         }
 
         self._build_ui()
-        self.carica_suggerimenti()
-        
+        self.popola_consigliati()
+
     def _build_ui(self):
         layout_principale = QVBoxLayout(self)
         layout_principale.setContentsMargins(20, 20, 20, 20)
@@ -75,17 +83,7 @@ class FinestraPrincipale(QWidget):
         btn_profilo.clicked.connect(self.apri_profilo)
         barra_top.addWidget(btn_profilo)
         layout_principale.addLayout(barra_top)
-        
-        titolo_consigli = QLabel("✨ Consigliati per te")
-        titolo_consigli.setStyleSheet("font-size: 20px; font-weight: bold; margin-top: 20px;")
-        layout_principale.addWidget(titolo_consigli)
 
-        self.area_consigli = QVBoxLayout()
-        layout_principale.addLayout(self.area_consigli)
-
-        self.aggiorna_consigli()
-        
-        
         # Logo centrato
         logo = QLabel()
         percorso_logo = os.path.join(BASE_DIR, "logo5.1.png")
@@ -119,31 +117,19 @@ class FinestraPrincipale(QWidget):
 
         layout_principale.addStretch()
 
-        # Pulsanti categoria, emoji sopra + testo sotto
+        # Pulsanti categoria, emoji sopra + testo sotto, con stellina se consigliata
         layout_categorie = QHBoxLayout()
         layout_categorie.setSpacing(12)
-
-        # Ottieni le categorie consigliate
         categorie_star = self.categorie_consigliate()
-
         for etichetta in self.link_categorie.keys():
             emoji, nome = etichetta.split(" ", 1)
-
-            # Se la categoria è consigliata → aggiungi la stellina
-            if nome in categorie_star:
-                nome_visualizzato = f"⭐ {nome}"
-            else:
-                nome_visualizzato = nome
-
+            nome_visualizzato = f"⭐ {nome}" if nome in categorie_star else nome
             btn = QPushButton(f"{emoji}\n{nome_visualizzato}")
             btn.setFixedHeight(110)
             btn.setStyleSheet(STILE_BTN_CATEGORIA)
             btn.clicked.connect(lambda ch, c=etichetta: self.apri_categoria(c))
             layout_categorie.addWidget(btn)
-
         layout_principale.addLayout(layout_categorie)
-
-
 
         # Riga extra: Preferenze, Acquista, Scaduti
         layout_extra = QHBoxLayout()
@@ -161,45 +147,61 @@ class FinestraPrincipale(QWidget):
             layout_extra.addWidget(btn)
         layout_principale.addLayout(layout_extra)
 
-        # Area Suggerimenti (CDU17)
-        # Area Suggerimenti (CDU17)
-        titolo_suggerimenti = QLabel("Contenuti Consigliati per Te")
+        # Unica sezione "Consigliati per te" — una fila orizzontale scorrevole
+        titolo_suggerimenti = QLabel("✨ Consigliati per te")
         titolo_suggerimenti.setStyleSheet("color: #222222; font-size: 16px; font-weight: bold;")
         layout_principale.addWidget(titolo_suggerimenti)
+
         self.scroll_suggerimenti = QScrollArea()
+        self.scroll_suggerimenti.setWidgetResizable(True)
+        self.scroll_suggerimenti.setFixedHeight(90)
+        self.scroll_suggerimenti.setStyleSheet("QScrollArea { border: none; }")
         self.container_suggerimenti = QWidget()
         self.layout_suggerimenti = QHBoxLayout(self.container_suggerimenti)
+        self.layout_suggerimenti.setSpacing(10)
         self.scroll_suggerimenti.setWidget(self.container_suggerimenti)
-        self.scroll_suggerimenti.setWidgetResizable(True)
         layout_principale.addWidget(self.scroll_suggerimenti)
 
         layout_principale.addStretch()
 
-
-    def aggiorna_consigli(self):
-        # Svuota la sezione
-        while self.area_consigli.count():
-            item = self.area_consigli.takeAt(0)
+    def popola_consigliati(self):
+        """CDU17: Mostra le piattaforme consigliate in base alle preferenze, in un'unica fila."""
+        while self.layout_suggerimenti.count():
+            item = self.layout_suggerimenti.takeAt(0)
             widget = item.widget()
             if widget:
                 widget.deleteLater()
 
-        # Recupera preferenze salvate
-        preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
-        if not preferenze:
-            self.area_consigli.addWidget(QLabel("Nessun consiglio disponibile."))
+        if not self.gestore_preferenze:
+            label_vuoto = QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!")
+            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            self.layout_suggerimenti.addWidget(label_vuoto)
             return
 
-        # Normalizza le categorie (rimuove emoji)
-        categorie_pulite = [p.split(" ", 1)[1] if " " in p else p for p in preferenze]
+        preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
+        if not preferenze:
+            label_vuoto = QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!")
+            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            self.layout_suggerimenti.addWidget(label_vuoto)
+            return
 
-        # Cerca piattaforme compatibili
+        categorie_pulite = [p.split(" ", 1)[1] if " " in p else p for p in preferenze]
+        trovate = False
         for piattaforma in CATALOGO_PIATTAFORME.values():
             if piattaforma.categoria.lower() in [c.lower() for c in categorie_pulite]:
-                lbl = QLabel(f"• {piattaforma.nome} ({piattaforma.categoria})")
-                lbl.setStyleSheet("font-size: 16px;")
-                self.area_consigli.addWidget(lbl)
+                trovate = True
+                chip = QPushButton(f"{piattaforma.nome}\n{piattaforma.categoria}")
+                chip.setFixedSize(140, 60)
+                chip.setStyleSheet(STILE_BTN_EXTRA)
+                etichetta_cat = self.categoria_to_etichetta.get(piattaforma.categoria)
+                if etichetta_cat:
+                    chip.clicked.connect(lambda ch, c=etichetta_cat: self.apri_categoria(c))
+                self.layout_suggerimenti.addWidget(chip)
 
+        if not trovate:
+            label_vuoto = QLabel("Nessun consiglio disponibile per le categorie selezionate.")
+            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
+            self.layout_suggerimenti.addWidget(label_vuoto)
 
     def apri_profilo(self):
         """CDU7: Apre il pannello di gestione del profilo."""
@@ -208,19 +210,16 @@ class FinestraPrincipale(QWidget):
 
     def esegui_ricerca(self):
         testo = self.campo_ricerca.text().strip()
-
         if not testo:
             QMessageBox.warning(self, "Errore", "Inserisci un testo da cercare.")
             return
-  
         finestra = FinestraRicerca(testo, self)
         finestra.exec()
-
 
     def apri_categoria(self, nome_categoria):
         """CDU18: Mostra le piattaforme per avviare la riproduzione."""
         servizi = self.link_categorie.get(nome_categoria, {})
-        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente,self.gestore_abbonamenti, self)
+        dialogo = SchedaCategoria(nome_categoria, servizi, self.email_utente, self.gestore_abbonamenti, self)
         dialogo.exec()
 
     def apri_preferenze(self):
@@ -228,56 +227,34 @@ class FinestraPrincipale(QWidget):
         from intefaccia.preferenze import FinestraPreferenze
         finestra = FinestraPreferenze(self.gestore_preferenze, self.email_utente, self)
         finestra.exec()
+        self.popola_consigliati()  # aggiorna i consigli dopo eventuali modifiche
 
     def apri_acquista(self):
-        """CDU1: L'acquisto ora si avvia dalla scheda di una categoria/piattaforma."""
+        """CDU1: L'acquisto si avvia dalla scheda di una categoria/piattaforma."""
         QMessageBox.information(
-        self, "Seleziona una piattaforma",
-        "Per acquistare un abbonamento, apri una categoria (es. 🎵 Musica, 📡 Streaming...) "
-        "e clicca su 'Acquista' accanto alla piattaforma che vuoi."
+            self, "Seleziona una piattaforma",
+            "Per acquistare un abbonamento, apri una categoria (es. 🎵 Musica, 📡 Streaming...) "
+            "e clicca su 'Acquista' accanto alla piattaforma che vuoi."
         )
+
     def apri_scaduti(self):
         """CDU14/CDU19: Mostra gli abbonamenti scaduti e permette di rimuoverli."""
         from intefaccia.dialoghi import FinestraScaduti
         dialogo = FinestraScaduti(self.gestore_abbonamenti, self)
         dialogo.exec()
 
-    def carica_suggerimenti(self):
-        """CDU17: Incrocia preferenze e disponibilità per mostrare i consigliati."""
-        if not self.gestore_preferenze:
-            label_vuoto = QLabel("Imposta le tue preferenze nel profilo per ricevere consigli!")
-            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
-            self.layout_suggerimenti.addWidget(label_vuoto)
-            return
-
-        suggerimenti = self.gestore_preferenze.genera_suggerimenti(self.email_utente)
-        if not suggerimenti:
-            label_vuoto = QLabel("Imposta le tue preferenze per ricevere consigli personalizzati!")
-            label_vuoto.setStyleSheet("color: #555555; font-size: 13px;")
-            self.layout_suggerimenti.addWidget(label_vuoto)
-            return
-
-    def controlla_notifiche(self):
-        """CDU21/CDU22: Invia avvisi per scadenze o aggiornamento preferenze."""
-        messaggio = "È trascorsa una settimana! Desideri aggiornare le tue preferenze?"
-        QMessageBox.information(self, "Avviso di Sistema", messaggio)
     def categorie_consigliate(self):
-        """
-        Restituisce l'elenco delle categorie che hanno almeno una piattaforma consigliata.
-        """
+        """Restituisce l'elenco delle categorie con almeno una piattaforma consigliata."""
+        if not self.gestore_preferenze:
+            return []
         preferenze = self.gestore_preferenze.ottieni_preferenze(self.email_utente)
         if not preferenze:
             return []
-
-        # Normalizza le categorie (rimuove emoji)
         categorie_pulite = [p.split(" ", 1)[1] if " " in p else p for p in preferenze]
-
         categorie_trovate = set()
-
         for piattaforma in CATALOGO_PIATTAFORME.values():
             if piattaforma.categoria.lower() in [c.lower() for c in categorie_pulite]:
                 categorie_trovate.add(piattaforma.categoria)
-
         return list(categorie_trovate)
 
 
