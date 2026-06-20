@@ -22,13 +22,6 @@ from intefaccia.stile import (
 from intefaccia.utils import BASE_DIR
 from models.piattaforma import CATALOGO_PIATTAFORME
 
-
-class FinestraPrincipale(QWidget):
-    """
-    Rappresenta l'interfaccia principale del gestore (Home Page).
-    Gestisce navigazione, ricerca, suggerimenti e notifiche (CDU4, CDU7, CDU17, CDU18, CDU21, CDU22).
-    """
-
 class FinestraPrincipale(QWidget):
     """
     Rappresenta l'interfaccia principale del gestore (Home Page).
