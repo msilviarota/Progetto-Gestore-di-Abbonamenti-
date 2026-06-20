@@ -111,18 +111,20 @@ class FinestraPrincipale(QWidget):
         layout_principale.addStretch()
 
         # Pulsanti categoria, emoji sopra + testo sotto, con stellina se consigliata
+        # Pulsanti categoria, emoji sopra + testo sotto, con stellina se consigliata
         layout_categorie = QHBoxLayout()
         layout_categorie.setSpacing(12)
-        categorie_star = self.categorie_consigliate()
+        self.bottoni_categoria = []
         for etichetta in self.link_categorie.keys():
             emoji, nome = etichetta.split(" ", 1)
-            nome_visualizzato = f"⭐ {nome}" if nome in categorie_star else nome
-            btn = QPushButton(f"{emoji}\n{nome_visualizzato}")
+            btn = QPushButton()
             btn.setFixedHeight(110)
             btn.setStyleSheet(STILE_BTN_CATEGORIA)
             btn.clicked.connect(lambda ch, c=etichetta: self.apri_categoria(c))
             layout_categorie.addWidget(btn)
+            self.bottoni_categoria.append((btn, emoji, nome))
         layout_principale.addLayout(layout_categorie)
+        self.aggiorna_stelle_categorie()
 
         # Riga extra: Preferenze, Acquista, Scaduti
         layout_extra = QHBoxLayout()
@@ -220,7 +222,8 @@ class FinestraPrincipale(QWidget):
         from intefaccia.preferenze import FinestraPreferenze
         finestra = FinestraPreferenze(self.gestore_preferenze, self.email_utente, self)
         finestra.exec()
-        self.popola_consigliati()  # aggiorna i consigli dopo eventuali modifiche
+        self.popola_consigliati()
+        self.aggiorna_stelle_categorie()  # aggiorna i consigli dopo eventuali modifiche
 
     def apri_acquista(self):
         """CDU1: L'acquisto si avvia dalla scheda di una categoria/piattaforma."""
@@ -249,6 +252,12 @@ class FinestraPrincipale(QWidget):
             if piattaforma.categoria.lower() in [c.lower() for c in categorie_pulite]:
                 categorie_trovate.add(piattaforma.categoria)
         return list(categorie_trovate)
+    def aggiorna_stelle_categorie(self):
+        """Aggiorna la stellina sui pulsanti categoria in base alle preferenze correnti."""
+        categorie_star = self.categorie_consigliate()
+        for btn, emoji, nome in self.bottoni_categoria:
+            nome_visualizzato = f"⭐ {nome}" if nome in categorie_star else nome
+            btn.setText(f"{emoji}\n{nome_visualizzato}")
 
 
 class FinestraCambiaCarta(QDialog):
