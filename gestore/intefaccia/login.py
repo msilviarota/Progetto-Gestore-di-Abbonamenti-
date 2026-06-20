@@ -8,14 +8,20 @@ from PyQt6.QtGui import QFont, QPixmap, QIcon
 from PyQt6.QtCore import Qt
 from intefaccia.dialoghi import FinestraRegistrazione
 from intefaccia.dialoghi import FinestraRecuperoPassword
+from intefaccia.stile import (
+    STILE_BTN_LINK,
+    STILE_CAMPO_RICERCA,
+    STILE_FINESTRA_LOGIN,
+    STILE_TITOLO_LOGIN,
+    STILE_BTN_ACCEDI
+)
 # Configurazione dei percorsi per gestire gli import dal progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-# Importazione degli stili e delle utility
-from intefaccia.stile import STILE_BTN_LINK, STILE_CAMPO_RICERCA
+# Importazione delle utility
 from intefaccia.utils import BASE_DIR
 from intefaccia.main_window import FinestraPrincipale
 
@@ -39,7 +45,7 @@ class LoginWindow(QWidget):
         self.setWindowTitle("Login - RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
         self.showMaximized()
-        self.setStyleSheet("QWidget { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_FINESTRA_LOGIN)
         
         self._build_ui()
 
@@ -59,7 +65,7 @@ class LoginWindow(QWidget):
 
         # 2. Titolo
         titolo = QLabel("Bentornato!")
-        titolo.setStyleSheet("font-size: 28px; font-weight: bold; color: #222222; margin-bottom: 20px;")
+        titolo.setStyleSheet(STILE_TITOLO_LOGIN)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout_principale.addWidget(titolo)
 
@@ -80,10 +86,7 @@ class LoginWindow(QWidget):
         # 4. Pulsante Accedi
         btn_accedi = QPushButton("Accedi")
         btn_accedi.setFixedWidth(350)
-        btn_accedi.setStyleSheet("""
-            QPushButton { background-color: #222222; color: white; padding: 12px; border-radius: 10px; font-weight: bold; }
-            QPushButton:hover { background-color: #444444; }
-        """)
+        btn_accedi.setStyleSheet(STILE_BTN_ACCEDI)
         btn_accedi.clicked.connect(self.esegui_login)
         layout_principale.addWidget(btn_accedi, alignment=Qt.AlignmentFlag.AlignCenter)
 

@@ -58,20 +58,20 @@ class FinestraCambiaPassword(QDialog):
 
         self.setWindowTitle("Cambia Password")
         self.setFixedSize(420, 320)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
         titolo = QLabel("🔑 Cambia Password")
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         # Vecchia password
@@ -135,26 +135,7 @@ class FinestraRecuperoPassword(QDialog):
 
         self.setWindowTitle("Recupero Password")
         self.setFixedSize(420, 260)
-        self.setStyleSheet("""
-         QDialog { background-color: #e8f5e9; }
-         QLabel {
-         color: black !important;
-         font-size: 14px;}
-         QLineEdit {
-         color: black !important;
-         background-color: white !important;
-         border: 1px solid #888;
-         padding: 6px;
-         border-radius: 6px;}
-         QPushButton {
-         color: black !important;
-         background-color: #dcdcdc !important;
-         border: 1px solid #555;
-         padding: 8px;
-         border-radius: 6px;
-         font-weight: bold;}
-         QPushButton:hover {
-         background-color: #c8c8c8 !important;}""")
+        self.setStyleSheet(STILE_FINESTRA_REGISTRAZIONE)
 
 
         layout = QVBoxLayout(self)
@@ -163,12 +144,12 @@ class FinestraRecuperoPassword(QDialog):
 
         titolo = QLabel("🔑 Recupero Password")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         layout.addWidget(QLabel("Inserisci la tua email:"))
@@ -206,20 +187,20 @@ class FinestraModificaPagamento(QDialog):
 
         self.setWindowTitle("Modifica Carta")
         self.setFixedSize(420, 320)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
 
         titolo = QLabel("💳 Modifica Carta")
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         # Vecchia carta
@@ -283,43 +264,7 @@ class FinestraRicerca(QDialog):
 
         self.setWindowTitle(f"Risultati per: {testo}")
         self.setFixedSize(520, 650)
-        self.setStyleSheet("""
-            QDialog {
-                background-color: #F2F7FF;
-            }
-            QLabel#titolo {
-                font-size: 22px;
-                font-weight: bold;
-                color: #1A3E73;
-            }
-            QFrame#card {
-                background-color: white;
-                border-radius: 12px;
-                border: 1px solid #D0D7E2;
-            }
-            QFrame#card:hover {
-                border: 1px solid #4A90E2;
-                background-color: #F7FAFF;
-            }
-            QPushButton {
-                background-color: #4A90E2;
-                color: white;
-                border-radius: 8px;
-                padding: 6px 12px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #357ABD;
-            }
-            QScrollArea {
-                background-color: white;
-            }
-
-            QWidget {
-                background-color: white;
-                }
-
-        """)
+        self.setStyleSheet(STILE_FINESTRA_RICERCA)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -339,7 +284,7 @@ class FinestraRicerca(QDialog):
 
         if not risultati:
             nessuno = QLabel("Nessun risultato trovato.")
-            nessuno.setStyleSheet("font-size: 16px; color: #444;")
+            nessuno.setStyleSheet(STILE_LABEL_NESSUN_RISULTATO)
             layout_scroll.addWidget(nessuno)
         else:
             for r in risultati:
@@ -363,11 +308,11 @@ class FinestraRicerca(QDialog):
                 # Testo
                 testo_box = QVBoxLayout()
                 titolo_lbl = QLabel(f"{r['titolo']}")
-                titolo_lbl.setStyleSheet("font-size: 18px; font-weight: bold; color: #1A3E73;")
+                titolo_lbl.setStyleSheet(STILE_TITOLO_RICERCA_ITEM)
                 testo_box.addWidget(titolo_lbl)
 
                 categoria_lbl = QLabel(f"Categoria: {r['categoria']}")
-                categoria_lbl.setStyleSheet("font-size: 14px; color: #555;")
+                categoria_lbl.setStyleSheet(STILE_LABEL_CATEGORIA_RICERCA)
                 testo_box.addWidget(categoria_lbl)
 
                 card_layout.addLayout(testo_box)
@@ -435,31 +380,14 @@ class FinestraRegistrazione(QDialog):
 
         self.setWindowTitle("Crea un nuovo account")
         self.setFixedSize(420, 480)
-        self.setStyleSheet("""
-         QDialog { background-color: #e8f5e9; }
-         QLineEdit {
-          color: black;
-          background-color: white;
-         border: 1px solid #888;
-         padding: 6px;
-         border-radius: 6px;}
-         QPushButton {
-         color: black;
-         background-color: #dcdcdc;
-         border: 1px solid #555;
-         padding: 8px;
-         border-radius: 6px;
-         font-weight: bold;}
-         QPushButton:hover {
-         background-color: #c8c8c8;}""")
-
+        self.setStyleSheet(STILE_FINESTRA_REGISTRAZIONE)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(12)
 
         titolo = QLabel("📝 Registrazione")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         self.input_nome = QLineEdit()
@@ -536,35 +464,7 @@ class FinestraAcquisto(QDialog):
 
         self.setWindowTitle("Acquista Abbonamento")
         self.setFixedSize(450, 420)
-        self.setStyleSheet("""
-            QDialog { background-color: #e8f5e9; }
-
-            QLabel {
-                color: black;
-                font-size: 15px;
-            }
-
-            QLineEdit {
-                color: black;
-                background-color: white;
-                border: 1px solid #888;
-                padding: 6px;
-                border-radius: 6px;
-            }
-
-            QPushButton {
-                color: black;
-                background-color: #dcdcdc;
-                border: 1px solid #555;
-                padding: 10px;
-                border-radius: 6px;
-                font-weight: bold;
-            }
-
-            QPushButton:hover {
-                background-color: #c8c8c8;
-            }
-        """)
+        self.setStyleSheet(STILE_FINESTRA_REGISTRAZIONE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -573,13 +473,13 @@ class FinestraAcquisto(QDialog):
         # Titolo
         titolo = QLabel("🛒 Acquista Abbonamento")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 22px; font-weight: bold;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         # Separator
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         # Scelta piano
@@ -642,26 +542,14 @@ class FinestraScaduti(QDialog):
 
         self.setWindowTitle("Abbonamenti Scaduti")
         self.setFixedSize(450, 450)
-        self.setStyleSheet("""
-            QDialog { background-color: #e8f5e9; }
-            QLabel { color: black; font-size: 14px; }
-            QPushButton {
-                color: black;
-                background-color: #dcdcdc;
-                border: 1px solid #555;
-                padding: 6px;
-                border-radius: 6px;
-                font-weight: bold;
-            }
-            QPushButton:hover { background-color: #c8c8c8; }
-        """)
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout_principale = QVBoxLayout(self)
         layout_principale.setContentsMargins(20, 20, 20, 20)
         layout_principale.setSpacing(12)
 
         titolo = QLabel("⏰ Abbonamenti Scaduti")
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout_principale.addWidget(titolo)
 
@@ -670,10 +558,10 @@ class FinestraScaduti(QDialog):
         layout_principale.addWidget(sep)
         self.area_scroll = QScrollArea()
         self.area_scroll.setWidgetResizable(True)
-        self.area_scroll.setStyleSheet("QScrollArea { border: none; background-color: #e8f5e9; }")
+        self.area_scroll.setStyleSheet(STILE_SCROLL_VERDE)
 
         self.contenitore = QWidget()
-        self.contenitore.setStyleSheet("background-color: #e8f5e9;")
+        self.contenitore.setStyleSheet(STILE_CONTENITORE_VERDE)
         self.layout_lista = QVBoxLayout(self.contenitore)
         self.area_scroll.setWidget(self.contenitore)
         layout_principale.addWidget(self.area_scroll)
@@ -699,7 +587,7 @@ class FinestraScaduti(QDialog):
 
         for abb in scaduti:
             riga = QFrame()
-            riga.setStyleSheet("background-color: white; border-radius: 8px; padding: 8px;")
+            riga.setStyleSheet(STILE_CARD_LISTA)
             riga_layout = QHBoxLayout(riga)
 
             testo = QLabel(f"{abb['piattaforma'].capitalize()}\nScaduto il {abb['data_scadenza']}")
@@ -727,26 +615,14 @@ class FinestraAbbonamenti(QDialog):
 
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 450)
-        self.setStyleSheet("""
-            QDialog { background-color: #e8f5e9; }
-            QLabel { color: black; font-size: 14px; }
-            QPushButton {
-                color: black;
-                background-color: #dcdcdc;
-                border: 1px solid #555;
-                padding: 6px;
-                border-radius: 6px;
-                font-weight: bold;
-            }
-            QPushButton:hover { background-color: #c8c8c8; }
-        """)
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout_principale = QVBoxLayout(self)
         layout_principale.setContentsMargins(20, 20, 20, 20)
         layout_principale.setSpacing(12)
 
         titolo = QLabel("📋 I miei Abbonamenti")
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout_principale.addWidget(titolo)
 
@@ -756,10 +632,10 @@ class FinestraAbbonamenti(QDialog):
 
         self.area_scroll = QScrollArea()
         self.area_scroll.setWidgetResizable(True)
-        self.area_scroll.setStyleSheet("QScrollArea { border: none; background-color: #e8f5e9; }")
+        self.area_scroll.setStyleSheet(STILE_SCROLL_VERDE)
 
         self.contenitore = QWidget()
-        self.contenitore.setStyleSheet("background-color: #e8f5e9;")
+        self.contenitore.setStyleSheet(STILE_CONTENITORE_VERDE)
         self.layout_lista = QVBoxLayout(self.contenitore)
         self.area_scroll.setWidget(self.contenitore)
         layout_principale.addWidget(self.area_scroll)
@@ -785,7 +661,7 @@ class FinestraAbbonamenti(QDialog):
 
         for abb in abbonamenti:
             riga = QFrame()
-            riga.setStyleSheet("background-color: white; border-radius: 8px; padding: 8px;")
+            riga.setStyleSheet(STILE_CARD_LISTA)
             riga_layout = QHBoxLayout(riga)
 
             testo = QLabel(
@@ -818,7 +694,7 @@ class FinestraPrestitoAbbonamento(QDialog):
 
         self.setWindowTitle("Presta Abbonamento")
         self.setFixedSize(420, 350)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -826,13 +702,13 @@ class FinestraPrestitoAbbonamento(QDialog):
 
         titolo = QLabel("🤝 Presta un abbonamento")
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titolo.setStyleSheet("font-size: 20px; font-weight: bold; color: #222;")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
         layout.addWidget(titolo)
 
         # Separator
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("color: #cccccc;")
+        sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
         # Lista abbonamenti attivi
