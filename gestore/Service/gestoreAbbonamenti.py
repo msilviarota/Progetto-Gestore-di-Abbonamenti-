@@ -42,7 +42,7 @@ class GestoreAbbonamenti:
         Verifica se già acquistato (Flusso alternativo A) e salva nel profilo [8, 9].
         """
         # Verifica se l'abbonamento per questa piattaforma è già attivo
-        if self._repo_Abbonamento.esiste_abbonamento_attivo(self._email_utente, self._piattaforma.get_nome()):
+        if self._repo_Abbonamento.esiste_abbonamento_attivo(self._email_utente, self._piattaforma.nome):
             self._notifica = Notifica("Abbonamento già acquistato per questa piattaforma.", "Errore") 
             return False
 

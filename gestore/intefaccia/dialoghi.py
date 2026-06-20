@@ -529,7 +529,7 @@ class FinestraAcquisto(QDialog):
             email=self.gestore_abbonamenti._email_utente,
             nome_utente=getattr(utente, "_nome", ""),
             cognome_utente=getattr(utente, "_cognome", ""),
-            piattaforma_nome=self.gestore_abbonamenti._piattaforma.get_nome()
+            piattaforma_nome=self.gestore_abbonamenti._piattaforma.nome
         )
         successo= self.gestore_abbonamenti.acquista_abbonamento(abbonamento)
         if successo:
