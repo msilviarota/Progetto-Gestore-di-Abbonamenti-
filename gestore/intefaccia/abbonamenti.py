@@ -1,13 +1,13 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel
 from PyQt6.QtCore import Qt
-
+from intefaccia.stile import STILE_DIALOGO_VERDE
 class FinestraAbbonamenti(QDialog):
     """Visualizza gli abbonamenti acquistati (CDU13) [11]."""
     def __init__(self, parent=None, email="", gestore_abbonamenti=None):
         super().__init__(parent)
         self.setWindowTitle("I miei Abbonamenti")
         self.setFixedSize(450, 400)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
 class FinestraAcquista(QDialog):
     """Gestisce l'acquisto di un nuovo abbonamento (CDU1) [12]."""
@@ -15,7 +15,7 @@ class FinestraAcquista(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Acquista Abbonamento")
         self.setFixedSize(450, 520)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)
 
 class FinestraPresta(QDialog):
     """Permette di prestare un abbonamento (CDU11) [11]."""
@@ -23,7 +23,7 @@ class FinestraPresta(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Presta Abbonamento")
         self.setFixedSize(400, 300)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE) 
 
 class FinestraScaduti(QDialog):
     """Gestione abbonamenti scaduti (CDU14, CDU19) [12]."""
@@ -31,4 +31,4 @@ class FinestraScaduti(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Abbonamenti Scaduti")
         self.setFixedSize(500, 500)
-        self.setStyleSheet("QDialog { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_DIALOGO_VERDE)

@@ -6,7 +6,8 @@ from PyQt6.QtCore import Qt
 
 from intefaccia.stile import (
     STILE_DIALOGO_PROFILO, STILE_BTN_ESCI, STILE_BTN_CHIUDI,
-    STILE_TITOLO_PROFILO, STILE_LABEL_PROFILO, STILE_BTN_SERVIZIO
+    STILE_TITOLO_PROFILO, STILE_LABEL_PROFILO, STILE_BTN_SERVIZIO,STILE_SCROLL_TRASPARENTE,
+    STILE_CONTENITORE_PROFILO
 )
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraModificaPagamento
@@ -30,10 +31,10 @@ class ProfiloDialog(QDialog):
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("QScrollArea { border: none; }")
+        scroll.setStyleSheet(STILE_SCROLL_TRASPARENTE)
 
         contenuto = QWidget()
-        contenuto.setStyleSheet("background-color: #F7F4EF;")
+        contenuto.setStyleSheet(STILE_CONTENITORE_PROFILO)
         layout = QVBoxLayout(contenuto)
         layout.setSpacing(15)
         layout.setContentsMargins(30, 30, 30, 30)

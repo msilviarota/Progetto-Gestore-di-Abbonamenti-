@@ -274,7 +274,24 @@ QWidget {
     background-color: white;
 }
 """
+STILE_CHECKBOX = """
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+}
 
+QCheckBox::indicator:hover {
+    border: 2px solid #333;
+}
+
+QCheckBox::indicator:checked {
+    background-color: black;
+    image: none;
+}
+"""
 # Testi dentro le card dei risultati di ricerca
 STILE_TITOLO_RICERCA_ITEM = "font-size: 18px; font-weight: bold; color: #1A3E73;"
 STILE_LABEL_CATEGORIA_RICERCA = "font-size: 14px; color: #555;"
@@ -284,3 +301,4 @@ STILE_LABEL_NESSUN_RISULTATO = "font-size: 16px; color: #444;"
 STILE_TITOLO_SEZIONE = "color: #222222; font-size: 16px; font-weight: bold;"  # es. "✨ Consigliati per te"
 STILE_SCROLL_TRASPARENTE = "QScrollArea { border: none; }"
 STILE_TESTO_VUOTO = "color: #555555; font-size: 13px;"  # messaggi "nessun consiglio disponibile" ecc.
+STILE_CONTENITORE_PROFILO = "background-color: #F7F4EF;"
