@@ -738,6 +738,9 @@ class FinestraPrestitoAbbonamento(QDialog):
         # Campo email amico
         layout.addWidget(QLabel("Email dell'amico:"))
         self.input_email = QLineEdit()
+        self.input_email.setPlaceholderText("Es. amico@email.com")
+        self.input_email.setFixedHeight(36)
+        self.input_email.setStyleSheet(STILE_CAMPO_RICERCA)
         layout.addWidget(self.input_email)
 
         # Pulsante conferma
