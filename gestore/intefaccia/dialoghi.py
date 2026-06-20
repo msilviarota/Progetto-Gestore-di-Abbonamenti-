@@ -2,7 +2,7 @@ import os
 import sys
 import webbrowser
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox,QFrame,QHBoxLayout,QScrollArea,QWidget,QComboBox
 from PyQt6.QtCore import Qt, QSize
 from models.piattaforma import CATALOGO_PIATTAFORME
 # Configurazione del path per permettere l'importazione dei moduli del progetto
@@ -497,10 +497,9 @@ class FinestraAcquisto(QDialog):
         # Metodo di pagamento
         layout.addWidget(QLabel("Metodo di pagamento registrato:"))
 
-        carta = self.gestore_abbonamenti.repoDatiPagamento.ottieni_numero_carta(
-            self.gestore_abbonamenti.email
+        carta = self.gestore_abbonamenti._repo_DatiPagamento.ottieni_numero_carta(
+            self.gestore_abbonamenti._email_utente
         )
-
         if carta:
             carta_mascherata = "**** **** **** " + carta[-4:]
         else:
@@ -525,9 +524,13 @@ class FinestraAcquisto(QDialog):
             QMessageBox.warning(self, "Errore", "Seleziona un piano prima di continuare.")
             return
 
-        abbonamento = Abbonamento( email_utente=self.gestore_abbonamenti.email,
-                                   piattaforma=self.gestore_abbonamenti._piattaforma.get_nome(),
-                                   piano=self.piano_scelto)
+        utente = self.gestore_abbonamenti._utente
+        abbonamento = Abbonamento(
+            email=self.gestore_abbonamenti._email_utente,
+            nome_utente=getattr(utente, "_nome", ""),
+            cognome_utente=getattr(utente, "_cognome", ""),
+            piattaforma_nome=self.gestore_abbonamenti._piattaforma.get_nome()
+        )
         successo= self.gestore_abbonamenti.acquista_abbonamento(abbonamento)
         if successo:
             QMessageBox.information(self, "Successo", "Abbonamento acquistato correttamente!")
@@ -711,24 +714,23 @@ class FinestraPrestitoAbbonamento(QDialog):
         sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
-        # Lista abbonamenti attivi
+     # Lista abbonamenti attivi
         layout.addWidget(QLabel("Seleziona un abbonamento da prestare:"))
 
-        self.lista_abbonamenti = self.gestore_abbonamenti._repo_Abbonamento.ottieni_per_utente(
-            self.gestore_abbonamenti.email
-        )
-
+        self.lista_abbonamenti = [
+            abb for abb in self.gestore_abbonamenti._repo_Abbonamento.ottieni_per_utente(self.gestore_abbonamenti._email_utente)
+            if abb.get("stato") == "Attivo"
+        ]
         if not self.lista_abbonamenti:
             layout.addWidget(QLabel("Nessun abbonamento attivo."))
             return
 
         self.btns = []
         for abb in self.lista_abbonamenti:
-            btn = QPushButton(f"{abb._piattaforma} ({abb._piano})")
+            btn = QPushButton(f"{abb['piattaforma'].capitalize()} (scade {abb['data_scadenza']})")
             btn.clicked.connect(lambda ch, a=abb: self.seleziona_abbonamento(a))
             layout.addWidget(btn)
             self.btns.append(btn)
-
         # Campo email amico
         layout.addWidget(QLabel("Email dell'amico:"))
         self.input_email = QLineEdit()
@@ -743,20 +745,20 @@ class FinestraPrestitoAbbonamento(QDialog):
 
     def seleziona_abbonamento(self, abb):
         self.abbonamento_scelto = abb
-        QMessageBox.information(self, "Selezionato", f"Hai scelto {abb._piattaforma}.")
+        QMessageBox.information(self, "Selezionato", f"Hai scelto {abb['piattaforma'].capitalize()}.")
 
     def conferma(self):
         if not self.abbonamento_scelto:
             QMessageBox.warning(self, "Errore", "Seleziona un abbonamento.")
             return
 
-        email_amico = self.input_email.text()
+        email_amico = self.input_email.text().strip()
         if not email_amico:
             QMessageBox.warning(self, "Errore", "Inserisci l'email dell'amico.")
             return
 
         successo = self.gestore_abbonamenti.presta_abbonamento(
-            self.abbonamento_scelto._id_abbonamento,
+            self.abbonamento_scelto["id_abbonamento"],
             email_amico
         )
 
