@@ -376,8 +376,14 @@ class FinestraRicerca(QDialog):
                 btn = QPushButton("Apri")
                 btn.clicked.connect(lambda ch, link=r["link"]: webbrowser.open(link))
                 card_layout.addWidget(btn)
-
+                card.setMaximumHeight(100)
                 layout_scroll.addWidget(card)
+
+            layout_scroll.addStretch()
+
+        scroll.setWidget(contenitore)
+        layout.addWidget(scroll)
+                
 
         scroll.setWidget(contenitore)
         layout.addWidget(scroll)
