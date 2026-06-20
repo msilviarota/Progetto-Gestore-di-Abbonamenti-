@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import hashlib # Utilizzato per la cifratura della password (CDU7)
-
+import string
 # Calcolo del percorso radice del progetto
 cartella_corrente = os.path.dirname(os.path.abspath(__file__)) 
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
@@ -13,7 +13,7 @@ if radice_progetto not in sys.path:
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryLog import RepositoryLog
 from models.notifica import Notifica
-
+import random
 class GestoreLogin:
     """
     Rappresenta il gestore dell'autenticazione.
@@ -52,7 +52,29 @@ class GestoreLogin:
             return utente_dict # Restituisce i dati per personalizzare la Home
         else:
             self._notifica = Notifica("Password o email errati. Riprova.", "Errore")
+
             return None
+    def recupera_password(self, email: str):
+        """
+        CDU8: Genera una nuova password temporanea per l'utente e la salva.
+        In un sistema reale qui andrebbe inviata via email; per ora la stampiamo in console.
+        """
+        utente_dict = self._repo_Utente.ottieni_per_email(email)
+
+        if not utente_dict:
+            self._notifica = Notifica("Email non trovata.", "Errore")
+            return False
+
+        nuova_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        successo = self._repo_Utente.aggiorna_password(email, nuova_password)
+
+        if successo:
+            print(f"[SIMULAZIONE EMAIL] Nuova password per {email}: {nuova_password}")
+            self._notifica = Notifica("Una nuova password temporanea è stata generata.", "Successo")
+            return True
+        else:
+            self._notifica = Notifica("Impossibile aggiornare la password.", "Errore")
+            return False
 
     def esegui_logout(self):
         """
