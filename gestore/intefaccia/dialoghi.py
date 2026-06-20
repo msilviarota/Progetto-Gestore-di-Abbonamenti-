@@ -602,6 +602,8 @@ class FinestraScaduti(QDialog):
 
             self.layout_lista.addWidget(riga)
 
+        self.layout_lista.addStretch()
+
     def rimuovi(self, id_abbonamento):
         successo = self.gestore_abbonamenti.elimina_scaduto(id_abbonamento)
         if successo:
@@ -679,6 +681,8 @@ class FinestraAbbonamenti(QDialog):
                 riga_layout.addWidget(btn_disdici)
 
             self.layout_lista.addWidget(riga)
+
+        self.layout_lista.addStretch()
 
     def disdici(self, id_abbonamento):
         successo = self.gestore_abbonamenti.disdisci_abbonamento(id_abbonamento)
