@@ -24,7 +24,7 @@ QLineEdit {
 """
 
 STILE_SCHEDA_CATEGORIA = """ 
-QDialog { background-color: #e8f5e9; } 
+QDialog { background-color: #E8F5E9; } 
 QLabel { color: #222222; } 
 """
 
@@ -51,10 +51,13 @@ QPushButton {
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 14px; 
-    font-size: 16px; 
+    font-size: 17px; 
     font-weight: bold; 
-    padding: 10px; 
+    min-width: 220px;
+    min-height: 90px;
+    padding: 20px 26px;
 } 
+
 QPushButton:hover { 
     background-color: #222222; 
     color: white; 
@@ -67,10 +70,13 @@ QPushButton {
     color: #222222; 
     border: 1px solid #cccccc; 
     border-radius: 14px; 
-    font-size: 15px; 
+    font-size: 17px; 
     font-weight: bold; 
-    padding: 10px; 
+    min-width: 180px;
+    min-height: 70px;
+    padding: 14px 20px;
 } 
+
 QPushButton:hover { 
     background-color: #222222; 
     color: white; 
@@ -83,10 +89,14 @@ QPushButton {
     background-color: #D6D6D6; 
     color: #222222; 
     border: 1px solid #cccccc; 
-    border-radius: 10px; 
-    font-size: 14px; 
+    border-radius: 14px; 
+    font-size: 17px; 
     font-weight: bold; 
+    min-width: 220px;
+    min-height: 90px;
+    padding: 20px 26px;
 } 
+
 QPushButton:hover { 
     background-color: #222222; 
     color: white; 
@@ -154,9 +164,10 @@ QComboBox::drop-down {
     border: none; 
 } 
 """
+
 STILE_FINESTRA_REGISTRAZIONE = """
 QDialog {
-    background-color: #e8f5e9;
+    background-color: #E8F5E9;
 }
 
 QLabel {
@@ -185,9 +196,10 @@ QPushButton:hover {
     background-color: #c8c8c8;
 }
 """
+
 STILE_FINESTRA_LOGIN = """
 QWidget {
-    background-color: #e8f5e9;
+    background-color: #E8F5E9;
 }
 """
 
@@ -220,25 +232,15 @@ STILE_BTN_LINK = "color: black; text-decoration: underline;"
 
 ### ==============================
 ### NUOVI STILI - centralizzati da finestre.py
-### (prima erano inline con setStyleSheet dentro ogni classe)
 ### ==============================
 
-# Sfondo verde semplice per dialoghi "leggeri" senza form complessi
-# (FinestraCambiaPassword, FinestraModificaPagamento, FinestraPrestitoAbbonamento)
-STILE_DIALOGO_VERDE = "QDialog { background-color: #e8f5e9; }"
-
-# Titolo standard usato in cima a quasi tutti i dialoghi (icona + testo)
+STILE_DIALOGO_VERDE = "QDialog { background-color: #E8F5E9; }"
 STILE_TITOLO_DIALOGO = "font-size: 20px; font-weight: bold; color: #222;"
-
-# Linea separatrice (QFrame.HLine) usata sotto i titoli
 STILE_SEPARATORE = "color: #cccccc;"
-
-# Pattern "scroll + card" usato da FinestraScaduti e FinestraAbbonamenti
-STILE_SCROLL_VERDE = "QScrollArea { border: none; background-color: #e8f5e9; }"
-STILE_CONTENITORE_VERDE = "background-color: #e8f5e9;"
+STILE_SCROLL_VERDE = "QScrollArea { border: none; background-color: #E8F5E9; }"
+STILE_CONTENITORE_VERDE = "background-color: #E8F5E9;"
 STILE_CARD_LISTA = "background-color: white; border-radius: 8px; padding: 8px;"
 
-# Finestra di ricerca globale (tema blu, usa selettori objectName #titolo e #card)
 STILE_FINESTRA_RICERCA = """
 QDialog {
     background-color: #F2F7FF;
@@ -274,6 +276,7 @@ QWidget {
     background-color: white;
 }
 """
+
 STILE_CHECKBOX = """
 QCheckBox::indicator {
     width: 20px;
@@ -292,15 +295,14 @@ QCheckBox::indicator:checked {
     image: none;
 }
 """
-# Testi dentro le card dei risultati di ricerca
+
 STILE_TITOLO_RICERCA_ITEM = "font-size: 18px; font-weight: bold; color: #1A3E73;"
 STILE_LABEL_CATEGORIA_RICERCA = "font-size: 14px; color: #555;"
 STILE_LABEL_NESSUN_RISULTATO = "font-size: 16px; color: #444;"
 
-# Trovati in main_window.py
-STILE_TITOLO_SEZIONE = "color: #222222; font-size: 16px; font-weight: bold;"  # es. "✨ Consigliati per te"
+STILE_TITOLO_SEZIONE = "color: #222222; font-size: 16px; font-weight: bold;"
 STILE_SCROLL_TRASPARENTE = "QScrollArea { border: none; }"
-STILE_TESTO_VUOTO = "color: #555555; font-size: 13px;"  # messaggi "nessun consiglio disponibile" ecc.
+STILE_TESTO_VUOTO = "color: #555555; font-size: 13px;"
 STILE_CONTENITORE_PROFILO = "background-color: #F7F4EF;"
 STILE_TITOLO_REGISTRAZIONE = "font-size: 22px; font-weight: bold; color: #222222; margin-bottom: 10px;"
 STILE_SPINBOX = "padding: 5px; border-radius: 5px; background: white;"
