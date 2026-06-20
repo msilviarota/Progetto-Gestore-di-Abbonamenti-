@@ -237,6 +237,8 @@ class FinestraPrincipale(QWidget):
 
     def apri_scaduti(self):
         """CDU14/CDU19: Mostra gli abbonamenti scaduti e permette di rimuoverli."""
+        if self.gestore_abbonamenti:
+            self.gestore_abbonamenti.verifica_tutte_scadenze()
         from intefaccia.dialoghi import FinestraScaduti
         dialogo = FinestraScaduti(self.gestore_abbonamenti, self)
         dialogo.exec()

@@ -86,17 +86,18 @@ class GestoreAbbonamenti:
 
     def verifica_tutte_scadenze(self):
         """
-        CDU20/21: Il sistema invalida l'accesso passata la data di scadenza [17, 18].
+        CDU20/21: Il sistema invalida l'accesso passata la data di scadenza.
         """
         lista_abbonamenti = self._repo_Abbonamento.ottieni_per_utente(self._email_utente)
         data_attuale = datetime.now()
-        
+
         for abb in lista_abbonamenti:
-            if data_attuale > abb._data_scadenza: # Confronto date [17, 19]
-                abb._validita = False
-                self.sposta_in_scaduti(abb._id_abbonamento)
-                # Invia avviso di scadenza (CDU21) [18]
-                self._notifica = Notifica(f"L'abbonamento {abb._piattaforma} è scaduto.", "Avviso")
+            if abb.get("sezione") == "Scaduti":
+                continue
+            data_scadenza = datetime.strptime(abb["data_scadenza"], "%Y-%m-%d")
+            if data_attuale > data_scadenza:
+                self.sposta_in_scaduti(abb["id_abbonamento"])
+                self._notifica = Notifica(f"L'abbonamento {abb['piattaforma']} è scaduto.", "Avviso")
     def ottieni_scaduti(self):
         """CDU14/CDU19: Restituisce solo gli abbonamenti nella sezione 'Scaduti' dell'utente."""
         tutti = self._repo_Abbonamento.ottieni_per_utente(self._email_utente)
