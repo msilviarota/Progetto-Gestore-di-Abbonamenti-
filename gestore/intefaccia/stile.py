@@ -306,6 +306,8 @@ QMessageBox {
 QMessageBox QLabel {
     color: white !important;
     font-size: 13px;
+    selection-background-color: #2b2b2b !important;
+    selection-color: white !important;
 }
 QMessageBox QPushButton {
     background-color: #444444 !important;
