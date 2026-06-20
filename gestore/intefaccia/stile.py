@@ -302,3 +302,5 @@ STILE_TITOLO_SEZIONE = "color: #222222; font-size: 16px; font-weight: bold;"  # 
 STILE_SCROLL_TRASPARENTE = "QScrollArea { border: none; }"
 STILE_TESTO_VUOTO = "color: #555555; font-size: 13px;"  # messaggi "nessun consiglio disponibile" ecc.
 STILE_CONTENITORE_PROFILO = "background-color: #F7F4EF;"
+STILE_TITOLO_REGISTRAZIONE = "font-size: 22px; font-weight: bold; color: #222222; margin-bottom: 10px;"
+STILE_SPINBOX = "padding: 5px; border-radius: 5px; background: white;"

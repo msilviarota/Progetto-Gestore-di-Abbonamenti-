@@ -13,7 +13,10 @@ radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
 if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
-from intefaccia.stile import STILE_CAMPO_RICERCA, STILE_BTN_LINK
+from intefaccia.stile import (
+    STILE_CAMPO_RICERCA, STILE_BTN_LINK, STILE_FINESTRA_LOGIN,
+    STILE_TITOLO_REGISTRAZIONE, STILE_SPINBOX, STILE_BTN_ACCEDI
+)
 from intefaccia.utils import BASE_DIR
 
 class RegisterWindow(QWidget):
@@ -29,7 +32,7 @@ class RegisterWindow(QWidget):
         # Configurazione Finestra basata su Source [3]
         self.setWindowTitle("Registrazione - RelaxApp")
         self.setFixedSize(450, 550) # Leggermente aumentata per ospitare tutti i campi di [1]
-        self.setStyleSheet("QWidget { background-color: #e8f5e9; }")
+        self.setStyleSheet(STILE_FINESTRA_LOGIN)
         
         self._build_ui()
 
@@ -41,7 +44,7 @@ class RegisterWindow(QWidget):
 
         # Titolo
         titolo = QLabel("Crea il tuo Account")
-        titolo.setStyleSheet("font-size: 22px; font-weight: bold; color: #222222; margin-bottom: 10px;")
+        titolo.setStyleSheet(STILE_TITOLO_REGISTRAZIONE)
         titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(titolo)
 
@@ -60,7 +63,7 @@ class RegisterWindow(QWidget):
         layout_eta.addWidget(QLabel("Età:"))
         self.input_eta = QSpinBox()
         self.input_eta.setRange(14, 120)
-        self.input_eta.setStyleSheet("padding: 5px; border-radius: 5px; background: white;")
+        self.input_eta.setStyleSheet(STILE_SPINBOX)
         layout_eta.addWidget(self.input_eta)
         layout.addLayout(layout_eta)
 
@@ -83,10 +86,7 @@ class RegisterWindow(QWidget):
 
         # Pulsante Registrati
         btn_register = QPushButton("Registrati")
-        btn_register.setStyleSheet("""
-            QPushButton { background-color: #222222; color: white; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 10px;}
-            QPushButton:hover { background-color: #444444; }
-        """)
+        btn_register.setStyleSheet(STILE_BTN_ACCEDI)
         btn_register.clicked.connect(self.esegui_registrazione)
         layout.addWidget(btn_register)
 
