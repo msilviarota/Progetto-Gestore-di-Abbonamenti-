@@ -301,24 +301,24 @@ QCheckBox::indicator:checked {
 """
 STILE_MESSAGEBOX = """
 QMessageBox {
-    background-color: #2b2b2b !important;
+    background-color: #E8E8E8 !important;
 }
 QMessageBox QLabel {
-    color: white !important;
+    color: black !important;
     font-size: 13px;
-    selection-background-color: #2b2b2b !important;
-    selection-color: white !important;
+    selection-background-color: #E8E8E8 !important;
+    selection-color: black !important;
 }
 QMessageBox QPushButton {
-    background-color: #444444 !important;
-    color: white !important;
-    border: 1px solid #666;
+    background-color: #D6D6D6 !important;
+    color: black !important;
+    border: 1px solid #999;
     border-radius: 6px;
     padding: 6px 16px;
     font-weight: bold;
 }
 QMessageBox QPushButton:hover {
-    background-color: #666666 !important;
+    background-color: #C0C0C0 !important;
 }
 """
 
