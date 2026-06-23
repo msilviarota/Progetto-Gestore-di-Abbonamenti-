@@ -1,6 +1,6 @@
 class DatiPagamento:
     """Rappresenta i dati della carta di pagamento dell'utente."""
-    def _init_(self, numero_carta: str, scadenza_carta: str, nome_titolare: str, cognome_titolare: str):
+    def __init__(self, numero_carta: str, scadenza_carta: str, nome_titolare: str, cognome_titolare: str):
         self._numero_carta = numero_carta
         self._scadenza_carta = scadenza_carta
         self._nome_titolare = nome_titolare
