@@ -22,7 +22,7 @@ QLineEdit {
     padding: 14px 18px;
     font-size: 16px;
     min-height: 45px;
-    margin-top: 6px;
+    margin-top: 10px;
     margin-bottom: 12px;
 }
 
