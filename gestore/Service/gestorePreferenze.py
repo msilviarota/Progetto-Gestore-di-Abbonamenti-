@@ -72,9 +72,6 @@ class GestorePreferenze:
 
         # Logica di matching: interroga il gestore ricerca per ogni categoria scelta
         self._risultati_suggeriti = []
-        for cat in preferenze["categorie"]:
-            # Esempio: risultati = self._gest_Ricerca.cerca_per_categoria(cat)
-            pass
         
         return self._risultati_suggeriti
 

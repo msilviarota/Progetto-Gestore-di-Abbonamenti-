@@ -28,11 +28,7 @@ class GestoreRicerca:
         self._piattaforma = piattaforma
         self._driver = None # Sarà inizializzato quando serve la ricerca web
 
-    def avvia_sessione_browser(self):
-        """Inizializza il driver di Selenium per la navigazione."""
-        # Esempio di implementazione futura
-        # self._driver = webdriver.Chrome()
-        pass
+
 
     def esegui_ricerca(self, termine_ricerca: str):
         """
