@@ -72,9 +72,7 @@ class ProfiloDialog(QDialog):
 
         self.campo_piano = QLineEdit("Non ancora disponibile")
         self.campo_piano.setReadOnly(True)
-
-        self.campo_pagamento = QLineEdit("Non ancora disponibile")
-        self.campo_pagamento.setReadOnly(True)
+        self.campo_pagamento = QLabel(("Non ancora disponibile"))
 
         form.addRow(crea_label("Nome:"), self.campo_nome)
         form.addRow(crea_label("Email:"), self.campo_email)

@@ -76,9 +76,9 @@ class FinestraCambiaPassword(QDialog):
 
         # Vecchia password
         layout.addWidget(QLabel("Vecchia password:"))
-        self.vecchia_input = QLineEdit()
-        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.vecchia_input)
+        self.vecchia_info = QLabel("4242 **** **** 4242")
+        self.vecchia_info.setStyleSheet(STILE_CAMPO_INFO)
+        layout.addWidget(self.vecchia_info)
 
         # Nuova password
         layout.addWidget(QLabel("Nuova password:"))

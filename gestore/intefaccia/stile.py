@@ -330,6 +330,15 @@ QMessageBox QPushButton:hover {
     background-color: #C0C0C0 !important;
 }
 """
+STILE_CAMPO_INFO="""
+QLabel {    background-color: #FFFFFF;
+    color: #222222;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 15px;
+    min-height: 35px;
+    }"""
 
 STILE_TITOLO_RICERCA_ITEM = "font-size: 18px; font-weight: bold; color: #1A3E73;"
 STILE_LABEL_CATEGORIA_RICERCA = "font-size: 14px; color: #555;"
