@@ -17,9 +17,10 @@ QLineEdit {
     background-color: #D6D6D6;
     color: #222222;
     border: 1px solid #cccccc;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 13px;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 16px;
+    min-height: 45px;
 }
 """
 
