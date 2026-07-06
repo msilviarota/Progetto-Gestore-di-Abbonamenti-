@@ -20,7 +20,7 @@ QLineEdit {
     border-radius: 12px;
     padding: 14px 18px;
     font-size: 16px;
-    min-height: 45px;
+    min-height: 25px;
 }
 """
 
