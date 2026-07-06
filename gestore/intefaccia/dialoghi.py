@@ -186,7 +186,7 @@ class FinestraModificaPagamento(QDialog):
         self.gestore_profilo = gestore_profilo
 
         self.setWindowTitle("Modifica Carta")
-        self.setFixedSize(420, 320)
+        self.setFixedSize(500, 420)
         self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
