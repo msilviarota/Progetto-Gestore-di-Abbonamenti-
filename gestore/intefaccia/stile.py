@@ -14,16 +14,22 @@ QLabel {
 }
 
 QLineEdit {
-    background-color: #D6D6D6;
+    background-color: #FFFFFF;
     color: #222222;
-    border: 2px solid #cccccc;
+    border: 2px solid #B5D8B5;
     border-radius: 12px;
     padding: 14px 18px;
     font-size: 16px;
-    min-height: 25px;
+    min-height: 45px;
     margin-top: 6px;
     margin-bottom: 12px;
 }
+
+QLineEdit:focus {
+    border: 2px solid #4A7F4A;
+    background-color: #F7FAFF;
+}
+
 """
 
 STILE_SCHEDA_CATEGORIA = """ 
