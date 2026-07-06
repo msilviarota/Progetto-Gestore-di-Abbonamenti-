@@ -16,11 +16,13 @@ QLabel {
 QLineEdit {
     background-color: #D6D6D6;
     color: #222222;
-    border: 1px solid #cccccc;
+    border: 2px solid #cccccc;
     border-radius: 12px;
     padding: 14px 18px;
     font-size: 16px;
     min-height: 25px;
+    margin-top: 6px;
+    margin-bottom: 12px;
 }
 """
 
