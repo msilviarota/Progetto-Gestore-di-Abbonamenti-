@@ -11,6 +11,7 @@ QDialog {
 QLabel {
     color: #222222;
     font-size: 13px;
+    margin-bottom: 6px;
 }
 
 QLineEdit {
