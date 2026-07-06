@@ -188,7 +188,9 @@ class FinestraModificaPagamento(QDialog):
         self.setWindowTitle("Modifica Carta")
         self.setFixedSize(500, 420)
         self.setStyleSheet(STILE_DIALOGO_VERDE)
-
+        self.vecchia_input = QLineEdit()
+        self.nuova_input = QLineEdit()
+        self.conferma_input = QLineEdit()
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
         layout.setSpacing(15)
@@ -203,23 +205,26 @@ class FinestraModificaPagamento(QDialog):
         sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
-        # Vecchia carta
-        layout.addWidget(QLabel("Vecchio numero carta:"))
-        self.vecchia_input = QLineEdit()
-        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.vecchia_input)
+       # Vecchia carta
+        box_vecchia = QVBoxLayout()
+        lbl_vecchia = QLabel("Vecchio numero carta:")
+        box_vecchia.addWidget(lbl_vecchia)
+        box_vecchia.addWidget(self.vecchia_input)
+        layout.addLayout(box_vecchia)
 
         # Nuova carta
-        layout.addWidget(QLabel("Nuovo numero carta:"))
-        self.nuova_input = QLineEdit()
-        self.nuova_input.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.nuova_input)
+        box_nuova = QVBoxLayout()
+        lbl_nuova = QLabel("Nuovo numero carta:")
+        box_nuova.addWidget(lbl_nuova)
+        box_nuova.addWidget(self.nuova_input)
+        layout.addLayout(box_nuova)
 
-        # Conferma
-        layout.addWidget(QLabel("Conferma nuovo numero:"))
-        self.conferma_input = QLineEdit()
-        self.conferma_input.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.conferma_input)
+        # Conferma carta
+        box_conf = QVBoxLayout()
+        lbl_conf = QLabel("Conferma nuovo numero:")
+        box_conf.addWidget(lbl_conf)
+        box_conf.addWidget(self.conferma_input)
+        layout.addLayout(box_conf)
 
         btn_salva = QPushButton("Salva")
         btn_salva.clicked.connect(self.salva)
