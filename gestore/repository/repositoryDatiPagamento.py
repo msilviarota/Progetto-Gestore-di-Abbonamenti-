@@ -46,8 +46,21 @@ class RepositoryDatiPagamento:
             json.dump(self._database, f, indent=4, ensure_ascii=False)
 
     def ottieni_per_utente(self, email):
-        """Recupera i dati di pagamento associati a una specifica email."""
-        return self._database.get(email)
+        """Recupera i dati di pagamento associati a una specifica email.
+        Se non esistono, restituisce una carta finta di default."""
+        dati = self._database.get(email)
+
+        if dati is None:
+            # Carta finta di default
+            return {
+                "numero_carta": "4242424242424242",
+                "scadenza": "12/30",
+                "nome_titolare": "Demo",
+                "cognome_titolare": "User"
+            }
+
+        return dati
+
 
     def ottieni_numero_carta(self, email):
         """Restituisce il numero della carta associata all'utente."""
