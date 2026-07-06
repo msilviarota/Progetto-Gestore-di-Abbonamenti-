@@ -63,11 +63,15 @@ class RepositoryDatiPagamento:
 
 
     def ottieni_numero_carta(self, email):
-        """Restituisce il numero della carta associata all'utente."""
+        """Restituisce il numero della carta associata all'utente.
+        Se non esiste, restituisce una carta finta di default."""
         dati = self._database.get(email)
+
         if not dati:
-            return None
+            return "4242424242424242"   # Carta finta
+
         return dati.get("numero_carta")
+
 
     def aggiornaDatiPagamento(self, email, dati: DatiPagamento):
         """
