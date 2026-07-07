@@ -32,13 +32,14 @@ class FinestraPrincipale(QWidget):
     """
 
     def __init__(self, gestore_profilo, gestore_abbonamenti, nome="Utente", email="utente@email.com",
-                 gestore_preferenze=None, parent=None):
+                 gestore_preferenze=None,gestore_portafoglio=None, parent=None):
         super().__init__()
         self.nome_utente = nome
         self.email_utente = email
         self.gestore_preferenze = gestore_preferenze
         self.gestore_profilo = gestore_profilo
         self.gestore_abbonamenti = gestore_abbonamenti
+        self.gestore_portafoglio = gestore_portafoglio
 
         self.setWindowTitle("RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))

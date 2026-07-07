@@ -34,7 +34,7 @@ class LoginWindow(QWidget):
     """
 
     def __init__(self, gestore_login=None, gestore_preferenze=None, gestore_profilo=None,
-                 gestore_abbonamenti=None, gestore_registrazione=None, repo_dati_pagamento=None):
+                 gestore_abbonamenti=None, gestore_registrazione=None, repo_dati_pagamento=None, gestore_portafoglio=None):
         super().__init__()
         self.gestore_login = gestore_login
         self.gestore_preferenze = gestore_preferenze
@@ -43,6 +43,7 @@ class LoginWindow(QWidget):
         self.gestore_registrazione = gestore_registrazione
         self.gestore_abbonamenti = gestore_abbonamenti
         self.repo_dati_pagamento =  repo_dati_pagamento
+        self.gestore_portafoglio = gestore_portafoglio
         # Configurazione Finestra (Requisito Mockup)
         self.setWindowTitle("Login - RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
@@ -153,7 +154,8 @@ class LoginWindow(QWidget):
             email=email,
             gestore_preferenze=self.gestore_preferenze,
             gestore_profilo=self.gestore_profilo,
-            gestore_abbonamenti=self.gestore_abbonamenti
+            gestore_abbonamenti=self.gestore_abbonamenti,
+            gestore_portafoglio=self.gestore_portafoglio
         )
         self.home.login_window = self
         self.home.show()

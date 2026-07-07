@@ -14,6 +14,8 @@ from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryLog import RepositoryLog
 from repository.repositoryPreferenze import RepositoryPreferenze
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento 
+from repository.repositoryPortafoglio import RepositoryPortafoglio
+from Service.gestorePortafoglio import GestorePortafoglio
 from models.notifica import Notifica
 from Service.gestoreLogin import GestoreLogin
 from Service.gestorePreferenze import GestorePreferenze
@@ -31,10 +33,12 @@ def avvia_applicazione():
     repo_log = RepositoryLog()
     repo_preferenze = RepositoryPreferenze()
     repo_dati_pagamento = RepositoryDatiPagamento()
+    repo_portafoglio = RepositoryPortafoglio()
     notifica = Notifica("", "")
     gestore_profilo = GestoreProfilo(repo_utente, notifica, repo_dati_pagamento)
     gestore_login = GestoreLogin(repo_utente, repo_log, notifica)
     gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, repo_dati_pagamento, notifica)
+    gestore_portafoglio = GestorePortafoglio(repo_portafoglio, notifica)
     gestore_registrazione = GestoreRegistrazione(repo_utente, notifica)
 
     window = LoginWindow(
@@ -43,7 +47,8 @@ def avvia_applicazione():
         gestore_profilo=gestore_profilo,
         gestore_abbonamenti=None,
         gestore_registrazione=gestore_registrazione,
-        repo_dati_pagamento=repo_dati_pagamento
+        repo_dati_pagamento=repo_dati_pagamento,
+        gestore_portafoglio=gestore_portafoglio
     )
     window.show()
     sys.exit(app.exec())
