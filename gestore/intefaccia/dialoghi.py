@@ -514,11 +514,13 @@ class FinestraAcquisto(QDialog):
         layout.addWidget(self.btn_conferma)
 
         self.piano_scelto = None
+        self.prezzo_scelto = None
 
     def seleziona_piano(self, piano):
         self.piano_scelto = piano
-        QMessageBox.information(self, "Piano selezionato", f"Hai scelto il piano {piano}.")
-
+        self.prezzo_scelto = 9.99 if piano == "mensile" else 79.99
+        QMessageBox.information(self, "Piano selezionato", f"Hai scelto il piano {piano} ({self.prezzo_scelto:.2f}€).")
+    
     def conferma_acquisto(self):
         if not self.piano_scelto:
             QMessageBox.warning(self, "Errore", "Seleziona un piano prima di continuare.")
@@ -531,12 +533,14 @@ class FinestraAcquisto(QDialog):
             cognome_utente=getattr(utente, "_cognome", ""),
             piattaforma_nome=self.gestore_abbonamenti._piattaforma.nome
         )
-        successo= self.gestore_abbonamenti.acquista_abbonamento(abbonamento)
+        successo = self.gestore_abbonamenti.acquista_abbonamento(abbonamento, importo=self.prezzo_scelto)
         if successo:
             QMessageBox.information(self, "Successo", "Abbonamento acquistato correttamente!")
             self.close()
         else:
-            QMessageBox.warning(self, "Errore", "Impossibile completare l'acquisto.")
+            messaggio_errore = getattr(self.gestore_abbonamenti._notifica, "_messaggio", "Impossibile completare l'acquisto.")
+            QMessageBox.warning(self, "Errore", messaggio_errore)
+
 class FinestraScaduti(QDialog):
     """Mostra gli abbonamenti scaduti e permette di rimuoverli (CDU14)."""
     def __init__(self, gestore_abbonamenti, parent=None):
