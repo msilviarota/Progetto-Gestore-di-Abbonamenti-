@@ -12,6 +12,7 @@ if radice_progetto not in sys.path:
 # Importazioni dai modelli e repository (coerenti con la struttura cartelle)
 from repository.repositoryAbbonamento import RepositoryAbbonamento
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento
+from Service.gestorePortafoglio import GestorePortafoglio
 from models.notifica import Notifica
 from models.utente import Utente
 from models.abbonamento import Abbonamento
@@ -25,7 +26,7 @@ class GestoreAbbonamenti:
     
     def __init__(self, utente: Utente, repoAbbonamento: RepositoryAbbonamento, 
                  repoDatiPagamento: RepositoryDatiPagamento, 
-                 piattaforma: Piattaforma, notifica: Notifica):
+                 piattaforma: Piattaforma, notifica: Notifica,gestorePortafoglio: GestorePortafoglio = None):
         """Inizializza il gestore con i dati dell'utente e le repository [5]."""
         self._utente = utente
         self._email_utente = utente._email 
@@ -36,18 +37,26 @@ class GestoreAbbonamenti:
         self._piattaforma = piattaforma
         self._notifica = notifica
         self.repoDatiPagamento = repoDatiPagamento
-    def acquista_abbonamento(self, abbonamento: Abbonamento):
+        self.gestorePortafoglio = gestorePortafoglio
+
+    def acquista_abbonamento(self, abbonamento: Abbonamento, importo: float = 0.0):
         """
         CDU1: Consente l'acquisto di un abbonamento inserendo i dati necessari [4, 7].
-        Verifica se già acquistato (Flusso alternativo A) e salva nel profilo [8, 9].
+        Verifica se già acquistato (Flusso alternativo A), controlla il credito
+        disponibile e lo scala, poi salva l'abbonamento nel profilo [8, 9].
         """
         # Verifica se l'abbonamento per questa piattaforma è già attivo
         if self._repo_Abbonamento.esiste_abbonamento_attivo(self._email_utente, self._piattaforma.nome):
             self._notifica = Notifica("Abbonamento già acquistato per questa piattaforma.", "Errore") 
             return False
 
-        # Simulazione transazione e generazione data scadenza [8]
-        # In un'implementazione reale, qui si interagirebbe con repoDatiPagamento
+        # Verifica e scala il credito (finto) dell'utente, se il gestore è disponibile
+        if self._gestore_portafoglio:
+            successo_pagamento = self._gestore_portafoglio.scala_credito(self._email_utente, importo)
+            if not successo_pagamento:
+                self._notifica = self._gestore_portafoglio._notifica
+                return False
+
         abbonamento._validita = True
         self._repo_Abbonamento.salva_nuovo_abbonamento(abbonamento)
         self._notifica = Notifica("Acquisto completato con successo!", "Successo") 

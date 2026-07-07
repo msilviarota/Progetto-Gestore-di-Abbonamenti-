@@ -142,7 +142,8 @@ class LoginWindow(QWidget):
             repoAbbonamento=repo_abbonamenti,
             repoDatiPagamento=self.repo_dati_pagamento,
             piattaforma=None,
-            notifica=self.gestore_login._notifica
+            notifica=self.gestore_login._notifica,
+            gestorePortafoglio=self.gestore_portafoglio
         )
 
         self.gestore_abbonamenti = gestore_abbonamenti
