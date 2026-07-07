@@ -37,7 +37,7 @@ class GestoreAbbonamenti:
         self._piattaforma = piattaforma
         self._notifica = notifica
         self.repoDatiPagamento = repoDatiPagamento
-        self._gestore_Portafoglio = gestorePortafoglio
+        self._gestore_portafoglio = gestorePortafoglio
 
     def acquista_abbonamento(self, abbonamento: Abbonamento, importo: float = 0.0):
         """
