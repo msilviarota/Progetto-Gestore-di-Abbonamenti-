@@ -598,7 +598,8 @@ class FinestraScaduti(QDialog):
             riga.setStyleSheet(STILE_CARD_LISTA)
             riga_layout = QHBoxLayout(riga)
 
-            testo = QLabel(f"{abb['piattaforma'].capitalize()}\nScaduto il {abb['data_scadenza']}")
+            piano_testo = abb.get('piano', 'mensile').capitalize()
+            testo = QLabel(f"{abb['piattaforma'].capitalize()} ({piano_testo})\nScaduto il {abb['data_scadenza']}")
             riga_layout.addWidget(testo)
 
             btn_rimuovi = QPushButton("🗑️ Rimuovi")
@@ -674,8 +675,9 @@ class FinestraAbbonamenti(QDialog):
             riga.setStyleSheet(STILE_CARD_LISTA)
             riga_layout = QHBoxLayout(riga)
 
+            piano_testo = abb.get('piano', 'mensile').capitalize()
             testo = QLabel(
-                f"{abb['piattaforma'].capitalize()}  —  {abb['stato']}\n"
+                f"{abb['piattaforma'].capitalize()} ({piano_testo})  —  {abb['stato']}\n"
                 f"Scadenza: {abb['data_scadenza']}"
             )
             riga_layout.addWidget(testo)
