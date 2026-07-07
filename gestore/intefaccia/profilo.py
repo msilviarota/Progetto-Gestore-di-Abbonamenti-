@@ -70,7 +70,7 @@ class ProfiloDialog(QDialog):
         self.campo_password.setReadOnly(True)
         self.campo_password.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.campo_piano = QLineEdit("Non ancora disponibile")
+        self.campo_piano = QLineEdit(self._ottieni_testo_piano())
         self.campo_piano.setReadOnly(True)
         self.campo_pagamento = QLabel(self._ottieni_testo_pagamento(email_utente))
 
@@ -218,3 +218,23 @@ class ProfiloDialog(QDialog):
 
         saldo = gestore_portafoglio.ottieni_saldo(email_utente)
         return f"{saldo:.2f} €"
+    
+    def _ottieni_testo_piano(self):
+        """Mostra il piano dell'abbonamento attivo più recente dell'utente, se esiste."""
+        gestore_abbonamenti = getattr(self.finestra_principale, "gestore_abbonamenti", None)
+
+        if not gestore_abbonamenti:
+            return "Nessun piano attivo"
+
+        abbonamenti = gestore_abbonamenti.ottieni_tutti()
+        attivi = [abb for abb in abbonamenti if abb.get("stato") == "Attivo"]
+
+        if not attivi:
+            return "Nessun piano attivo"
+
+        # Prende l'abbonamento con data di emissione più recente
+        piu_recente = max(attivi, key=lambda abb: abb.get("data_emissione", ""))
+        piattaforma = piu_recente.get("piattaforma", "").capitalize()
+        piano = piu_recente.get("piano", "mensile").capitalize()
+
+        return f"{piattaforma} ({piano})"
