@@ -57,8 +57,8 @@ class FinestraCambiaPassword(QDialog):
         self.gestore_profilo = gestore_profilo
 
         self.setWindowTitle("Cambia Password")
-        self.setFixedSize(420, 320)
-        self.setStyleSheet(STILE_DIALOGO_VERDE)
+        self.setMinimumSize(420, 380)
+        self.setStyleSheet(STILE_DIALOGO_FORM_COMPATTO)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -76,9 +76,9 @@ class FinestraCambiaPassword(QDialog):
 
         # Vecchia password
         layout.addWidget(QLabel("Vecchia password:"))
-        self.vecchia_info = QLabel("4242 **** **** 4242")
-        self.vecchia_info.setStyleSheet(STILE_CAMPO_INFO)
-        layout.addWidget(self.vecchia_info)
+        self.vecchia_input = QLineEdit()
+        self.vecchia_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.vecchia_input)
 
         # Nuova password
         layout.addWidget(QLabel("Nuova password:"))
@@ -184,29 +184,9 @@ class FinestraModificaPagamento(QDialog):
 
         self.email_utente = email_utente
         self.gestore_profilo = gestore_profilo
-
         self.setWindowTitle("Modifica Carta")
-        self.setMinimumSize(480, 480)   # niente più setFixedSize: si adatta al contenuto
-
-        # Stylesheet completo e AUTOSUFFICIENTE: sovrascrive QLineEdit così non eredita
-        # lo stile enorme di STILE_DIALOGO_PROFILO dal ProfiloDialog genitore.
-        self.setStyleSheet("""
-            QDialog { background-color: #E8F5E9; }
-            QLabel { color: #222222; font-size: 13px; margin-bottom: 4px; }
-            QLineEdit {
-                background-color: #FFFFFF;
-                color: #222222;
-                border: 1px solid #B5D8B5;
-                border-radius: 8px;
-                padding: 8px 12px;
-                font-size: 14px;
-                min-height: 22px;
-                margin-bottom: 10px;
-            }
-            QLineEdit:focus {
-                border: 1px solid #4A7F4A;
-            }
-        """)
+        self.setMinimumSize(480, 480)
+        self.setStyleSheet(STILE_DIALOGO_FORM_COMPATTO)
 
         self.vecchia_input = QLineEdit()
         self.nuova_input = QLineEdit()
@@ -274,7 +254,7 @@ class FinestraModificaPagamento(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
-            
+
 class FinestraRicerca(QDialog):
     def __init__(self, testo, finestra_principale, parent=None):
         super().__init__(parent)

@@ -351,3 +351,20 @@ STILE_TESTO_VUOTO = "color: #555555; font-size: 13px;"
 STILE_CONTENITORE_PROFILO = "background-color: #F7F4EF;"
 STILE_TITOLO_REGISTRAZIONE = "font-size: 22px; font-weight: bold; color: #222222; margin-bottom: 10px;"
 STILE_SPINBOX = "padding: 5px; border-radius: 5px; background: white;"
+STILE_DIALOGO_FORM_COMPATTO = """
+QDialog { background-color: #E8F5E9; }
+QLabel { color: #222222; font-size: 13px; margin-bottom: 4px; }
+QLineEdit {
+    background-color: #FFFFFF;
+    color: #222222;
+    border: 1px solid #B5D8B5;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 22px;
+    margin-bottom: 10px;
+}
+QLineEdit:focus {
+    border: 1px solid #4A7F4A;
+}
+"""
