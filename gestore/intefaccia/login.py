@@ -34,7 +34,7 @@ class LoginWindow(QWidget):
     """
 
     def __init__(self, gestore_login=None, gestore_preferenze=None, gestore_profilo=None,
-                 gestore_abbonamenti=None, gestore_registrazione=None):
+                 gestore_abbonamenti=None, gestore_registrazione=None, repo_dati_pagamento=None):
         super().__init__()
         self.gestore_login = gestore_login
         self.gestore_preferenze = gestore_preferenze
@@ -42,6 +42,7 @@ class LoginWindow(QWidget):
         self.gestore_abbonamenti = gestore_abbonamenti
         self.gestore_registrazione = gestore_registrazione
         self.gestore_abbonamenti = gestore_abbonamenti
+        self.repo_dati_pagamento =  repo_dati_pagamento
         # Configurazione Finestra (Requisito Mockup)
         self.setWindowTitle("Login - RelaxApp")
         self.setWindowIcon(QIcon(os.path.join(BASE_DIR, "logo5.1.png")))
@@ -132,15 +133,13 @@ class LoginWindow(QWidget):
         # Creo il gestore abbonamenti ORA che l'utente esiste
         from Service.gestoreAbbonamenti import GestoreAbbonamenti
         from repository.repositoryAbbonamento import RepositoryAbbonamento
-        from repository.repositoryDatiPagamento import RepositoryDatiPagamento
 
         repo_abbonamenti = RepositoryAbbonamento()
-        repo_pagamenti = RepositoryDatiPagamento()
 
         gestore_abbonamenti = GestoreAbbonamenti(
             utente=utente,
             repoAbbonamento=repo_abbonamenti,
-            repoDatiPagamento=repo_pagamenti,
+            repoDatiPagamento=self.repo_dati_pagamento,
             piattaforma=None,
             notifica=self.gestore_login._notifica
         )

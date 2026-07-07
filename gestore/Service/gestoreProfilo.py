@@ -9,6 +9,7 @@ if radice_progetto not in sys.path:
 
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento
+from models.datiPagamento import DatiPagamento
 from models.utente import Utente
 from models.datiPagamento import DatiPagamento
 from models.notifica import Notifica
@@ -22,9 +23,7 @@ class GestoreProfilo:
                  repoDatiPagamento: RepositoryDatiPagamento = None):
         self._repo_Utente = repoUtente
         self._notifica = notifica
-        # Se non viene passato, lo creo di default (retrocompatibile con chi
-        # istanzia GestoreProfilo senza questo parametro)
-        self._repo_DatiPagamento = repoDatiPagamento or RepositoryDatiPagamento()
+        self._repo_DatiPagamento = repoDatiPagamento or RepositoryDatiPagamento
 
     def ottieni_dati_utente(self, email: str):
         utente_dict = self._repo_Utente.ottieni_per_email(email)
@@ -58,10 +57,6 @@ class GestoreProfilo:
         return False
 
     def cambia_carta_utente(self, email: str, vecchia: str, nuova: str):
-        """
-        CDU16: Modifica il numero della carta, leggendolo/scrivendolo dal
-        repository dei pagamenti (NON dall'oggetto Utente, che non lo contiene).
-        """
         carta_attuale = self._repo_DatiPagamento.ottieni_numero_carta(email)
 
         if carta_attuale != vecchia:
@@ -72,8 +67,8 @@ class GestoreProfilo:
         nome_titolare = utente._nome if utente else "Demo"
         cognome_titolare = utente._cognome if utente else "User"
 
-        dati_pagamento_precedenti = self._repo_DatiPagamento.ottieni_per_utente(email)
-        scadenza = dati_pagamento_precedenti.get("scadenza", "12/30")
+        dati_precedenti = self._repo_DatiPagamento.ottieni_per_utente(email)
+        scadenza = dati_precedenti.get("scadenza", "12/30")
 
         nuovi_dati = DatiPagamento(
             numero_carta=nuova,

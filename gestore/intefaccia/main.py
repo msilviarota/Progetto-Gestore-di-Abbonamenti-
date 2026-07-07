@@ -13,6 +13,7 @@ from Service.gestoreProfilo import GestoreProfilo
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryLog import RepositoryLog
 from repository.repositoryPreferenze import RepositoryPreferenze
+from repository.repositoryDatiPagamento import RepositoryDatiPagamento 
 from models.notifica import Notifica
 from Service.gestoreLogin import GestoreLogin
 from Service.gestorePreferenze import GestorePreferenze
@@ -20,6 +21,7 @@ from intefaccia.main_window import FinestraPrincipale
 from Service.registrazione import GestoreRegistrazione
 from models.notifica import Notifica
 from intefaccia.stile import STILE_MESSAGEBOX
+
 def avvia_applicazione():
     app = QApplication(sys.argv)
     app.setStyleSheet(STILE_MESSAGEBOX)
@@ -28,10 +30,11 @@ def avvia_applicazione():
     repo_utente = RepositoryUtente()
     repo_log = RepositoryLog()
     repo_preferenze = RepositoryPreferenze()
+    repo_dati_pagamento = RepositoryDatiPagamento()
     notifica = Notifica("", "")
-    gestore_profilo = GestoreProfilo(repo_utente, notifica)
+    gestore_profilo = GestoreProfilo(repo_utente, notifica, repo_dati_pagamento)
     gestore_login = GestoreLogin(repo_utente, repo_log, notifica)
-    gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, None, notifica)
+    gestore_preferenze = GestorePreferenze(repo_utente, repo_preferenze, repo_dati_pagamento, notifica)
     gestore_registrazione = GestoreRegistrazione(repo_utente, notifica)
 
     window = LoginWindow(
@@ -39,7 +42,8 @@ def avvia_applicazione():
         gestore_preferenze=gestore_preferenze,
         gestore_profilo=gestore_profilo,
         gestore_abbonamenti=None,
-        gestore_registrazione=gestore_registrazione
+        gestore_registrazione=gestore_registrazione,
+        repo_dati_pagamento=repo_dati_pagamento
     )
     window.show()
     sys.exit(app.exec())
