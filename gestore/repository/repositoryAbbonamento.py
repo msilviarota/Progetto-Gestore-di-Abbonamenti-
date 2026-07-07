@@ -49,6 +49,7 @@ class RepositoryAbbonamento:
             "id_abbonamento": f"ABB_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             "email": abb._email,
             "piattaforma": abb.piattaforma,
+            "piano": abb._piano,
             "data_emissione": datetime.now().strftime("%Y-%m-%d"),
             "data_scadenza": abb._data_scadenza.strftime("%Y-%m-%d"),
             "validita": True,
