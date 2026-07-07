@@ -186,14 +186,35 @@ class FinestraModificaPagamento(QDialog):
         self.gestore_profilo = gestore_profilo
 
         self.setWindowTitle("Modifica Carta")
-        self.setFixedSize(500, 420)
-        self.setStyleSheet(STILE_DIALOGO_VERDE)
+        self.setMinimumSize(480, 480)   # niente più setFixedSize: si adatta al contenuto
+
+        # Stylesheet completo e AUTOSUFFICIENTE: sovrascrive QLineEdit così non eredita
+        # lo stile enorme di STILE_DIALOGO_PROFILO dal ProfiloDialog genitore.
+        self.setStyleSheet("""
+            QDialog { background-color: #E8F5E9; }
+            QLabel { color: #222222; font-size: 13px; margin-bottom: 4px; }
+            QLineEdit {
+                background-color: #FFFFFF;
+                color: #222222;
+                border: 1px solid #B5D8B5;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 14px;
+                min-height: 22px;
+                margin-bottom: 10px;
+            }
+            QLineEdit:focus {
+                border: 1px solid #4A7F4A;
+            }
+        """)
+
         self.vecchia_input = QLineEdit()
         self.nuova_input = QLineEdit()
         self.conferma_input = QLineEdit()
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
-        layout.setSpacing(15)
+        layout.setSpacing(12)
 
         titolo = QLabel("💳 Modifica Carta")
         titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
@@ -205,28 +226,23 @@ class FinestraModificaPagamento(QDialog):
         sep.setStyleSheet(STILE_SEPARATORE)
         layout.addWidget(sep)
 
-       # Vecchia carta
-        box_vecchia = QVBoxLayout()
-        lbl_vecchia = QLabel("Vecchio numero carta:")
-        box_vecchia.addWidget(lbl_vecchia)
-        box_vecchia.addWidget(self.vecchia_input)
-        layout.addLayout(box_vecchia)
+        # Vecchia carta
+        layout.addWidget(QLabel("Vecchio numero carta:"))
+        layout.addWidget(self.vecchia_input)
 
         # Nuova carta
-        box_nuova = QVBoxLayout()
-        lbl_nuova = QLabel("Nuovo numero carta:")
-        box_nuova.addWidget(lbl_nuova)
-        box_nuova.addWidget(self.nuova_input)
-        layout.addLayout(box_nuova)
+        layout.addWidget(QLabel("Nuovo numero carta:"))
+        layout.addWidget(self.nuova_input)
 
         # Conferma carta
-        box_conf = QVBoxLayout()
-        lbl_conf = QLabel("Conferma nuovo numero:")
-        box_conf.addWidget(lbl_conf)
-        box_conf.addWidget(self.conferma_input)
-        layout.addLayout(box_conf)
+        layout.addWidget(QLabel("Conferma nuovo numero:"))
+        layout.addWidget(self.conferma_input)
+
+        layout.addSpacing(10)
 
         btn_salva = QPushButton("Salva")
+        btn_salva.setStyleSheet(STILE_BTN_ACCEDI)  # nero, coerente col resto dell'app
+        btn_salva.setFixedHeight(40)
         btn_salva.clicked.connect(self.salva)
         layout.addWidget(btn_salva)
 
@@ -258,8 +274,7 @@ class FinestraModificaPagamento(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Il vecchio numero carta non è corretto.")
-
-
+            
 class FinestraRicerca(QDialog):
     def __init__(self, testo, finestra_principale, parent=None):
         super().__init__(parent)
