@@ -89,6 +89,14 @@ class RepositoryAbbonamento:
                 self._salva_dati()
                 return True
         return False
+    def presta_a_amico(self, id_abb, email_amico):
+        """Registra a chi è stato prestato l'abbonamento."""
+        for abb in self._abbonamenti:
+            if abb['id_abbonamento'] == id_abb:
+                abb['prestato_a'] = email_amico
+                self._salva_dati()
+                return True
+        return False
 
     def rimuovi_record(self, id_abb):
         """CDU14: Elimina definitivamente un record dalla cronologia."""

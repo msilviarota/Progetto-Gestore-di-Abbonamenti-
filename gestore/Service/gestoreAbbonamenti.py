@@ -72,14 +72,14 @@ class GestoreAbbonamenti:
         return successo
 
     def presta_abbonamento(self, id_abbonamento: str, email_amico: str):
+        """ CDU11: Permette di prestare un abbonamento a un amico registrato [12, 13].
         """
-        CDU11: Permette di prestare un abbonamento a un amico registrato [12, 13].
-        """
-        # Verifica descritta nel PDF: l'amico deve avere un account sul gestore [12, 13]
-        # (Qui si chiamerebbe una funzione di verifica su RepositoryUtente)
-        print(f"Prestito abbonamento {id_abbonamento} a {email_amico} in corso...")
-        self._notifica = Notifica(f"Accesso condiviso con {email_amico}.", "Info")
-        return True
+        successo = self._repo_Abbonamento.presta_a_amico(id_abbonamento, email_amico)
+        if successo:
+            self._notifica = Notifica(f"Accesso condiviso con {email_amico}.", "Info")
+        else:
+            self._notifica = Notifica("Impossibile registrare il prestito.", "Errore")
+        return successo
 
     def sposta_in_scaduti(self, id_abbonamento: str):
         """
