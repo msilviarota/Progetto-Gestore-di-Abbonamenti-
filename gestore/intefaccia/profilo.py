@@ -79,6 +79,8 @@ class ProfiloDialog(QDialog):
         form.addRow(crea_label("Password:"), self.campo_password)
         form.addRow(crea_label("Piano:"), self.campo_piano)
         form.addRow(crea_label("Pagamento:"), self.campo_pagamento)
+        self.campo_credito = QLabel(self._ottieni_testo_credito(email_utente))
+        form.addRow(crea_label("Credito:"), self.campo_credito)
         layout.addLayout(form)
 
         sep2 = QFrame()
@@ -108,6 +110,12 @@ class ProfiloDialog(QDialog):
         btn_pagamento.setStyleSheet(STILE_BTN_SERVIZIO)
         btn_pagamento.clicked.connect(self.apri_modifica_pagamento)
         layout.addWidget(btn_pagamento)
+
+        btn_credito = QPushButton("💰 Ricarica credito")
+        btn_credito.setFixedHeight(38)
+        btn_credito.setStyleSheet(STILE_BTN_SERVIZIO)
+        btn_credito.clicked.connect(self.apri_ricarica_credito)
+        layout.addWidget(btn_credito)
 
         sep3 = QFrame()
         sep3.setFrameShape(QFrame.Shape.HLine)
@@ -171,6 +179,18 @@ class ProfiloDialog(QDialog):
         finestra.exec()
         # Aggiorna subito il campo "Pagamento" con i nuovi dati, senza dover riaprire il profilo
         self.campo_pagamento.setText(self._ottieni_testo_pagamento(self.campo_email.text()))
+   
+    def apri_ricarica_credito(self):
+        from intefaccia.dialoghi import FinestraRicaricaCredito
+        gestore_portafoglio = getattr(self.finestra_principale, "gestore_portafoglio", None)
+        finestra = FinestraRicaricaCredito(
+            email_utente=self.campo_email.text(),
+            gestore_portafoglio=gestore_portafoglio,
+            parent=self
+        )
+        finestra.exec()
+        # Aggiorna subito il saldo mostrato, dopo la ricarica
+        self.campo_credito.setText(self._ottieni_testo_credito(self.campo_email.text()))
     
     def _ottieni_testo_pagamento(self, email_utente):
         """Recupera numero (mascherato) e tipo carta dal repository dati pagamento."""
@@ -189,3 +209,12 @@ class ProfiloDialog(QDialog):
 
         numero_mascherato = "**** **** **** " + numero[-4:]
         return f"{tipo}  {numero_mascherato}"
+    def _ottieni_testo_credito(self, email_utente):
+        """Recupera il saldo attuale dal gestore portafoglio."""
+        gestore_portafoglio = getattr(self.finestra_principale, "gestore_portafoglio", None)
+
+        if not gestore_portafoglio:
+            return "Non ancora disponibile"
+
+        saldo = gestore_portafoglio.ottieni_saldo(email_utente)
+        return f"{saldo:.2f} €"
