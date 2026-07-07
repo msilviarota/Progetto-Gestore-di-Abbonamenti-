@@ -10,6 +10,7 @@ if radice_progetto not in sys.path:
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento
 from models.datiPagamento import DatiPagamento
+from models.cartadiCredito import CartaDiCredito
 from models.utente import Utente
 from models.datiPagamento import DatiPagamento
 from models.notifica import Notifica
@@ -56,7 +57,7 @@ class GestoreProfilo:
         self._notifica = Notifica("La vecchia password non è corretta.", "Errore")
         return False
 
-    def cambia_carta_utente(self, email: str, vecchia: str, nuova: str):
+    def cambia_carta_utente(self, email: str, vecchia: str, nuova: str, cvv: str = ""):
         carta_attuale = self._repo_DatiPagamento.ottieni_numero_carta(email)
 
         if carta_attuale != vecchia:
@@ -70,11 +71,15 @@ class GestoreProfilo:
         dati_precedenti = self._repo_DatiPagamento.ottieni_per_utente(email)
         scadenza = dati_precedenti.get("scadenza", "12/30")
 
-        nuovi_dati = DatiPagamento(
+        # NOTA: il CVV viene usato solo per la validazione del form (lato GUI),
+        # ma non viene mai salvato su disco per motivi di sicurezza (standard PCI-DSS:
+        # il CVV non va mai persistito dopo l'autorizzazione).
+        nuovi_dati = CartaDiCredito(
             numero_carta=nuova,
             scadenza_carta=scadenza,
             nome_titolare=nome_titolare,
             cognome_titolare=cognome_titolare
+            # cvv NON passato qui: resta "" di default, non verrà salvato
         )
 
         self._repo_DatiPagamento.aggiornaDatiPagamento(email, nuovi_dati)

@@ -10,6 +10,7 @@ if radice_progetto not in sys.path:
     sys.path.append(radice_progetto)
 
 from models.datiPagamento import DatiPagamento
+from models.cartadiCredito import CartaDiCredito
 
 class RepositoryDatiPagamento:
     """
@@ -47,17 +48,22 @@ class RepositoryDatiPagamento:
 
     def ottieni_per_utente(self, email):
         """Recupera i dati di pagamento associati a una specifica email.
-        Se non esistono, restituisce una carta finta di default."""
+        Se non esistono, restituisce una carta finta di default.
+        Se il record non ha ancora 'tipo_carta' (dati salvati prima
+        dell'introduzione di CartaDiCredito), lo calcola al volo."""
         dati = self._database.get(email)
 
         if dati is None:
             # Carta finta di default
-            return {
+            dati = {
                 "numero_carta": "4242424242424242",
                 "scadenza": "12/30",
                 "nome_titolare": "Demo",
                 "cognome_titolare": "User"
             }
+
+        if "tipo_carta" not in dati:
+            dati["tipo_carta"] = CartaDiCredito._rileva_tipo_carta(dati.get("numero_carta", ""))
 
         return dati
 
@@ -77,15 +83,21 @@ class RepositoryDatiPagamento:
         """
         CDU16: Modifica i dati di pagamento sovrascrivendo i precedenti.
         Nota: i dati dovrebbero essere cifrati prima del salvataggio (Requisito 2).
+        Se 'dati' è una CartaDiCredito, salva anche cvv e tipo_carta; altrimenti
+        (DatiPagamento "semplice") salva solo i campi base per retrocompatibilità.
         """
-        # Creazione della struttura dati (Simulazione cifratura)
-        self._database[email] = {
+        record = {
             "numero_carta": dati._numero_carta, # Qui andrebbe applicata la cifratura
             "scadenza": dati._scadenza_carta,
             "nome_titolare": dati._nome_titolare,
             "cognome_titolare": dati._cognome_titolare
         }
-        
+
+        if isinstance(dati, CartaDiCredito):
+            record["cvv"] = dati._cvv
+            record["tipo_carta"] = dati._tipo_carta
+
+        self._database[email] = record
         self._salva_su_disco()
         print(f"Dati di pagamento aggiornati per {email}.")
         return True
