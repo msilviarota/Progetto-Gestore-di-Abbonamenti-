@@ -778,3 +778,77 @@ class FinestraPrestitoAbbonamento(QDialog):
             self.close()
         else:
             QMessageBox.warning(self, "Errore", "Impossibile prestare l'abbonamento.")
+
+class FinestraRicaricaCredito(QDialog):
+    """Permette all'utente di ricaricare il proprio credito (finto) per acquistare abbonamenti."""
+    def __init__(self, email_utente, gestore_portafoglio, parent=None):
+        super().__init__(parent)
+
+        self.email_utente = email_utente
+        self.gestore_portafoglio = gestore_portafoglio
+
+        self.setWindowTitle("Ricarica Credito")
+        self.setMinimumSize(420, 300)
+        self.setStyleSheet(STILE_DIALOGO_FORM_COMPATTO)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+
+        titolo = QLabel("💰 Ricarica Credito")
+        titolo.setStyleSheet(STILE_TITOLO_DIALOGO)
+        titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(titolo)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet(STILE_SEPARATORE)
+        layout.addWidget(sep)
+
+        saldo_attuale = 0.0
+        if self.gestore_portafoglio:
+            saldo_attuale = self.gestore_portafoglio.ottieni_saldo(self.email_utente)
+
+        self.label_saldo = QLabel(f"Saldo attuale: {saldo_attuale:.2f} €")
+        layout.addWidget(self.label_saldo)
+
+        layout.addWidget(QLabel("Importo da aggiungere (€):"))
+        self.input_importo = QLineEdit()
+        self.input_importo.setPlaceholderText("Es. 20.00")
+        layout.addWidget(self.input_importo)
+
+        btn_salva = QPushButton("Ricarica")
+        btn_salva.setStyleSheet(STILE_BTN_ACCEDI)
+        btn_salva.setFixedHeight(40)
+        btn_salva.clicked.connect(self.ricarica)
+        layout.addWidget(btn_salva)
+
+    def ricarica(self):
+        testo_importo = self.input_importo.text().strip().replace(",", ".")
+
+        if not testo_importo:
+            QMessageBox.warning(self, "Errore", "Inserisci un importo.")
+            return
+
+        try:
+            importo = float(testo_importo)
+        except ValueError:
+            QMessageBox.warning(self, "Errore", "L'importo inserito non è valido.")
+            return
+
+        if importo <= 0:
+            QMessageBox.warning(self, "Errore", "L'importo deve essere maggiore di zero.")
+            return
+
+        if not self.gestore_portafoglio:
+            QMessageBox.warning(self, "Errore", "Servizio portafoglio non disponibile.")
+            return
+
+        successo = self.gestore_portafoglio.aggiungi_credito(self.email_utente, importo)
+
+        if successo:
+            nuovo_saldo = self.gestore_portafoglio.ottieni_saldo(self.email_utente)
+            QMessageBox.information(self, "Successo", f"Credito ricaricato! Nuovo saldo: {nuovo_saldo:.2f} €")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Errore", "Impossibile completare la ricarica.")
