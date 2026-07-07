@@ -72,7 +72,7 @@ class ProfiloDialog(QDialog):
 
         self.campo_piano = QLineEdit("Non ancora disponibile")
         self.campo_piano.setReadOnly(True)
-        self.campo_pagamento = QLabel(("Non ancora disponibile"))
+        self.campo_pagamento = QLabel(self._ottieni_testo_pagamento(email_utente))
 
         form.addRow(crea_label("Nome:"), self.campo_nome)
         form.addRow(crea_label("Email:"), self.campo_email)
@@ -164,8 +164,28 @@ class ProfiloDialog(QDialog):
 
     def apri_modifica_pagamento(self):
         finestra = FinestraModificaPagamento(
-        email_utente=self.campo_email.text(),
-        gestore_profilo=self.finestra_principale.gestore_profilo,
-        parent=self
-    )
+            email_utente=self.campo_email.text(),
+            gestore_profilo=self.finestra_principale.gestore_profilo,
+            parent=self
+        )
         finestra.exec()
+        # Aggiorna subito il campo "Pagamento" con i nuovi dati, senza dover riaprire il profilo
+        self.campo_pagamento.setText(self._ottieni_testo_pagamento(self.campo_email.text()))
+    
+    def _ottieni_testo_pagamento(self, email_utente):
+        """Recupera numero (mascherato) e tipo carta dal repository dati pagamento."""
+        gestore_profilo = getattr(self.finestra_principale, "gestore_profilo", None)
+        repo_pagamento = getattr(gestore_profilo, "_repo_DatiPagamento", None)
+
+        if not repo_pagamento:
+            return "Non ancora disponibile"
+
+        dati = repo_pagamento.ottieni_per_utente(email_utente)
+        numero = dati.get("numero_carta", "")
+        tipo = dati.get("tipo_carta", "Sconosciuta")
+
+        if not numero:
+            return "Nessuna carta registrata"
+
+        numero_mascherato = "**** **** **** " + numero[-4:]
+        return f"{tipo}  {numero_mascherato}"
