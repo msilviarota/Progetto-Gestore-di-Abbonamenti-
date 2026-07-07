@@ -70,8 +70,9 @@ class ProfiloDialog(QDialog):
         self.campo_password.setReadOnly(True)
         self.campo_password.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.campo_piano = QLineEdit(self._ottieni_testo_piano())
-        self.campo_piano.setReadOnly(True)
+        self.campo_piano = QLabel(self._ottieni_testo_piano())
+        self.campo_piano.setStyleSheet(STILE_LABEL_PROFILO)
+        self.campo_piano.setWordWrap(True)
         self.campo_pagamento = QLabel(self._ottieni_testo_pagamento(email_utente))
 
         form.addRow(crea_label("Nome:"), self.campo_nome)
@@ -220,7 +221,8 @@ class ProfiloDialog(QDialog):
         return f"{saldo:.2f} €"
     
     def _ottieni_testo_piano(self):
-        """Mostra il piano dell'abbonamento attivo più recente dell'utente, se esiste."""
+        """Mostra tutti gli abbonamenti attivi, divisi per tipo di piano (Mensile/Annuale)."""
+        
         gestore_abbonamenti = getattr(self.finestra_principale, "gestore_abbonamenti", None)
 
         if not gestore_abbonamenti:
@@ -232,9 +234,13 @@ class ProfiloDialog(QDialog):
         if not attivi:
             return "Nessun piano attivo"
 
-        # Prende l'abbonamento con data di emissione più recente
-        piu_recente = max(attivi, key=lambda abb: abb.get("data_emissione", ""))
-        piattaforma = piu_recente.get("piattaforma", "").capitalize()
-        piano = piu_recente.get("piano", "mensile").capitalize()
+        mensili = [abb["piattaforma"].capitalize() for abb in attivi if abb.get("piano", "mensile") == "mensile"]
+        annuali = [abb["piattaforma"].capitalize() for abb in attivi if abb.get("piano") == "annuale"]
 
-        return f"{piattaforma} ({piano})"
+        righe = []
+        if mensili:
+            righe.append("Mensile: " + ", ".join(mensili))
+        if annuali:
+            righe.append("Annuale: " + ", ".join(annuali))
+
+        return "\n".join(righe)
