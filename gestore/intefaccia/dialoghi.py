@@ -683,10 +683,14 @@ class FinestraAbbonamenti(QDialog):
             riga_layout = QHBoxLayout(riga)
 
             piano_testo = abb.get('piano', 'mensile').capitalize()
-            testo = QLabel(
+            testo_base = (
                 f"{abb['piattaforma'].capitalize()} ({piano_testo})  —  {abb['stato']}\n"
                 f"Scadenza: {abb['data_scadenza']}"
             )
+            if abb.get('prestato_a'):
+                testo_base += f"\n🤝 Prestato a: {abb['prestato_a']}"
+
+            testo = QLabel(testo_base)
             riga_layout.addWidget(testo)
 
             if abb["stato"] == "Attivo":
