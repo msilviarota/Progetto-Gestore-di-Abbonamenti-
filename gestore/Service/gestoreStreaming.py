@@ -33,25 +33,22 @@ class GestoreStreaming:
         """
         # 1. Verifica validità abbonamento (CDU18 - Punto 2 del flusso principale)
         abbonamento = self._repo_Abb.ottieni_abbonamento_attivo(email_utente, contenuto._piattaforma)
-        
-        if not abbonamento or not abbonamento._validita:
+
+        if not abbonamento or not abbonamento['validita']:
             self._notifica = Notifica("Abbonamento non valido o scaduto. Impossibile riprodurre.", "Errore")
             return False
 
         # 2. Recupero URL di ricerca/riproduzione dalla piattaforma
         # Formatta il link di ricerca con il titolo del contenuto
-        url_finale = self._piattaforma_esterna.get_link_ricerca().format(contenuto._titolo)
-        
+        url_finale = self._piattaforma_esterna.link_ricerca.format(contenuto._titolo)
         try:
             # 3. Avvio interfaccia piattaforma (CDU18 - Punto 4)
-            print(f"Trasmissione dati a {self._piattaforma_esterna.get_nome()} per: {contenuto._titolo}")
+            print(f"Trasmissione dati a {self._piattaforma_esterna.nome} per: {contenuto._titolo}")
             webbrowser.open(url_finale)
-            
+
             # 4. Notifica di successo
-            self._notifica = Notifica(f"Apertura di {contenuto._titolo} su {self._piattaforma_esterna.get_nome()}...", "Successo")
+            self._notifica = Notifica(f"Apertura di {contenuto._titolo} su {self._piattaforma_esterna.nome}...", "Successo")
             return True
         except Exception as e:
             self._notifica = Notifica(f"Errore nell'avvio della piattaforma: {str(e)}", "Errore")
             return False
-
-   
