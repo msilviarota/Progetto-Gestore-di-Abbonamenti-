@@ -10,9 +10,9 @@ from intefaccia.stile import (
     STILE_CONTENITORE_PROFILO
 )
 from intefaccia.dialoghi import FinestraCambiaPassword, FinestraModificaPagamento
-from intefaccia.dialoghi import FinestraModificaPagamento
 from intefaccia.dialoghi import FinestraAbbonamenti
 from intefaccia.dialoghi import FinestraPrestitoAbbonamento
+
 
 class ProfiloDialog(QDialog):
     """Hub per la gestione dell'account (CDU7, CDU9, CDU15, CDU16)."""
