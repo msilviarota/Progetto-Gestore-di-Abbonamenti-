@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
     QLabel, QLineEdit, QMessageBox
 )
 from intefaccia.utils import mostra_messaggio
-from PyQt6.QtGui import QFont, QPixmap, QIcon
+from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtCore import Qt
 from intefaccia.dialoghi import FinestraRegistrazione
 from intefaccia.dialoghi import FinestraRecuperoPassword
