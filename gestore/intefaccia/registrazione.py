@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
     QLabel, QLineEdit, QMessageBox, QSpinBox
 )
-from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtCore import Qt
 
 # Configurazione dei percorsi per gestire gli import dal progetto
@@ -17,7 +16,6 @@ from intefaccia.stile import (
     STILE_CAMPO_RICERCA, STILE_BTN_LINK, STILE_FINESTRA_LOGIN,
     STILE_TITOLO_REGISTRAZIONE, STILE_SPINBOX, STILE_BTN_ACCEDI
 )
-from intefaccia.utils import BASE_DIR
 
 class RegisterWindow(QWidget):
     """
