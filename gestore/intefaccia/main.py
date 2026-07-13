@@ -21,7 +21,6 @@ from Service.gestoreLogin import GestoreLogin
 from Service.gestorePreferenze import GestorePreferenze
 from intefaccia.main_window import FinestraPrincipale
 from Service.registrazione import GestoreRegistrazione
-from models.notifica import Notifica
 from intefaccia.stile import STILE_MESSAGEBOX
 
 def avvia_applicazione():
