@@ -266,18 +266,15 @@ class FinestraPrincipale(QWidget):
 
 
 
-
 class FinestraRegistrazione(QDialog):
-    """NOTA: questa classe sembra un doppione (versione semplificata) di FinestraRegistrazione
-    in dialoghi.py, che ha più campi (cognome, età, conferma password). Valuta se serve davvero
-    o se è codice rimasto da una versione precedente."""
-    def __init__(self, gestore_login, parent=None):
+    """CDU3: Crea un nuovo account utente (versione semplice, usata da main_window)."""
+    def __init__(self, gestore_registrazione, parent=None):
         super().__init__(parent)
 
-        self.gestore_login = gestore_login
+        self.gestore_registrazione = gestore_registrazione
 
         self.setWindowTitle("Crea un nuovo account")
-        self.setFixedSize(420, 380)
+        self.setFixedSize(420, 480)
         self.setStyleSheet(STILE_DIALOGO_VERDE)
 
         layout = QVBoxLayout(self)
@@ -294,6 +291,14 @@ class FinestraRegistrazione(QDialog):
         self.input_nome.setPlaceholderText("Nome")
         layout.addWidget(self.input_nome)
 
+        self.input_cognome = QLineEdit()
+        self.input_cognome.setPlaceholderText("Cognome")
+        layout.addWidget(self.input_cognome)
+
+        self.input_eta = QLineEdit()
+        self.input_eta.setPlaceholderText("Età")
+        layout.addWidget(self.input_eta)
+
         self.input_email = QLineEdit()
         self.input_email.setPlaceholderText("Email")
         layout.addWidget(self.input_email)
@@ -303,26 +308,46 @@ class FinestraRegistrazione(QDialog):
         self.input_password.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(self.input_password)
 
+        self.input_conferma = QLineEdit()
+        self.input_conferma.setPlaceholderText("Conferma password")
+        self.input_conferma.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.input_conferma)
+
         btn_registra = QPushButton("Crea account")
         btn_registra.clicked.connect(self.registra)
         layout.addWidget(btn_registra)
 
     def registra(self):
-        nome = self.input_nome.text()
-        email = self.input_email.text()
+        nome = self.input_nome.text().strip()
+        cognome = self.input_cognome.text().strip()
+        eta_testo = self.input_eta.text().strip()
+        email = self.input_email.text().strip()
         password = self.input_password.text()
+        conferma = self.input_conferma.text()
 
-        if not nome or not email or not password:
+        if not nome or not cognome or not eta_testo or not email or not password or not conferma:
             QMessageBox.warning(self, "Errore", "Compila tutti i campi.")
             return
 
-        successo = self.gestore_login.registra_utente(nome, email, password)
+        if not eta_testo.isdigit():
+            QMessageBox.warning(self, "Errore", "L'età deve essere un numero.")
+            return
 
-        if successo:
-            QMessageBox.information(self, "Successo", "Account creato!")
+        if password != conferma:
+            QMessageBox.warning(self, "Errore", "Le password non coincidono.")
+            return
+
+        codice = self.gestore_registrazione.registra_nuovo_utente(
+            nome=nome, cognome=cognome, eta=eta_testo, email=email,
+            password=password, conferma_password=conferma
+        )
+
+        if codice:
+            QMessageBox.information(self, "Successo", f"Account creato! Il tuo codice è: {codice}")
             self.close()
         else:
-            QMessageBox.warning(self, "Errore", "Email già registrata.")
+            QMessageBox.warning(self, "Errore", "Registrazione non riuscita. Controlla i dati inseriti.")
+
             
 class FinestraRecupero(QDialog):
     """NOTA: questa classe sembra un doppione di FinestraRecuperoPassword in dialoghi.py."""
