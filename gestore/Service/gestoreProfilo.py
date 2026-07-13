@@ -8,10 +8,8 @@ if radice_progetto not in sys.path:
 
 from repository.repositoryUtente import RepositoryUtente
 from repository.repositoryDatiPagamento import RepositoryDatiPagamento
-from models.datiPagamento import DatiPagamento
 from models.cartadiCredito import CartaDiCredito
 from models.utente import Utente
-from models.datiPagamento import DatiPagamento
 from models.notifica import Notifica
 
 class GestoreProfilo:
