@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))

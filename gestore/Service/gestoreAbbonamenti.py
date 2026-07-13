@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 from datetime import datetime
 
 # Calcolo del percorso radice del progetto

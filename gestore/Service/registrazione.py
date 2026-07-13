@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import random # Necessario per generare il codice identificativo (CDU3)
 
 # Calcolo del percorso radice del progetto per gestire gli import

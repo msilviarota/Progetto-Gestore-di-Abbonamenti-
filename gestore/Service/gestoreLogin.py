@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import hashlib # Utilizzato per la cifratura della password (CDU7)
 import string
 # Calcolo del percorso radice del progetto

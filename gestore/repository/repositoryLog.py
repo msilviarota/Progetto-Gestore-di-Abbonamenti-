@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 
 # Calcolo del percorso radice del progetto per gestire gli import e i file
 # Corretto l'uso di __file__ (doppio underscore) [4]
