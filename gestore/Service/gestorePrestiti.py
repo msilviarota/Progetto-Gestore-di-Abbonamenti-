@@ -50,10 +50,9 @@ class GestorePrestiti:
         # 3. Verifica che l'abbonamento appartenga all'utente e sia attivo
         # (Requisito: L'abbonamento deve permettere la condivisione [2])
         abbonamento = self._repo_abbonamento.ottieni_per_id(id_abbonamento)
-        if not abbonamento or abbonamento._email != email_proprietario:
+        if not abbonamento or abbonamento['email'] != email_proprietario:
             self._notifica = Notifica("Abbonamento non disponibile per il prestito.", "Errore")
             return False
-
         # 4. Il sistema invia una notifica di accesso all'amico indicato (CDU11 - Punto 5)
         # In un'implementazione completa, qui si aggiornerebbe anche il database 'prestiti.json'
         successo_msg = f"Accesso all'abbonamento {id_abbonamento} condiviso con {email_amico}."
