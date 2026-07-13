@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QLabel
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog
+
 from intefaccia.stile import STILE_DIALOGO_VERDE
 class FinestraAbbonamenti(QDialog):
     """Visualizza gli abbonamenti acquistati (CDU13) [11]."""
