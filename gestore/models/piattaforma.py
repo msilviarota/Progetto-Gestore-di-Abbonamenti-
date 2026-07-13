@@ -13,15 +13,20 @@ class Piattaforma:
     con un catalogo di contenuti ricercabili.
     """
 
-    def __init__(self, nome: str, logo: str, link_login: str, categoria: str):
+    def __init__(self, nome: str, logo: str, link_login: str, categoria: str, link_ricerca: str = None):
         self._nome = nome
         self._logo = logo
         self._link_login = link_login
         self._categoria = categoria
+        self._link_ricerca = link_ricerca or link_login  # fallback al link di login se non specificato
+
     @property
     def nome(self):
         return self._nome
 
+    @property
+    def link_ricerca(self):
+        return self._link_ricerca
     @property
     def logo(self):
         return self._logo
