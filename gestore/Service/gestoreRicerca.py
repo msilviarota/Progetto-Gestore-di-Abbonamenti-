@@ -35,7 +35,7 @@ class GestoreRicerca:
         Esegue la ricerca sulla piattaforma impostata utilizzando il termine fornito.
         Sfrutta i link di ricerca definiti nel modello Piattaforma.
         """
-        link_base = self._piattaforma.get_link_ricerca()
+        link_base = self._piattaforma.link_ricerca
         url_finale = link_base.format(termine_ricerca)
-        print(f"Ricerca in corso su {self._piattaforma.get_nome()} per: {termine_ricerca}")
-        # Qui andrebbe la logica Selenium per navigare all'url_finale [3, 4]
+        print(f"Ricerca in corso su {self._piattaforma.nome} per: {termine_ricerca}")
+        return url_finale
