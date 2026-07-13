@@ -71,6 +71,21 @@ class RepositoryAbbonamento:
         """CDU13: Recupera tutti gli abbonamenti (attivi e scaduti) di un utente."""
         return [abb for abb in self._abbonamenti if abb['email'] == email]
 
+    def ottieni_per_id(self, id_abbonamento):
+        """Recupera un singolo abbonamento tramite il suo id, se esiste."""
+        for abb in self._abbonamenti:
+            if abb['id_abbonamento'] == id_abbonamento:
+                return abb
+        return None
+
+    def ottieni_abbonamento_attivo(self, email, piattaforma):
+        """Recupera l'abbonamento attivo e valido di un utente per una data piattaforma."""
+        for abb in self._abbonamenti:
+            if abb['email'] == email and abb['piattaforma'] == piattaforma and abb['validita']:
+                return abb
+        return None
+
+
     def aggiorna_stato(self, id_abb, nuovo_stato):
         """CDU2: Cambia lo stato dell'abbonamento (es. 'Disdetto')."""
         for abb in self._abbonamenti:
