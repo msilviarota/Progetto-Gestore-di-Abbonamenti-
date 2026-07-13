@@ -2,13 +2,12 @@ import os
 import sys
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QLineEdit, QFrame, QScrollArea, QMessageBox,QDialog
+    QLabel, QLineEdit, QScrollArea, QMessageBox,QDialog
 )
 from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtCore import Qt
 from intefaccia.profilo import ProfiloDialog
 from intefaccia.dialoghi import FinestraRicerca, SchedaCategoria
-from intefaccia.dialoghi import FinestraAcquisto
 
 cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 radice_progetto = os.path.abspath(os.path.join(cartella_corrente, ".."))
@@ -19,8 +18,7 @@ from intefaccia.stile import (
     STILE_FINESTRA_PRINCIPALE, STILE_BTN_PROFILO, STILE_BTN_CATEGORIA,
     STILE_CAMPO_RICERCA, STILE_SALUTO, STILE_BTN_EXTRA,
     STILE_TITOLO_SEZIONE, STILE_SCROLL_TRASPARENTE, STILE_TESTO_VUOTO,
-    STILE_DIALOGO_VERDE, STILE_TITOLO_DIALOGO, STILE_SEPARATORE,
-    STILE_FINESTRA_REGISTRAZIONE
+    STILE_DIALOGO_VERDE, STILE_TITOLO_DIALOGO
 )
 from intefaccia.utils import BASE_DIR
 from models.piattaforma import CATALOGO_PIATTAFORME
@@ -348,7 +346,7 @@ class FinestraRegistrazione(QDialog):
         else:
             QMessageBox.warning(self, "Errore", "Registrazione non riuscita. Controlla i dati inseriti.")
 
-            
+
 class FinestraRecupero(QDialog):
     """NOTA: questa classe sembra un doppione di FinestraRecuperoPassword in dialoghi.py."""
     def __init__(self, gestore_login, parent=None):
